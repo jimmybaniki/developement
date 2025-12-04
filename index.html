@@ -3,475 +3,1167 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Eau Pure - Livraison à Domicile</title>
+    <title>BANIKI LABS - Nos Services</title>
+    <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        /* ================================================= */
-        /* == STYLES GÉNÉRAUX & CLIENT (CATALOGUE)        == */
-        /* ================================================= */
-
+        /* Configuration de la police Inter */
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
+        
+        /* Base Colors for Dark Mode (Default) */
         :root {
-            --couleur-primaire: #007bff; /* Bleu Eau */
-            --couleur-secondaire: #28a745; /* Vert Commande */
-            --couleur-fond: #f8f9fa;
-            --couleur-texte: #343a40;
+            --color-bg-main: #1a1a1a;        /* dark-bg */
+            --color-bg-card: #262626;        /* dark-card */
+            --color-text-main: #f3f4f6;      /* text-light */
+            --color-text-opposite: #1a1a1a;  /* dark-bg (for BL logo text and Discover buttons) */
+            
+            --color-accent: #FFD700;         /* Strong Gold (Dark Mode) */
+            --color-accent-dark: #CCAA00;    /* Dark Gold for hover/focus */
         }
 
+        /* Override Colors for Light Mode */
+        body.light-mode {
+            --color-bg-main: #ffffff;      /* White body background */
+            --color-bg-card: #f9f9f9;      /* Near-white card/nav */
+            --color-text-main: #1f2937;    /* Dark Gray text (gray-800) */
+            
+            --color-accent: #FFD166;         /* Soft Gold (Light Mode) */
+            --color-accent-dark: #FFB733;    /* Slightly darker soft gold for hover */
+        }
+        
+        /* Appliquer les variables CSS aux classes utilitaires */
+        .bg-main { background-color: var(--color-bg-main); }
+        .bg-card { background-color: var(--color-bg-card); }
+        .text-main { color: var(--color-text-main); }
+        .text-opposite { color: var(--color-text-opposite); }
+        
+        .text-gold-accent { color: var(--color-accent); }
+        .bg-gold-accent { background-color: var(--color-accent); }
+        .border-gold-accent { border-color: var(--color-accent); }
+
+        .hover\:text-gold-accent:hover { color: var(--color-accent); }
+        .hover\:bg-gold-dark:hover { background-color: var(--color-accent-dark); }
+        .focus\:ring-gold-dark:focus { border-color: var(--color-accent-dark); }
+
+        /* Fix body styling to use variables */
         body {
-            font-family: 'Arial', sans-serif;
-            background-color: var(--couleur-fond);
-            color: var(--couleur-texte);
-            line-height: 1.6;
-            margin: 0;
-            padding: 0;
+            font-family: 'Inter', sans-serif;
+            background-color: var(--color-bg-main);
+            color: var(--color-text-main);
+            min-height: 100vh;
+            transition: background-color 0.3s, color 0.3s; /* Transition douce */
         }
 
-        .container {
-            max-width: 800px;
-            margin: 20px auto;
-            background: #fff;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+        /* Styles personnalisés pour l'effet sur le bouton */
+        .btn-discover:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(180, 150, 50, 0.5), 0 4px 6px -2px rgba(180, 150, 50, 0.05);
         }
-
-        h1, h2, h3 {
-            color: var(--couleur-primaire);
-            border-bottom: 2px solid #e9ecef;
-            padding-bottom: 5px;
-            margin-top: 25px;
-        }
-
-        /* Catalogue des produits */
-        .produit {
-            margin-bottom: 15px;
-            padding: 10px 0;
-            border-bottom: 1px dashed #ced4da;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .produit-info {
-            flex-grow: 1;
-        }
-
-        .produit-prix {
-            font-weight: bold;
-            color: var(--couleur-secondaire);
-            margin-right: 15px;
-        }
-        
-        /* Champs de quantité */
-        .quantite-input {
-            width: 50px;
-            padding: 5px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            text-align: center;
-        }
-
-        /* Total */
-        .total-section {
-            padding: 15px;
-            background-color: #e9f7ef;
-            border-radius: 4px;
-            text-align: right;
-            font-size: 1.5em;
-            margin-top: 20px;
-        }
-
-        /* Formulaire de Livraison */
-        .form-group {
-            margin-bottom: 15px;
-        }
-
-        .form-group input {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            box-sizing: border-box;
-        }
-
-        /* Boutons */
-        .btn-commande {
-            width: 100%;
-            padding: 12px;
-            background-color: var(--couleur-secondaire);
-            color: white;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 1.1em;
-            font-weight: bold;
-            margin-top: 10px;
-            transition: background-color 0.3s;
-        }
-
-        .btn-commande:hover {
-            background-color: #1e7e34;
-        }
-
-        .lien-livreur {
-            display: block;
-            text-align: center;
-            margin-top: 20px;
-            color: var(--couleur-primaire);
-            text-decoration: none;
-        }
-
-        /* ================================================= */
-        /* == STYLES LIVREUR (LOGIN & ADMIN)              == */
-        /* ================================================= */
-
-        .page-login-livreur, .page-admin-orders {
-            padding: 40px;
-            max-width: 400px;
-            margin: 50px auto;
-            background: #fff;
-            border-radius: 8px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-        }
-
-        /* Admin Orders Styles (pour le simple affichage ici) */
-        .page-admin-orders {
-             max-width: 90%; 
-        }
-
-        .table-orders {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-            font-size: 0.9em;
-        }
-
-        .table-orders th, .table-orders td {
-            border: 1px solid #dee2e6;
-            padding: 8px;
-            text-align: left;
-        }
-
-        .table-orders th {
-            background-color: var(--couleur-primaire);
-            color: white;
-        }
-        
-        .status-badge {
-            padding: 5px 8px;
-            border-radius: 3px;
-            color: white;
-            font-weight: bold;
-            font-size: 0.8em;
-            text-transform: uppercase;
-        }
-
-        .status-new { background-color: #ffc107; color: #343a40; }
-        .status-delivery { background-color: #007bff; }
-        .status-delivered { background-color: var(--couleur-secondaire); }
-
-        /* Masquage des pages au chargement */
-        #loginPage, #adminPage {
-            display: none;
-        }
-
+        /* Style pour masquer/afficher les menus déroulants */
+        .hidden { display: none; }
     </style>
 </head>
-<body>
+<body class="min-h-screen">
 
-    <div id="clientPage" class="container">
-        <h1>💧 Eau Pure</h1>
-        <p>Livraison d'eau à votre porte</p>
+    <nav class="bg-card shadow-xl sticky top-0 z-10 border-b border-gold-accent">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-20"> 
+                <div class="flex-shrink-0 flex items-center space-x-4">
+                    <div class="w-10 h-10 bg-gold-accent rounded-full flex items-center justify-center">
+                        <span class="text-2xl font-black text-opposite">BL</span> 
+                    </div>
+                    <div class="text-3xl font-extrabold text-gold-accent">
+                        <span class="text-2xl font-black tracking-wider">BANIKI LABS</span>
+                    </div>
+                </div>
 
-        <h2>Nos Eaux</h2>
-        <form id="commandeFormulaire">
-            <h3>Eau Pure</h3>
-            <div class="produit">
-                <div class="produit-info">Sachets individuels (150FC / sachet)</div>
-                <span class="produit-prix">150FC</span>
-                <input type="number" min="0" value="0" data-prix="150" class="quantite-input">
+                <div class="hidden md:flex space-x-6 lg:space-x-8 items-center">
+                    <a href="#pricing" data-key="nav_pricing" class="text-main hover:text-gold-accent font-medium transition duration-150">Prix</a>
+                    <a href="#services" data-key="nav_services" class="text-gold-accent font-bold transition duration-150 border-b-2 border-gold-accent">Services</a>
+                    
+                    <div class="relative">
+                        <button id="mode-toggle" class="text-main hover:text-gold-accent font-medium transition duration-150 flex items-center p-2 rounded-lg hover:bg-card focus:outline-none" title="Changer de Mode">
+                            <span data-key="mode_dark">Mode Sombre</span>
+                            <svg id="dark-icon" class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 11.001 11.001 0 0015.354 20.354z"></path></svg>
+                            <svg id="light-icon" class="w-5 h-5 ml-2 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+                        </button>
+                    </div>
+                    <div class="relative">
+                        <button id="explore-btn" class="text-main hover:text-gold-accent font-medium transition duration-150 flex items-center p-2 rounded-lg hover:bg-main focus:outline-none">
+                            <span data-key="nav_explore">Explorer</span>
+                            <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                        </button>
+                        <div id="explore-menu" class="hidden absolute right-0 mt-2 w-60 rounded-md shadow-lg bg-card ring-1 ring-gold-accent ring-opacity-50 z-20">
+                            <div class="py-1" role="menu" aria-orientation="vertical" aria-labelledby="explore-btn">
+                                <a href="#blog" class="block px-4 py-2 text-sm text-main hover:bg-gold-dark hover:text-opposite">
+                                    <span class="font-semibold" data-key="menu_blog">Blog</span><br><span class="text-xs text-gray-400" data-key="desc_blog">Nos dernières nouvelles et mises à jour</span>
+                                </a>
+                                <a href="#features" class="block px-4 py-2 text-sm text-main hover:bg-gold-dark hover:text-opposite">
+                                    <span class="font-semibold" data-key="menu_features">Fonctionnalités et outils</span><br><span class="text-xs text-gray-400" data-key="desc_features">Dernières versions et caractéristiques des produits</span>
+                                </a>
+                                <a href="#story" class="block px-4 py-2 text-sm text-main hover:bg-gold-dark hover:text-opposite">
+                                    <span class="font-semibold" data-key="menu_story">Notre histoire</span><br><span class="text-xs text-gray-400" data-key="desc_story">D'où nous venons et où nous allons</span>
+                                </a>
+                                <a href="#clients" class="block px-4 py-2 text-sm text-main hover:bg-gold-dark hover:text-opposite">
+                                    <span class="font-semibold" data-key="menu_clients">Histoires de clients</span><br><span class="text-xs text-gray-400" data-key="desc_clients">Les succès de nos clients sont nos histoires préférées</span>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <a href="#support" data-key="nav_support" class="text-main hover:text-gold-accent font-medium transition duration-150">Aide</a>
+                    
+                    <div class="relative">
+                        <button id="lang-btn" class="text-main hover:text-gold-accent font-medium transition duration-150 flex items-center p-2 rounded-lg hover:bg-main focus:outline-none">
+                            Français
+                            <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                        </button>
+                        <div id="lang-menu" class="hidden absolute right-0 mt-2 w-40 rounded-md shadow-lg bg-card ring-1 ring-gold-accent ring-opacity-50 z-20">
+                            <div class="py-1" role="menu" aria-orientation="vertical" aria-labelledby="lang-btn">
+                                <a href="#" data-lang="fr" class="lang-option block px-4 py-2 text-sm text-gold-accent font-bold bg-main">Français</a>
+                                <a href="#" data-lang="en" class="lang-option block px-4 py-2 text-sm text-main hover:bg-gold-dark hover:text-opposite">English</a>
+                                <a href="#" data-lang="sw" class="lang-option block px-4 py-2 text-sm text-main hover:bg-gold-dark hover:text-opposite">Swahili</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <a href="#account" data-key="nav_account" class="ml-4 px-4 py-2 text-opposite bg-gold-accent rounded-lg font-semibold hover:bg-gold-dark transition duration-150">Mon compte</a>
+                </div>
+
+                <div class="md:hidden">
+                    <button type="button" class="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-opposite hover:bg-gold-accent focus:outline-none focus:ring-2 focus:ring-inset focus:ring-gold-accent">
+                        <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" /></svg>
+                    </button>
+                </div>
             </div>
-            <div class="produit">
-                <div class="produit-info">Pack de 12 sachets (1 500FC / pack)</div>
-                <span class="produit-prix">1 500FC</span>
-                <input type="number" min="0" value="0" data-prix="1500" class="quantite-input">
+        </div>
+    </nav>
+
+    <div id="services" class="container mx-auto py-16 px-4 sm:px-6 lg:px-8">
+
+        <header class="text-center mb-16">
+            <h1 class="text-4xl sm:text-5xl font-extrabold text-gold-accent leading-tight" data-key="title">
+                Nos Services Diversifiés | BANIKI LABS
+            </h1>
+            <p class="mt-4 text-xl text-gray-400 max-w-4xl mx-auto" data-key="subtitle">
+                Un hub complet au cœur de Kinshasa : de la technologie à l'alimentation, en passant par la formation et les services essentiels.
+            </p>
+        </header>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 xl:gap-10">
+            
+            <div class="flex flex-col bg-card p-8 rounded-2xl shadow-xl transition duration-300 hover:shadow-2xl border border-gold-accent">
+                <div class="mb-6 h-40 bg-gray-800 rounded-lg flex items-center justify-center text-gray-500 font-semibold text-sm">
+                    [Photo Site Web]
+                </div>
+                <div class="text-blue-400 mb-4">
+                    <span class="text-5xl">🌐</span>
+                </div>
+                <h3 class="text-2xl font-bold text-main mb-3" data-key="service_title_0">Création de Site Web</h3>
+                <p class="text-gray-400 mb-6 flex-grow" data-key="service_desc_0">
+                    Conception et développement de sites web professionnels (vitrine, e-commerce, blog) sur mesure, optimisés pour mobile et le référencement (SEO).
+                </p>
+                <div class="flex space-x-3 mt-4">
+                    <a href="site_web.html" class="btn-discover flex-grow px-4 py-3 text-lg font-semibold text-opposite bg-gold-accent rounded-lg shadow-md hover:bg-gold-dark focus:outline-none focus:ring-4 focus:ring-gold-dark focus:ring-opacity-50 transition ease-in-out duration-150 text-center" data-key="btn_discover">
+    Découvrir
+</a>
+                    <a href="https://wa.me/243978415814" target="_blank" title="Contactez-nous via WhatsApp" class="flex items-center justify-center w-14 h-[52px] text-xl font-semibold text-white bg-green-500 rounded-lg shadow-md hover:bg-green-600 focus:outline-none focus:ring-4 focus:ring-green-400 focus:ring-opacity-50 transition ease-in-out duration-150">
+                        📞
+                    </a>
+                </div>
             </div>
 
-            <h3>Eau Swissta</h3>
-            <div class="produit">
-                <div class="produit-info">Bouteilles individuelles (500FC / bouteille)</div>
-                <span class="produit-prix">500FC</span>
-                <input type="number" min="0" value="0" data-prix="500" class="quantite-input">
-            </div>
-            <div class="produit">
-                <div class="produit-info">Pack de 12 bouteilles (5 000FC / pack)</div>
-                <span class="produit-prix">5 000FC</span>
-                <input type="number" min="0" value="0" data-prix="5000" class="quantite-input">
-            </div>
-
-            <h3>Eau Spasso</h3>
-            <div class="produit">
-                <div class="produit-info">Bouteilles individuelles (500FC / bouteille)</div>
-                <span class="produit-prix">500FC</span>
-                <input type="number" min="0" value="0" data-prix="500" class="quantite-input">
-            </div>
-            <div class="produit">
-                <div class="produit-info">Pack de 12 bouteilles (5 000FC / pack)</div>
-                <span class="produit-prix">5 000FC</span>
-                <input type="number" min="0" value="0" data-prix="5000" class="quantite-input">
+            <div class="flex flex-col bg-card p-8 rounded-2xl shadow-xl transition duration-300 hover:shadow-2xl border border-blue-400">
+                <div class="mb-6 h-40 bg-gray-800 rounded-lg flex items-center justify-center text-gray-500 font-semibold text-sm">
+                    [Photo Centre Informatique]
+                </div>
+                <div class="text-blue-500 mb-4">
+                    <span class="text-5xl">🖥️</span>
+                </div>
+                <h3 class="text-2xl font-bold text-main mb-3" data-key="service_title_1">Centre Informatique Avancé</h3>
+                <p class="text-gray-400 mb-6 flex-grow" data-key="service_desc_1">
+                    Accès internet haut débit, impression, scanning, photocopie, conversion de format de fichier (PDF/Word, MP4/MP3, etc.), maintenance informatique et cours d'informatique pour tous les niveaux.
+                </p>
+                <div class="flex space-x-3 mt-4">
+                    <a href="#informatique" class="btn-discover flex-grow px-4 py-3 text-lg font-semibold text-opposite bg-gold-accent rounded-lg shadow-md hover:bg-gold-dark focus:outline-none focus:ring-4 focus:ring-gold-dark focus:ring-opacity-50 transition ease-in-out duration-150 text-center" data-key="btn_discover">
+                        Découvrir
+                    </a>
+                    <a href="https://wa.me/243978415814" target="_blank" title="Contactez-nous via WhatsApp" class="flex items-center justify-center w-14 h-[52px] text-xl font-semibold text-white bg-green-500 rounded-lg shadow-md hover:bg-green-600 focus:outline-none focus:ring-4 focus:ring-green-400 focus:ring-opacity-50 transition ease-in-out duration-150">
+                        📞
+                    </a>
+                </div>
             </div>
 
-            <h3>Eau America</h3>
-            <div class="produit">
-                <div class="produit-info">Bouteilles individuelles (500FC / bouteille)</div>
-                <span class="produit-prix">500FC</span>
-                <input type="number" min="0" value="0" data-prix="500" class="quantite-input">
+            <div class="flex flex-col bg-card p-8 rounded-2xl shadow-xl transition duration-300 hover:shadow-2xl border border-red-500">
+                <div class="mb-6 h-40 bg-gray-800 rounded-lg flex items-center justify-center text-gray-500 font-semibold text-sm">
+                    [Photo Cours de Langue]
+                </div>
+                <div class="text-red-500 mb-4">
+                    <span class="text-5xl">🇬🇧</span>
+                </div>
+                <h3 class="text-2xl font-bold text-main mb-3" data-key="service_title_2">Cours de Langue (ANGLAIS, SWAHILI, FRANCAIS)</h3>
+                <p class="text-gray-400 mb-6 flex-grow" data-key="service_desc_2">
+                    Des programmes intensifs et personnalisés pour maîtriser l'anglais, le swahili, le français des affaires, académique ou conversationnel.
+                </p>
+                <div class="flex space-x-3 mt-4">
+                    <a href="#langues" class="btn-discover flex-grow px-4 py-3 text-lg font-semibold text-opposite bg-gold-accent rounded-lg shadow-md hover:bg-gold-dark focus:outline-none focus:ring-4 focus:ring-gold-dark focus:ring-opacity-50 transition ease-in-out duration-150 text-center" data-key="btn_discover">
+                        Découvrir
+                    </a>
+                    <a href="https://wa.me/243978415814" target="_blank" title="Contactez-nous via WhatsApp" class="flex items-center justify-center w-14 h-[52px] text-xl font-semibold text-white bg-green-500 rounded-lg shadow-md hover:bg-green-600 focus:outline-none focus:ring-4 focus:ring-green-400 focus:ring-opacity-50 transition ease-in-out duration-150">
+                        📞
+                    </a>
+                </div>
             </div>
-            <div class="produit">
-                <div class="produit-info">Pack de 12 bouteilles (5 000FC / pack)</div>
-                <span class="produit-prix">5 000FC</span>
-                <input type="number" min="0" value="0" data-prix="5000" class="quantite-input">
+
+            <div class="flex flex-col bg-card p-8 rounded-2xl shadow-xl transition duration-300 hover:shadow-2xl border border-purple-400">
+                <div class="mb-6 h-40 bg-gray-800 rounded-lg flex items-center justify-center text-gray-500 font-semibold text-sm">
+                    [Photo Studio Podcast]
+                </div>
+                <div class="text-purple-500 mb-4">
+                    <span class="text-5xl">🎙️</span>
+                </div>
+                <h3 class="text-2xl font-bold text-main mb-3" data-key="service_title_3">Studio d'Enregistrement Podcast</h3>
+                <p class="text-gray-400 mb-6 flex-grow" data-key="service_desc_3">
+                    Espace insonorisé équipé pour l'enregistrement, le montage et la diffusion de podcasts de qualité professionnelle.
+                </p>
+                <div class="flex space-x-3 mt-4">
+                    <a href="#podcast" class="btn-discover flex-grow px-4 py-3 text-lg font-semibold text-opposite bg-gold-accent rounded-lg shadow-md hover:bg-gold-dark focus:outline-none focus:ring-4 focus:ring-gold-dark focus:ring-opacity-50 transition ease-in-out duration-150 text-center" data-key="btn_discover">
+                        Découvrir
+                    </a>
+                    <a href="https://wa.me/243978415814" target="_blank" title="Contactez-nous via WhatsApp" class="flex items-center justify-center w-14 h-[52px] text-xl font-semibold text-white bg-green-500 rounded-lg shadow-md hover:bg-green-600 focus:outline-none focus:ring-4 focus:ring-green-400 focus:ring-opacity-50 transition ease-in-out duration-150">
+                        📞
+                    </a>
+                </div>
             </div>
 
-            <div class="total-section">
-                Total: <span id="totalPrix">0</span>FC
+            <div class="flex flex-col bg-card p-8 rounded-2xl shadow-xl transition duration-300 hover:shadow-2xl border border-indigo-400">
+                <div class="mb-6 h-40 bg-gray-800 rounded-lg flex items-center justify-center text-gray-500 font-semibold text-sm">
+                    [Photo Studio Musical]
+                </div>
+                <div class="text-indigo-500 mb-4">
+                    <span class="text-5xl">🎧</span>
+                </div>
+                <h3 class="text-2xl font-bold text-main mb-3" data-key="service_title_4">Studio d'Enregistrement Musical</h3>
+                <p class="text-gray-400 mb-6 flex-grow" data-key="service_desc_4">
+                    Studio moderne pour l'enregistrement, le mixage et le mastering de vos productions musicales (artiste, beatmaker, jingle).
+                </p>
+                <div class="flex space-x-3 mt-4">
+                    <a href="#musique" class="btn-discover flex-grow px-4 py-3 text-lg font-semibold text-opposite bg-gold-accent rounded-lg shadow-md hover:bg-gold-dark focus:outline-none focus:ring-4 focus:ring-gold-dark focus:ring-opacity-50 transition ease-in-out duration-150 text-center" data-key="btn_discover">
+                        Découvrir
+                    </a>
+                    <a href="https://wa.me/243978415814" target="_blank" title="Contactez-nous via WhatsApp" class="flex items-center justify-center w-14 h-[52px] text-xl font-semibold text-white bg-green-500 rounded-lg shadow-md hover:bg-green-600 focus:outline-none focus:ring-4 focus:ring-green-400 focus:ring-opacity-50 transition ease-in-out duration-150">
+                        📞
+                    </a>
+                </div>
             </div>
 
-            <h2>Informations de Livraison</h2>
-            <div class="form-group"><input type="text" id="nomClient" placeholder="Nom" required></div>
-            <div class="form-group"><input type="text" id="adresseClient" placeholder="Adresse" required></div>
-            <div class="form-group"><input type="tel" id="telephoneClient" placeholder="Téléphone" required></div>
+            <div class="flex flex-col bg-card p-8 rounded-2xl shadow-xl transition duration-300 hover:shadow-2xl border border-yellow-400">
+                <div class="mb-6 h-40 bg-gray-800 rounded-lg flex items-center justify-center text-gray-500 font-semibold text-sm">
+                    [Photo Formation Bureautique]
+                </div>
+                <div class="text-yellow-500 mb-4">
+                    <span class="text-5xl">📄</span>
+                </div>
+                <h3 class="text-2xl font-bold text-main mb-3" data-key="service_title_5">Formation en Bureautique</h3>
+                <p class="text-gray-400 mb-6 flex-grow" data-key="service_desc_5">
+                    Cours pratiques sur les outils de productivité (Word, Excel, PowerPoint) essentiels pour le monde professionnel.
+                </p>
+                <div class="flex space-x-3 mt-4">
+                    <a href="#bureautique" class="btn-discover flex-grow px-4 py-3 text-lg font-semibold text-opposite bg-gold-accent rounded-lg shadow-md hover:bg-gold-dark focus:outline-none focus:ring-4 focus:ring-gold-dark focus:ring-opacity-50 transition ease-in-out duration-150 text-center" data-key="btn_discover">
+                        Découvrir
+                    </a>
+                    <a href="https://wa.me/243978415814" target="_blank" title="Contactez-nous via WhatsApp" class="flex items-center justify-center w-14 h-[52px] text-xl font-semibold text-white bg-green-500 rounded-lg shadow-md hover:bg-green-600 focus:outline-none focus:ring-4 focus:ring-green-400 focus:ring-opacity-50 transition ease-in-out duration-150">
+                        📞
+                    </a>
+                </div>
+            </div>
 
-            <button type="submit" class="btn-commande">Commander</button>
-        </form>
-        
-        <a href="#" class="lien-livreur" onclick="showPage('login')">Connexion Livreur</a>
-    </div>
+            <div class="flex flex-col bg-card p-8 rounded-2xl shadow-xl transition duration-300 hover:shadow-2xl border border-green-500">
+                <div class="mb-6 h-40 bg-gray-800 rounded-lg flex items-center justify-center text-gray-500 font-semibold text-sm">
+                    [Photo Agence Immobilière]
+                </div>
+                <div class="text-green-500 mb-4">
+                    <span class="text-5xl">🏠</span>
+                </div>
+                <h3 class="text-2xl font-bold text-main mb-3" data-key="service_title_6">Agence Immobilière (Achat/Vente)</h3>
+                <p class="text-gray-400 mb-6 flex-grow" data-key="service_desc_6">
+                    Conseils et transactions pour la location, l'achat ou la vente de propriétés résidentielles et commerciales à Kinshasa.
+                </p>
+                <div class="flex space-x-3 mt-4">
+                    <a href="https://jimmybaniki.github.io/maisonsdujour/" class="btn-discover flex-grow px-4 py-3 text-lg font-semibold text-opposite bg-gold-accent rounded-lg shadow-md hover:bg-gold-dark focus:outline-none focus:ring-4 focus:ring-gold-dark focus:ring-opacity-50 transition ease-in-out duration-150 text-center" data-key="btn_discover">
+                        Découvrir
+                    </a>
+                    <a href="https://wa.me/243978415814" target="_blank" title="Contactez-nous via WhatsApp" class="flex items-center justify-center w-14 h-[52px] text-xl font-semibold text-white bg-green-500 rounded-lg shadow-md hover:bg-green-600 focus:outline-none focus:ring-4 focus:ring-green-400 focus:ring-opacity-50 transition ease-in-out duration-150">
+                        📞
+                    </a>
+                </div>
+            </div>
 
-    <div id="loginPage" class="page-login-livreur">
-        <h1>🔒 Connexion Livreur</h1>
-        <p>Accédez à vos commandes.</p>
-        
-        <form id="loginForm">
-            <div class="input-group">
-                <label for="identifiant">Identifiant</label>
-                <input type="text" id="identifiant" required>
+            <div class="flex flex-col bg-card p-8 rounded-2xl shadow-xl transition duration-300 hover:shadow-2xl border border-amber-400">
+                <div class="mb-6 h-40 bg-gray-800 rounded-lg flex items-center justify-center text-gray-500 font-semibold text-sm">
+                    [Photo Service de Photographie]
+                </div>
+                <div class="text-amber-500 mb-4">
+                    <span class="text-5xl">📸</span>
+                </div>
+                <h3 class="text-2xl font-bold text-main mb-3" data-key="service_title_7">Service de Photographie</h3>
+                <p class="text-gray-400 mb-6 flex-grow" data-key="service_desc_7">
+                    Couverture d'événements, portraits professionnels, photos de produits et séances créatives. Matériel haut de gamme et post-traitement inclus.
+                </p>
+                <div class="flex space-x-3 mt-4">
+                    <a href="#photo" class="btn-discover flex-grow px-4 py-3 text-lg font-semibold text-opposite bg-gold-accent rounded-lg shadow-md hover:bg-gold-dark focus:outline-none focus:ring-4 focus:ring-gold-dark focus:ring-opacity-50 transition ease-in-out duration-150 text-center" data-key="btn_discover">
+                        Découvrir
+                    </a>
+                    <a href="https://wa.me/243978415814" target="_blank" title="Contactez-nous via WhatsApp" class="flex items-center justify-center w-14 h-[52px] text-xl font-semibold text-white bg-green-500 rounded-lg shadow-md hover:bg-green-600 focus:outline-none focus:ring-4 focus:ring-green-400 focus:ring-opacity-50 transition ease-in-out duration-150">
+                        📞
+                    </a>
+                </div>
+            </div>
+
+            <div class="flex flex-col bg-card p-8 rounded-2xl shadow-xl transition duration-300 hover:shadow-2xl border border-teal-400">
+                <div class="mb-6 h-40 bg-gray-800 rounded-lg flex items-center justify-center text-gray-500 font-semibold text-sm">
+                    [Photo Service de Vidéographie]
+                </div>
+                <div class="text-teal-500 mb-4">
+                    <span class="text-5xl">🎥</span>
+                </div>
+                <h3 class="text-2xl font-bold text-main mb-3" data-key="service_title_8">Service de Vidéographie</h3>
+                <p class="text-gray-400 mb-6 flex-grow" data-key="service_desc_8">
+                    Production de clips musicaux, vidéos d'entreprise, documentaires et publicités. Du concept à la post-production professionnelle.
+                </p>
+                <div class="flex space-x-3 mt-4">
+                    <a href="#video" class="btn-discover flex-grow px-4 py-3 text-lg font-semibold text-opposite bg-gold-accent rounded-lg shadow-md hover:bg-gold-dark focus:outline-none focus:ring-4 focus:ring-gold-dark focus:ring-opacity-50 transition ease-in-out duration-150 text-center" data-key="btn_discover">
+                        Découvrir
+                    </a>
+                    <a href="https://wa.me/243978415814" target="_blank" title="Contactez-nous via WhatsApp" class="flex items-center justify-center w-14 h-[52px] text-xl font-semibold text-white bg-green-500 rounded-lg shadow-md hover:bg-green-600 focus:outline-none focus:ring-4 focus:ring-green-400 focus:ring-opacity-50 transition ease-in-out duration-150">
+                        📞
+                    </a>
+                </div>
+            </div>
+
+            <div class="flex flex-col bg-card p-8 rounded-2xl shadow-xl transition duration-300 hover:shadow-2xl border border-cyan-400">
+                <div class="mb-6 h-40 bg-gray-800 rounded-lg flex items-center justify-center text-gray-500 font-semibold text-sm">
+                    [Photo Livraison]
+                </div>
+                <div class="text-cyan-500 mb-4">
+                    <span class="text-5xl">📦</span>
+                </div>
+                <h3 class="text-2xl font-bold text-main mb-3" data-key="service_title_9">Livraison Rapide à Domicile</h3>
+                <p class="text-gray-400 mb-6 flex-grow" data-key="service_desc_9">
+                    Service de livraison rapide et fiable de tous types de colis et repas à travers Kinshasa. Suivi en temps réel et support client.
+                </p>
+                <div class="flex space-x-3 mt-4">
+                    <a href="https://jimmybaniki.github.io/blivraison/" class="btn-discover flex-grow px-4 py-3 text-lg font-semibold text-opposite bg-gold-accent rounded-lg shadow-md hover:bg-gold-dark focus:outline-none focus:ring-4 focus:ring-gold-dark focus:ring-opacity-50 transition ease-in-out duration-150 text-center" data-key="btn_discover">
+                        Découvrir
+                    </a>
+                    <a href="https://wa.me/243978415814" target="_blank" title="Contactez-nous via WhatsApp" class="flex items-center justify-center w-14 h-[52px] text-xl font-semibold text-white bg-green-500 rounded-lg shadow-md hover:bg-green-600 focus:outline-none focus:ring-4 focus:ring-green-400 focus:ring-opacity-50 transition ease-in-out duration-150">
+                        📞
+                    </a>
+                </div>
+            </div>
+
+            <div class="flex flex-col bg-card p-8 rounded-2xl shadow-xl transition duration-300 hover:shadow-2xl border border-pink-400">
+                <div class="mb-6 h-40 bg-gray-800 rounded-lg flex items-center justify-center text-gray-500 font-semibold text-sm">
+                    [Photo Développement Personnel]
+                </div>
+                <div class="text-pink-500 mb-4">
+                    <span class="text-5xl">🌱</span>
+                </div>
+                <h3 class="text-2xl font-bold text-main mb-3" data-key="service_title_10">Centre de Développement Personnel</h3>
+                <p class="text-gray-400 mb-6 flex-grow" data-key="service_desc_10">
+                    Ateliers, coaching et séminaires pour renforcer le leadership, la confiance en soi et l'atteinte des objectifs personnels et professionnels.
+                </p>
+                <div class="flex space-x-3 mt-4">
+                    <a href="#developpement-perso" class="btn-discover flex-grow px-4 py-3 text-lg font-semibold text-opposite bg-gold-accent rounded-lg shadow-md hover:bg-gold-dark focus:outline-none focus:ring-4 focus:ring-gold-dark focus:ring-opacity-50 transition ease-in-out duration-150 text-center" data-key="btn_discover">
+                        Découvrir
+                    </a>
+                    <a href="https://wa.me/243978415814" target="_blank" title="Contactez-nous via WhatsApp" class="flex items-center justify-center w-14 h-[52px] text-xl font-semibold text-white bg-green-500 rounded-lg shadow-md hover:bg-green-600 focus:outline-none focus:ring-4 focus:ring-green-400 focus:ring-opacity-50 transition ease-in-out duration-150">
+                        📞
+                    </a>
+                </div>
+            </div>
+
+            <div class="flex flex-col bg-card p-8 rounded-2xl shadow-xl transition duration-300 hover:shadow-2xl border border-gray-400">
+                <div class="mb-6 h-40 bg-gray-800 rounded-lg flex items-center justify-center text-gray-500 font-semibold text-sm">
+                    [Photo Centre d'Autonomie]
+                </div>
+                <div class="text-gray-500 mb-4">
+                    <span class="text-5xl">💡</span>
+                </div>
+                <h3 class="text-2xl font-bold text-main mb-3" data-key="service_title_11">Centre d'Autonomie</h3>
+                <p class="text-gray-400 mb-6 flex-grow" data-key="service_desc_11">
+                    Programmes et ressources dédiés à l'indépendance financière, professionnelle et personnelle, notamment pour les jeunes entrepreneurs.
+                </p>
+                <div class="flex space-x-3 mt-4">
+                    <a href="#autonomie" class="btn-discover flex-grow px-4 py-3 text-lg font-semibold text-opposite bg-gold-accent rounded-lg shadow-md hover:bg-gold-dark focus:outline-none focus:ring-4 focus:ring-gold-dark focus:ring-opacity-50 transition ease-in-out duration-150 text-center" data-key="btn_discover">
+                        Découvrir
+                    </a>
+                    <a href="https://wa.me/243978415814" target="_blank" title="Contactez-nous via WhatsApp" class="flex items-center justify-center w-14 h-[52px] text-xl font-semibold text-white bg-green-500 rounded-lg shadow-md hover:bg-green-600 focus:outline-none focus:ring-4 focus:ring-green-400 focus:ring-opacity-50 transition ease-in-out duration-150">
+                        📞
+                    </a>
+                </div>
+            </div>
+
+            <div class="flex flex-col bg-card p-8 rounded-2xl shadow-xl transition duration-300 hover:shadow-2xl border border-orange-400">
+                <div class="mb-6 h-40 bg-gray-800 rounded-lg flex items-center justify-center text-gray-500 font-semibold text-sm">
+                    [Photo Bureau de Change]
+                </div>
+                <div class="text-orange-500 mb-4">
+                    <span class="text-5xl">💰</span>
+                </div>
+                <h3 class="text-2xl font-bold text-main mb-3" data-key="service_title_12">Bureau de Change d'Argent</h3>
+                <p class="text-gray-400 mb-6 flex-grow" data-key="service_desc_12">
+                    Services de change de devises rapides et sécurisés avec des taux compétitifs, facilitant vos transactions internationales et locales.
+                </p>
+                <div class="flex space-x-3 mt-4">
+                    <a href="#change" class="btn-discover flex-grow px-4 py-3 text-lg font-semibold text-opposite bg-gold-accent rounded-lg shadow-md hover:bg-gold-dark focus:outline-none focus:ring-4 focus:ring-gold-dark focus:ring-opacity-50 transition ease-in-out duration-150 text-center" data-key="btn_discover">
+                        Découvrir
+                    </a>
+                    <a href="https://wa.me/243978415814" target="_blank" title="Contactez-nous via WhatsApp" class="flex items-center justify-center w-14 h-[52px] text-xl font-semibold text-white bg-green-500 rounded-lg shadow-md hover:bg-green-600 focus:outline-none focus:ring-4 focus:ring-green-400 focus:ring-opacity-50 transition ease-in-out duration-150">
+                        📞
+                    </a>
+                </div>
             </div>
             
-            <div class="input-group">
-                <label for="password">Mot de passe</label>
-                <input type="password" id="password" required>
+            <div class="flex flex-col bg-card p-8 rounded-2xl shadow-xl transition duration-300 hover:shadow-2xl border border-purple-600">
+                <div class="mb-6 h-40 bg-gray-800 rounded-lg flex items-center justify-center text-gray-500 font-semibold text-sm">
+                    [Photo Service de Traduction]
+                </div>
+                <div class="text-purple-600 mb-4">
+                    <span class="text-5xl">🗣️</span>
+                </div>
+                <h3 class="text-2xl font-bold text-main mb-3" data-key="service_title_13">Service de Traduction et Interprétariat</h3>
+                <p class="text-gray-400 mb-6 flex-grow" data-key="service_desc_13">
+                    Traduction de documents et interprétation en personne dans 10 langues clés (français, anglais, swahili, chinois, lingala, portugais, japonais, sona, malgache, espagnol) et autres sur demande.
+                </p>
+                <div class="flex space-x-3 mt-4">
+                    <a href="#traduction" class="btn-discover flex-grow px-4 py-3 text-lg font-semibold text-opposite bg-gold-accent rounded-lg shadow-md hover:bg-gold-dark focus:outline-none focus:ring-4 focus:ring-gold-dark focus:ring-opacity-50 transition ease-in-out duration-150 text-center" data-key="btn_discover">
+                        Découvrir
+                    </a>
+                    <a href="https://wa.me/243978415814" target="_blank" title="Contactez-nous via WhatsApp" class="flex items-center justify-center w-14 h-[52px] text-xl font-semibold text-white bg-green-500 rounded-lg shadow-md hover:bg-green-600 focus:outline-none focus:ring-4 focus:ring-green-400 focus:ring-opacity-50 transition ease-in-out duration-150">
+                        📞
+                    </a>
+                </div>
             </div>
-            
-            <button type="submit" class="btn-commande">Se Connecter</button>
-            <a href="#" class="lien-livreur" onclick="showPage('client')">Retour Client</a>
-        </form>
+
+            <div class="flex flex-col bg-card p-8 rounded-2xl shadow-xl transition duration-300 hover:shadow-2xl border border-lime-400">
+                <div class="mb-6 h-40 bg-gray-800 rounded-lg flex items-center justify-center text-gray-500 font-semibold text-sm">
+                    [Photo Services Réseaux Mobiles]
+                </div>
+                <div class="text-lime-500 mb-4">
+                    <span class="text-5xl">📱</span>
+                </div>
+                <h3 class="text-2xl font-bold text-main mb-3" data-key="service_title_14">Vente Services Réseaux Mobiles RDC</h3>
+                <p class="text-gray-400 mb-6 flex-grow" data-key="service_desc_14">
+                    Cabine de vente de crédits, forfaits, cartes SIM et services de transfert d'argent mobile pour tous les réseaux en RDC.
+                </p>
+                <div class="flex space-x-3 mt-4">
+                    <a href="#reseaux" class="btn-discover flex-grow px-4 py-3 text-lg font-semibold text-opposite bg-gold-accent rounded-lg shadow-md hover:bg-gold-dark focus:outline-none focus:ring-4 focus:ring-gold-dark focus:ring-opacity-50 transition ease-in-out duration-150 text-center" data-key="btn_discover">
+                        Découvrir
+                    </a>
+                    <a href="https://wa.me/243978415814" target="_blank" title="Contactez-nous via WhatsApp" class="flex items-center justify-center w-14 h-[52px] text-xl font-semibold text-white bg-green-500 rounded-lg shadow-md hover:bg-green-600 focus:outline-none focus:ring-4 focus:ring-green-400 focus:ring-opacity-50 transition ease-in-out duration-150">
+                        📞
+                    </a>
+                </div>
+            </div>
+
+            <div class="flex flex-col bg-card p-8 rounded-2xl shadow-xl transition duration-300 hover:shadow-2xl border border-pink-400">
+                <div class="mb-6 h-40 bg-gray-800 rounded-lg flex items-center justify-center text-gray-500 font-semibold text-sm">
+                    [Photo Production d'Eau et Jus Naturels]
+                </div>
+                <div class="text-pink-500 mb-4">
+                    <span class="text-5xl">🍹</span>
+                </div>
+                <h3 class="text-2xl font-bold text-main mb-3" data-key="service_title_15">Production d'Eau et Jus Naturels</h3>
+                <p class="text-gray-400 mb-6 flex-grow" data-key="service_desc_15">
+                    Agence de fabrication et de vente de jus de fruits frais et d'eau pure, privilégiant les ingrédients naturels et locaux de qualité.
+                </p>
+                <div class="flex space-x-3 mt-4">
+                    <a href="#alimentation" class="btn-discover flex-grow px-4 py-3 text-lg font-semibold text-opposite bg-gold-accent rounded-lg shadow-md hover:bg-gold-dark focus:outline-none focus:ring-4 focus:ring-gold-dark focus:ring-opacity-50 transition ease-in-out duration-150 text-center" data-key="btn_discover">
+                        Découvrir
+                    </a>
+                    <a href="https://wa.me/243978415814" target="_blank" title="Contactez-nous via WhatsApp" class="flex items-center justify-center w-14 h-[52px] text-xl font-semibold text-white bg-green-500 rounded-lg shadow-md hover:bg-green-600 focus:outline-none focus:ring-4 focus:ring-green-400 focus:ring-opacity-50 transition ease-in-out duration-150">
+                        📞
+                    </a>
+                </div>
+            </div>
+
+            <div class="flex flex-col bg-card p-8 rounded-2xl shadow-xl transition duration-300 hover:shadow-2xl border border-red-500">
+                <div class="mb-6 h-40 bg-gray-800 rounded-lg flex items-center justify-center text-gray-500 font-semibold text-sm">
+                    [Photo Nourriture Fast Food]
+                </div>
+                <div class="text-red-600 mb-4">
+                    <span class="text-5xl">🍔</span>
+                </div>
+                <h3 class="text-2xl font-bold text-main mb-3" data-key="service_title_16">Nourriture Fast Food (Kinshasa)</h3>
+                <p class="text-gray-400 mb-6 flex-grow" data-key="service_desc_16">
+                    Vente de plats rapides et savoureux, préparés localement à Kinshasa, pour une pause déjeuner ou un dîner rapide et gourmand.
+                </p>
+                <div class="flex space-x-3 mt-4">
+                    <a href="#fast-food" class="btn-discover flex-grow px-4 py-3 text-lg font-semibold text-opposite bg-gold-accent rounded-lg shadow-md hover:bg-gold-dark focus:outline-none focus:ring-4 focus:ring-gold-dark focus:ring-opacity-50 transition ease-in-out duration-150 text-center" data-key="btn_discover">
+                        Découvrir
+                    </a>
+                    <a href="https://wa.me/243978415814" target="_blank" title="Contactez-nous via WhatsApp" class="flex items-center justify-center w-14 h-[52px] text-xl font-semibold text-white bg-green-500 rounded-lg shadow-md hover:bg-green-600 focus:outline-none focus:ring-4 focus:ring-green-400 focus:ring-opacity-50 transition ease-in-out duration-150">
+                        📞
+                    </a>
+                </div>
+            </div>
+
+            <div class="flex flex-col bg-card p-8 rounded-2xl shadow-xl transition duration-300 hover:shadow-2xl border border-gray-400">
+                <div class="mb-6 h-40 bg-gray-800 rounded-lg flex items-center justify-center text-gray-500 font-semibold text-sm">
+                    [Photo Service d'Entraide]
+                </div>
+                <div class="text-gray-500 mb-4">
+                    <span class="text-5xl">🤝</span>
+                </div>
+                <h3 class="text-2xl font-bold text-main mb-3" data-key="service_title_17">Service d'Entraide</h3>
+                <p class="text-gray-400 mb-6 flex-grow" data-key="service_desc_17">
+                    Plateforme communautaire d'entraide et de partage de ressources, visant à connecter les individus ayant des besoins similaires à Kinshasa.
+                </p>
+                <div class="flex space-x-3 mt-4">
+                    <a href="#entraide" class="btn-discover flex-grow px-4 py-3 text-lg font-semibold text-opposite bg-gold-accent rounded-lg shadow-md hover:bg-gold-dark focus:outline-none focus:ring-4 focus:ring-gold-dark focus:ring-opacity-50 transition ease-in-out duration-150 text-center" data-key="btn_discover">
+                        Découvrir
+                    </a>
+                    <a href="https://wa.me/243978415814" target="_blank" title="Contactez-nous via WhatsApp" class="flex items-center justify-center w-14 h-[52px] text-xl font-semibold text-white bg-green-500 rounded-lg shadow-md hover:bg-green-600 focus:outline-none focus:ring-4 focus:ring-green-400 focus:ring-opacity-50 transition ease-in-out duration-150">
+                        📞
+                    </a>
+                </div>
+            </div>
+
+            <div class="flex flex-col bg-card p-8 rounded-2xl shadow-xl transition duration-300 hover:shadow-2xl border border-indigo-500">
+                <div class="mb-6 h-40 bg-gray-800 rounded-lg flex items-center justify-center text-gray-500 font-semibold text-sm">
+                    [Photo Service de Transport]
+                </div>
+                <div class="text-indigo-500 mb-4">
+                    <span class="text-5xl">🚌</span>
+                </div>
+                <h3 class="text-2xl font-bold text-main mb-3" data-key="service_title_18">Service de Transport Fiable</h3>
+                <p class="text-gray-400 mb-6 flex-grow" data-key="service_desc_18">
+                    Transport fiable et sécurisé à Kinshasa pour les écoles, églises, universités, et événements spéciaux (mariages, funérailles, excursions, etc.).
+                </p>
+                <div class="flex space-x-3 mt-4">
+                    <a href="#transport" class="btn-discover flex-grow px-4 py-3 text-lg font-semibold text-opposite bg-gold-accent rounded-lg shadow-md hover:bg-gold-dark focus:outline-none focus:ring-4 focus:ring-gold-dark focus:ring-opacity-50 transition ease-in-out duration-150 text-center" data-key="btn_discover">
+                        Découvrir
+                    </a>
+                    <a href="https://wa.me/243978415814" target="_blank" title="Contactez-nous via WhatsApp" class="flex items-center justify-center w-14 h-[52px] text-xl font-semibold text-white bg-green-500 rounded-lg shadow-md hover:bg-green-600 focus:outline-none focus:ring-4 focus:ring-green-400 focus:ring-opacity-50 transition ease-in-out duration-150">
+                        📞
+                    </a>
+                </div>
+            </div>
+
+            <div class="flex flex-col bg-card p-8 rounded-2xl shadow-xl transition duration-300 hover:shadow-2xl border border-cyan-600">
+                <div class="mb-6 h-40 bg-gray-800 rounded-lg flex items-center justify-center text-gray-500 font-semibold text-sm">
+                    [Photo Agence Cinématographique]
+                </div>
+                <div class="text-cyan-600 mb-4">
+                    <span class="text-5xl">🎬</span>
+                </div>
+                <h3 class="text-2xl font-bold text-main mb-3" data-key="service_title_19">Agence Cinématographique</h3>
+                <p class="text-gray-400 mb-6 flex-grow" data-key="service_desc_19">
+                    Production, réalisation et distribution de films et de courts-métrages. Location d'équipement professionnel.
+                </p>
+                <div class="flex space-x-3 mt-4">
+                    <a href="#cinema" class="btn-discover flex-grow px-4 py-3 text-lg font-semibold text-opposite bg-gold-accent rounded-lg shadow-md hover:bg-gold-dark focus:outline-none focus:ring-4 focus:ring-gold-dark focus:ring-opacity-50 transition ease-in-out duration-150 text-center" data-key="btn_discover">
+                        Découvrir
+                    </a>
+                    <a href="https://wa.me/243978415814" target="_blank" title="Contactez-nous via WhatsApp" class="flex items-center justify-center w-14 h-[52px] text-xl font-semibold text-white bg-green-500 rounded-lg shadow-md hover:bg-green-600 focus:outline-none focus:ring-4 focus:ring-green-400 focus:ring-opacity-50 transition ease-in-out duration-150">
+                        📞
+                    </a>
+                </div>
+            </div>
+
+            <div class="flex flex-col bg-card p-8 rounded-2xl shadow-xl transition duration-300 hover:shadow-2xl border border-indigo-600">
+                <div class="mb-6 h-40 bg-gray-800 rounded-lg flex items-center justify-center text-gray-500 font-semibold text-sm">
+                    [Photo Management Musical]
+                </div>
+                <div class="text-indigo-600 mb-4">
+                    <span class="text-5xl">🎤</span>
+                </div>
+                <h3 class="text-2xl font-bold text-main mb-3" data-key="service_title_20">Management & Promotion Musicale</h3>
+                <p class="text-gray-400 mb-6 flex-grow" data-key="service_desc_20">
+                    Conseil, gestion de carrière et promotion digitale pour artistes et labels.
+                </p>
+                <div class="flex space-x-3 mt-4">
+                    <a href="#gestion-musicale" class="btn-discover flex-grow px-4 py-3 text-lg font-semibold text-opposite bg-gold-accent rounded-lg shadow-md hover:bg-gold-dark focus:outline-none focus:ring-4 focus:ring-gold-dark focus:ring-opacity-50 transition ease-in-out duration-150 text-center" data-key="btn_discover">
+                        Découvrir
+                    </a>
+                    <a href="https://wa.me/243978415814" target="_blank" title="Contactez-nous via WhatsApp" class="flex items-center justify-center w-14 h-[52px] text-xl font-semibold text-white bg-green-500 rounded-lg shadow-md hover:bg-green-600 focus:outline-none focus:ring-4 focus:ring-green-400 focus:ring-opacity-50 transition ease-in-out duration-150">
+                        📞
+                    </a>
+                </div>
+            </div>
+
+            <div class="flex flex-col bg-card p-8 rounded-2xl shadow-xl transition duration-300 hover:shadow-2xl border border-orange-600">
+                <div class="mb-6 h-40 bg-gray-800 rounded-lg flex items-center justify-center text-gray-500 font-semibold text-sm">
+                    [Photo Cours de Dessin]
+                </div>
+                <div class="text-orange-600 mb-4">
+                    <span class="text-5xl">✏️</span>
+                </div>
+                <h3 class="text-2xl font-bold text-main mb-3" data-key="service_title_21">Cours de Dessin & Illustration</h3>
+                <p class="text-gray-400 mb-6 flex-grow" data-key="service_desc_21">
+                    Ateliers pratiques pour l'apprentissage du dessin, de l'illustration numérique et traditionnelle.
+                </p>
+                <div class="flex space-x-3 mt-4">
+                    <a href="#dessin" class="btn-discover flex-grow px-4 py-3 text-lg font-semibold text-opposite bg-gold-accent rounded-lg shadow-md hover:bg-gold-dark focus:outline-none focus:ring-4 focus:ring-gold-dark focus:ring-opacity-50 transition ease-in-out duration-150 text-center" data-key="btn_discover">
+                        Découvrir
+                    </a>
+                    <a href="https://wa.me/243978415814" target="_blank" title="Contactez-nous via WhatsApp" class="flex items-center justify-center w-14 h-[52px] text-xl font-semibold text-white bg-green-500 rounded-lg shadow-md hover:bg-green-600 focus:outline-none focus:ring-4 focus:ring-green-400 focus:ring-opacity-50 transition ease-in-out duration-150">
+                        📞
+                    </a>
+                </div>
+            </div>
+
+            <div class="flex flex-col bg-card p-8 rounded-2xl shadow-xl transition duration-300 hover:shadow-2xl border border-red-600">
+                <div class="mb-6 h-40 bg-gray-800 rounded-lg flex items-center justify-center text-gray-500 font-semibold text-sm">
+                    [Photo Production d'Animation]
+                </div>
+                <div class="text-red-600 mb-4">
+                    <span class="text-5xl">🎞️</span>
+                </div>
+                <h3 class="text-2xl font-bold text-main mb-3" data-key="service_title_22">Production d'Animation</h3>
+                <p class="text-gray-400 mb-6 flex-grow" data-key="service_desc_22">
+                    Création de films d'animation, de vidéos explicatives et de contenus de motion design 2D/3D.
+                </p>
+                <div class="flex space-x-3 mt-4">
+                    <a href="#animation" class="btn-discover flex-grow px-4 py-3 text-lg font-semibold text-opposite bg-gold-accent rounded-lg shadow-md hover:bg-gold-dark focus:outline-none focus:ring-4 focus:ring-gold-dark focus:ring-opacity-50 transition ease-in-out duration-150 text-center" data-key="btn_discover">
+                        Découvrir
+                    </a>
+                    <a href="https://wa.me/243978415814" target="_blank" title="Contactez-nous via WhatsApp" class="flex items-center justify-center w-14 h-[52px] text-xl font-semibold text-white bg-green-500 rounded-lg shadow-md hover:bg-green-600 focus:outline-none focus:ring-4 focus:ring-green-400 focus:ring-opacity-50 transition ease-in-out duration-150">
+                        📞
+                    </a>
+                </div>
+            </div>
+
+            <div class="flex flex-col bg-card p-8 rounded-2xl shadow-xl transition duration-300 hover:shadow-2xl border border-blue-600">
+                <div class="mb-6 h-40 bg-gray-800 rounded-lg flex items-center justify-center text-gray-500 font-semibold text-sm">
+                    [Photo Service d'Information]
+                </div>
+                <div class="text-blue-600 mb-4">
+                    <span class="text-5xl">📰</span>
+                </div>
+                <h3 class="text-2xl font-bold text-main mb-3" data-key="service_title_23">Service d'Information & Média</h3>
+                <p class="text-gray-400 mb-6 flex-grow" data-key="service_desc_23">
+                    Veille stratégique, analyse de l'actualité et création de contenu d'information ciblé.
+                </p>
+                <div class="flex space-x-3 mt-4">
+                    <a href="#info-media" class="btn-discover flex-grow px-4 py-3 text-lg font-semibold text-opposite bg-gold-accent rounded-lg shadow-md hover:bg-gold-dark focus:outline-none focus:ring-4 focus:ring-gold-dark focus:ring-opacity-50 transition ease-in-out duration-150 text-center" data-key="btn_discover">
+                        Découvrir
+                    </a>
+                    <a href="https://wa.me/243978415814" target="_blank" title="Contactez-nous via WhatsApp" class="flex items-center justify-center w-14 h-[52px] text-xl font-semibold text-white bg-green-500 rounded-lg shadow-md hover:bg-green-600 focus:outline-none focus:ring-4 focus:ring-green-400 focus:ring-opacity-50 transition ease-in-out duration-150">
+                        📞
+                    </a>
+                </div>
+            </div>
+
+            <div class="flex flex-col bg-card p-8 rounded-2xl shadow-xl transition duration-300 hover:shadow-2xl border border-teal-600">
+                <div class="mb-6 h-40 bg-gray-800 rounded-lg flex items-center justify-center text-gray-500 font-semibold text-sm">
+                    [Photo Marketing Digital]
+                </div>
+                <div class="text-teal-600 mb-4">
+                    <span class="text-5xl">📈</span>
+                </div>
+                <h3 class="text-2xl font-bold text-main mb-3" data-key="service_title_24">Marketing Digital & Référencement (SEO)</h3>
+                <p class="text-gray-400 mb-6 flex-grow" data-key="service_desc_24">
+                    Stratégies complètes de marketing en ligne, optimisation pour les moteurs de recherche (SEO), publicité payante et gestion des réseaux sociaux.
+                </p>
+                <div class="flex space-x-3 mt-4">
+                    <a href="#marketing-digital" class="btn-discover flex-grow px-4 py-3 text-lg font-semibold text-opposite bg-gold-accent rounded-lg shadow-md hover:bg-gold-dark focus:outline-none focus:ring-4 focus:ring-gold-dark focus:ring-opacity-50 transition ease-in-out duration-150 text-center" data-key="btn_discover">
+                        Découvrir
+                    </a>
+                    <a href="https://wa.me/243978415814" target="_blank" title="Contactez-nous via WhatsApp" class="flex items-center justify-center w-14 h-[52px] text-xl font-semibold text-white bg-green-500 rounded-lg shadow-md hover:bg-green-600 focus:outline-none focus:ring-4 focus:ring-green-400 focus:ring-opacity-50 transition ease-in-out duration-150">
+                        📞
+                    </a>
+                </div>
+            </div>
+
+            <div class="flex flex-col bg-card p-8 rounded-2xl shadow-xl transition duration-300 hover:shadow-2xl border border-red-600">
+                <div class="mb-6 h-40 bg-gray-800 rounded-lg flex items-center justify-center text-gray-500 font-semibold text-sm">
+                    [Photo Montage Électronique]
+                </div>
+                <div class="text-red-600 mb-4">
+                    <span class="text-5xl">⚡</span>
+                </div>
+                <h3 class="text-2xl font-bold text-main mb-3" data-key="service_title_25">Service de Création de Montage Électronique</h3>
+                <p class="text-gray-400 mb-6 flex-grow" data-key="service_desc_25">
+                    Conception et réalisation de circuits électroniques sur mesure. Cela inclut l'intégration de **détecteurs de lumière**, d'**autres types de détecteurs**, de **lampes à 40W**, et d'**autres appareils électroniques utiles à la société** (automatisation, domotique, etc.).
+                </p>
+                <div class="flex space-x-3 mt-4">
+                    <a href="#electronique" class="btn-discover flex-grow px-4 py-3 text-lg font-semibold text-opposite bg-gold-accent rounded-lg shadow-md hover:bg-gold-dark focus:outline-none focus:ring-4 focus:ring-gold-dark focus:ring-opacity-50 transition ease-in-out duration-150 text-center" data-key="btn_discover">
+                        Découvrir
+                    </a>
+                    <a href="https://wa.me/243978415814" target="_blank" title="Contactez-nous via WhatsApp" class="flex items-center justify-center w-14 h-[52px] text-xl font-semibold text-white bg-green-500 rounded-lg shadow-md hover:bg-green-600 focus:outline-none focus:ring-4 focus:ring-green-400 focus:ring-opacity-50 transition ease-in-out duration-150">
+                        📞
+                    </a>
+                </div>
+            </div>
+            </div> <div class="mt-16 bg-card p-8 rounded-2xl shadow-xl border border-gold-accent max-w-4xl mx-auto" id="contact">
+            <h2 class="text-3xl font-bold text-gold-accent mb-6 text-center" data-key="contact_title">Contactez-nous</h2>
+            <p class="text-center text-main mb-6" data-key="contact_subtitle">
+                Nous sommes prêts à commencer votre projet. Envoyez-nous un message pour discuter de vos besoins.
+            </p>
+            <form action="https://formspree.io/f/xbjnbqov" method="POST" class="space-y-4">
+                <div>
+                    <label for="name" class="block text-sm font-medium text-main" data-key="form_name">Nom Complet</label>
+                    <input type="text" id="name" name="name" required class="mt-1 block w-full bg-main border border-gray-600 rounded-md shadow-sm p-3 text-main focus:border-gold-accent focus:ring-gold-accent">
+                </div>
+                <div>
+                    <label for="email" class="block text-sm font-medium text-main" data-key="form_email">Adresse E-mail</label>
+                    <input type="email" id="email" name="_replyto" required class="mt-1 block w-full bg-main border border-gray-600 rounded-md shadow-sm p-3 text-main focus:border-gold-accent focus:ring-gold-accent">
+                </div>
+                <div>
+                    <label for="message" class="block text-sm font-medium text-main" data-key="form_message">Votre Demande / Projet</label>
+                    <textarea id="message" name="message" rows="4" required class="mt-1 block w-full bg-main border border-gray-600 rounded-md shadow-sm p-3 text-main focus:border-gold-accent focus:ring-gold-accent"></textarea>
+                </div>
+                <div>
+                    <button type="submit" class="w-full px-4 py-3 text-lg font-semibold text-opposite bg-gold-accent rounded-lg shadow-md hover:bg-gold-dark focus:outline-none focus:ring-4 focus:ring-gold-dark focus:ring-opacity-50 transition ease-in-out duration-150" data-key="form_submit">
+                        Envoyer le Message
+                    </button>
+                </div>
+            </form>
+            <p class="mt-4 text-center text-sm text-gray-400">Pour un service plus rapide, veuillez inclure votre nom et la description de votre demande.</p>
+        </div>
     </div>
 
-    <div id="adminPage" class="container page-admin-orders">
-        <h1>⚙️ Gestion des Commandes</h1>
-        <p>Tableau de bord du Livreur/Admin.</p>
-
-        <table class="table-orders">
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Client / Tél.</th>
-                    <th>Adresse</th>
-                    <th>Détail Commande</th>
-                    <th>Total</th>
-                    <th>Statut</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody id="ordersTableBody">
-                </tbody>
-        </table>
-        <a href="#" class="lien-livreur" onclick="showPage('client')">Déconnexion / Client</a>
-    </div>
-
+    <footer class="bg-card border-t border-gold-accent mt-16">
+        <div class="max-w-7xl mx-auto py-12 px-4 overflow-hidden sm:px-6 lg:px-8">
+            <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-4 gap-8">
+                <div>
+                    <h4 class="text-lg font-semibold text-gold-accent mb-4">BANIKI LABS</h4>
+                    <p class="text-sm text-gray-400" data-key="footer_desc">
+                        Un hub d'innovation et de multiples services au cœur de la RDC. Nous connectons technologie, formation et services essentiels.
+                    </p>
+                </div>
+                <div>
+                    <h4 class="text-lg font-semibold text-gold-accent mb-4" data-key="footer_nav_title">Navigation Rapide</h4>
+                    <ul class="space-y-3 text-sm">
+                        <li><a href="#services" data-key="nav_services" class="text-gray-400 hover:text-gold-accent transition duration-150">Services</a></li>
+                        <li><a href="#pricing" data-key="nav_pricing" class="text-gray-400 hover:text-gold-accent transition duration-150">Prix</a></li>
+                        <li><a href="#blog" data-key="menu_blog" class="text-gray-400 hover:text-gold-accent transition duration-150">Blog</a></li>
+                        <li><a href="#story" data-key="menu_story" class="text-gray-400 hover:text-gold-accent transition duration-150">Notre histoire</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="text-lg font-semibold text-gold-accent mb-4" data-key="footer_contact_title">Contact & Paiement</h4>
+                    <ul class="space-y-3 text-sm">
+                        <li><span class="text-gray-400">📞 +243 978 415 814</span></li>
+                        <li><a href="mailto:banikimukishijimmy@gmail.com" class="text-gray-400 hover:text-gold-accent transition duration-150">✉️ banikimukishijimmy@gmail.com</a></li>
+                        <li><span class="text-gray-400">📍 Kinshasa, RDC</span></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="text-lg font-semibold text-gold-accent mb-4" data-key="footer_social_title">Suivez-nous</h4>
+                    <div class="flex space-x-4">
+                        <a href="https://www.facebook.com/banikilabs/" target="_blank" class="text-gray-400 hover:text-gold-accent transition duration-150">
+                            <svg fill="currentColor" viewBox="0 0 24 24" class="h-6 w-6" aria-hidden="true"><path fill-rule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 5.174 3.655 9.426 8.44 10.323v-7.234h-2.54V12.01h2.54v-2.188c0-2.522 1.492-3.876 3.784-3.876 1.074 0 2.228.197 2.228.197v2.48h-1.27c-1.24 0-1.62.775-1.62 1.564v1.879h2.77l-.443 2.89h-2.327v7.234c4.784-.897 8.439-5.149 8.439-10.323C22 6.484 17.523 2 12 2z" clip-rule="evenodd"></path></svg>
+                        </a>
+                        <a href="https://wa.me/243978415814" target="_blank" class="text-gray-400 hover:text-gold-accent transition duration-150">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.824-1.587-5.91C.159 5.817 5.748.24 12.001.24s11.84 5.577 11.84 11.84-5.577 11.84-11.84 11.84h-.005c-2.09.001-4.097-.557-5.88-1.583l-6.162 1.693zm16.541-6.521l-.397-.796c-.146-.292-.58-.881-1.622-1.311-.976-.403-2.046-.78-3.237-1.311-.82-.375-1.464-.563-1.868-.563-.385 0-.818.143-1.242.426-.403.266-.979.883-1.242 1.272-.259.385-.506.463-1.011.233-1.328-.621-2.763-1.442-3.953-2.943-.466-.605-.919-1.364-.783-2.091.139-.726.79-1.622 1.055-2.052.282-.42.394-.603.582-.791.195-.192.42-.424.571-.623.166-.207.272-.442.34-.691s.004-.484-.047-.723c-.049-.234-.403-.978-.553-1.357-.149-.379-.313-.324-.442-.324-.109 0-.256-.006-.44-.006s-.502.164-.765.456c-.256.292-.991.954-.991 2.316 0 1.363 1.016 2.685 1.166 2.873.149.19.827 1.258 2.023 2.607 1.423 1.677 2.622 2.152 3.011 2.375.292.169.584.22.787.164.23-.051.79-.323 1.03-.64.24-.316.331-.587.48-.821.146-.234.306-.525.594-.624.288-.099.6-.089.976.046.375.138 1.95 1.015 2.222 1.194.274.182.46.273.623.424.164.152.336.42.376.689s.057.518-.004.832c-.061.313-.432.658-.675.901-.242.241-.513.568-.781.821l-.392.355z"/></svg>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <p class="mt-8 text-center text-base text-gray-400">&copy; 2024 BANIKI LABS Inc. Tous droits réservés.</p>
+        </div>
+    </footer>
 
     <script>
-        // =================================================
-        // == LOGIQUE JAVASCRIPT                          ==
-        // =================================================
+        const exploreBtn = document.getElementById('explore-btn');
+        const exploreMenu = document.getElementById('explore-menu');
+        const langBtn = document.getElementById('lang-btn');
+        const langMenu = document.getElementById('lang-menu');
+        const modeToggle = document.getElementById('mode-toggle');
+        const darkIcon = document.getElementById('dark-icon');
+        const lightIcon = document.getElementById('light-icon');
+        let currentLang = 'fr'; // Langue par défaut
+        let isLightMode = false;
+
+        function toggleMenu(button, menu) {
+            menu.classList.toggle('hidden');
+        }
+
+        // --- LOGIQUE DE CHANGEMENT DE THÈME ---
+        function toggleTheme() {
+            isLightMode = !isLightMode;
+            document.body.classList.toggle('light-mode', isLightMode);
+
+            // Mise à jour des icônes
+            darkIcon.classList.toggle('hidden', isLightMode);
+            lightIcon.classList.toggle('hidden', !isLightMode);
+
+            // Mise à jour du texte du bouton de mode
+            const modeKey = isLightMode ? 'mode_light' : 'mode_dark';
+            modeToggle.querySelector('span').setAttribute('data-key', modeKey); 
+            // Force la re-traduction du bouton
+            updateContent(currentLang); 
+
+            // Enregistre la préférence
+            localStorage.setItem('theme', isLightMode ? 'light' : 'dark');
+        }
+
+        // --- FIN LOGIQUE DE CHANGEMENT DE THÈME ---
+
+
+        // --- LOGIQUE DE TRADUCTION SIMULÉE (Mise à jour avec les clés de mode) ---
+        const translations = {
+            fr: {
+                nav_pricing: 'Prix',
+                nav_services: 'Services',
+                nav_explore: 'Explorer',
+                nav_support: 'Aide',
+                nav_account: 'Mon compte',
+                nav_lang: 'Français',
+                mode_dark: 'Mode Sombre',
+                mode_light: 'Mode Clair',
+                menu_blog: 'Blog',
+                desc_blog: 'Nos dernières nouvelles et mises à jour',
+                menu_features: 'Fonctionnalités et outils',
+                desc_features: 'Dernières versions et caractéristiques des produits',
+                menu_story: 'Notre histoire',
+                desc_story: 'D\'où nous venons et où nous allons',
+                menu_clients: 'Histoires de clients',
+                desc_clients: 'Les succès de nos clients sont nos histoires préférées',
+                title: 'Nos Services Diversifiés | BANIKI LABS',
+                subtitle: 'Un hub complet au cœur de Kinshasa : de la technologie à l\'alimentation, en passant par la formation et les services essentiels.',
+                btn_discover: 'Découvrir',
+                service_title_0: 'Création de Site Web',
+                service_desc_0: 'Conception et développement de sites web professionnels (vitrine, e-commerce, blog) sur mesure, optimisés pour mobile et le référencement (SEO).',
+                service_title_1: 'Centre Informatique Avancé',
+                service_desc_1: 'Accès internet haut débit, impression, scanning, photocopie, conversion de format de fichier (PDF/Word, MP4/MP3, etc.), maintenance informatique et cours d\'informatique pour tous les niveaux.',
+                service_title_2: 'Cours de Langue (ANGLAIS, SWAHILI, FRANCAIS)',
+                service_desc_2: 'Des programmes intensifs et personnalisés pour maîtriser l\'anglais, le swahili, le français des affaires, académique ou conversationnel.',
+                service_title_3: 'Studio d\'Enregistrement Podcast',
+                service_desc_3: 'Espace insonorisé équipé pour l\'enregistrement, le montage et la diffusion de podcasts de qualité professionnelle.',
+                service_title_4: 'Studio d\'Enregistrement Musical',
+                service_desc_4: 'Studio moderne pour l\'enregistrement, le mixage et le mastering de vos productions musicales (artiste, beatmaker, jingle).',
+                service_title_5: 'Formation en Bureautique',
+                service_desc_5: 'Cours pratiques sur les outils de productivité (Word, Excel, PowerPoint) essentiels pour le monde professionnel.',
+                service_title_6: 'Agence Immobilière (Achat/Vente)',
+                service_desc_6: 'Conseils et transactions pour la location, l\'achat ou la vente de propriétés résidentielles et commerciales à Kinshasa.',
+                service_title_7: 'Service de Photographie',
+                service_desc_7: 'Couverture d\'événements, portraits professionnels, photos de produits et séances créatives. Matériel haut de gamme et post-traitement inclus.',
+                service_title_8: 'Service de Vidéographie',
+                service_desc_8: 'Production de clips musicaux, vidéos d\'entreprise, documentaires et publicités. Du concept à la post-production professionnelle.',
+                service_title_9: 'Livraison Rapide à Domicile',
+                service_desc_9: 'Service de livraison rapide et fiable de tous types de colis et repas à travers Kinshasa. Suivi en temps réel et support client.',
+                service_title_10: 'Centre de Développement Personnel',
+                service_desc_10: 'Ateliers, coaching et séminaires pour renforcer le leadership, la confiance en soi et l\'atteinte des objectifs personnels et professionnels.',
+                service_title_11: 'Centre d\'Autonomie',
+                service_desc_11: 'Programmes et ressources dédiés à l\'indépendance financière, professionnelle et personnelle, notamment pour les jeunes entrepreneurs.',
+                service_title_12: 'Bureau de Change d\'Argent',
+                service_desc_12: 'Services de change de devises rapides et sécurisés avec des taux compétitifs, facilitant vos transactions internationales et locales.',
+                service_title_13: 'Service de Traduction et Interprétariat',
+                service_desc_13: 'Traduction de documents et interprétation en personne dans 10 langues clés (français, anglais, swahili, chinois, lingala, portugais, japonais, sona, malgache, espagnol) et autres sur demande.',
+                service_title_14: 'Vente Services Réseaux Mobiles RDC',
+                service_desc_14: 'Cabine de vente de crédits, forfaits, cartes SIM et services de transfert d\'argent mobile pour tous les réseaux en RDC.',
+                service_title_15: 'Production d\'Eau et Jus Naturels',
+                service_desc_15: 'Agence de fabrication et de vente de jus de fruits frais et d\'eau pure, privilégiant les ingrédients naturels et locaux de qualité.',
+                service_title_16: 'Nourriture Fast Food (Kinshasa)',
+                service_desc_16: 'Vente de plats rapides et savoureux, préparés localement à Kinshasa, pour une pause déjeuner ou un dîner rapide et gourmand.',
+                service_title_17: 'Service d\'Entraide',
+                service_desc_17: 'Plateforme communautaire d\'entraide et de partage de ressources, visant à connecter les individus ayant des besoins similaires à Kinshasa.',
+                service_title_18: 'Service de Transport Fiable',
+                service_desc_18: 'Transport fiable et sécurisé à Kinshasa pour les écoles, églises, universités, et événements spéciaux (mariages, funérailles, excursions, etc.).',
+                service_title_19: 'Agence Cinématographique',
+                service_desc_19: 'Production, réalisation et distribution de films et de courts-métrages. Location d\'équipement professionnel.',
+                service_title_20: 'Management & Promotion Musicale',
+                service_desc_20: 'Conseil, gestion de carrière et promotion digitale pour artistes et labels.',
+                service_title_21: 'Cours de Dessin & Illustration',
+                service_desc_21: 'Ateliers pratiques pour l\'apprentissage du dessin, de l\'illustration numérique et traditionnelle.',
+                service_title_22: 'Production d\'Animation',
+                service_desc_22: 'Création de films d\'animation, de vidéos explicatives et de contenus de motion design 2D/3D.',
+                service_title_23: 'Service d\'Information & Média',
+                service_desc_23: 'Veille stratégique, analyse de l\'actualité et création de contenu d\'information ciblé.',
+                service_title_24: 'Marketing Digital & Référencement (SEO)',
+                service_desc_24: 'Stratégies complètes de marketing en ligne, optimisation pour les moteurs de recherche (SEO), publicité payante et gestion des réseaux sociaux.',
+                // NOUVEAU SERVICE
+                service_title_25: 'Service de Création de Montage Électronique',
+                service_desc_25: 'Conception et réalisation de circuits électroniques sur mesure. Cela inclut l\'intégration de détecteurs de lumière, d\'autres types de détecteurs, de lampes à 40W, et d\'autres appareils électroniques utiles à la société (automatisation, domotique, etc.).',
+
+                footer_desc: 'Un hub d\'innovation et de multiples services au cœur de la RDC. Nous connectons technologie, formation et services essentiels.',
+                footer_nav_title: 'Navigation Rapide',
+                footer_contact_title: 'Contact & Paiement',
+                footer_social_title: 'Suivez-nous',
+                contact_title: 'Contactez-nous',
+                contact_subtitle: 'Nous sommes prêts à commencer votre projet. Envoyez-nous un message pour discuter de vos besoins.',
+                form_name: 'Nom Complet',
+                form_email: 'Adresse E-mail',
+                form_message: 'Votre Demande / Projet',
+                form_submit: 'Envoyer le Message',
+            },
+            en: {
+                nav_pricing: 'Pricing',
+                nav_services: 'Services',
+                nav_explore: 'Explore',
+                nav_support: 'Support',
+                nav_account: 'My Account',
+                nav_lang: 'English',
+                mode_dark: 'Dark Mode',
+                mode_light: 'Light Mode',
+                menu_blog: 'Blog',
+                desc_blog: 'Our latest news and updates',
+                menu_features: 'Features & Tools',
+                desc_features: 'Latest releases and product features',
+                menu_story: 'Our Story',
+                desc_story: 'Where we come from and where we\'re going',
+                menu_clients: 'Client Stories',
+                desc_clients: 'Our clients\' successes are our favorite stories',
+                title: 'Our Diverse Services | BANIKI LABS',
+                subtitle: 'A comprehensive hub in the heart of Kinshasa: from technology to food, training, and essential services.',
+                btn_discover: 'Discover',
+                service_title_0: 'Website Creation',
+                service_desc_0: 'Design and development of professional custom websites (showcase, e-commerce, blog), optimized for mobile and search engine optimization (SEO).',
+                service_title_1: 'Advanced IT Center',
+                service_desc_1: 'High-speed internet access, printing, scanning, photocopying, file format conversion (PDF/Word, MP4/MP3, etc.), IT maintenance, and computer courses for all levels.',
+                service_title_2: 'Language Courses (ENGLISH, SWAHILI, FRENCH)',
+                service_desc_2: 'Intensive and personalized programs to master business, academic, or conversational English, Swahili, and French.',
+                service_title_3: 'Podcast Recording Studio',
+                service_desc_3: 'Soundproofed space equipped for professional-quality podcast recording, editing, and broadcasting.',
+                service_title_4: 'Music Recording Studio',
+                service_desc_4: 'Modern studio for recording, mixing, and mastering your musical productions (artist, beatmaker, jingle).',
+                service_title_5: 'Office Automation Training',
+                service_desc_5: 'Practical courses on essential productivity tools (Word, Excel, PowerPoint) for the professional world.',
+                service_title_6: 'Real Estate Agency (Buy/Sell)',
+                service_desc_6: 'Advice and transactions for renting, buying, or selling residential and commercial properties in Kinshasa.',
+                service_title_7: 'Photography Service',
+                service_desc_7: 'Event coverage, professional portraits, product photos, and creative sessions. High-end equipment and post-processing included.',
+                service_title_8: 'Videography Service',
+                service_desc_8: 'Production of music videos, corporate videos, documentaries, and advertisements. From concept to professional post-production.',
+                service_title_9: 'Fast Home Delivery',
+                service_desc_9: 'Fast and reliable delivery service for all types of packages and meals across Kinshasa. Real-time tracking and customer support.',
+                service_title_10: 'Personal Development Center',
+                service_desc_10: 'Workshops, coaching, and seminars to enhance leadership, self-confidence, and the achievement of personal and professional goals.',
+                service_title_11: 'Autonomy Center',
+                service_desc_11: 'Programs and resources dedicated to financial, professional, and personal independence, particularly for young entrepreneurs.',
+                service_title_12: 'Money Exchange Office',
+                service_desc_12: 'Fast and secure currency exchange services with competitive rates, facilitating your international and local transactions.',
+                service_title_13: 'Translation and Interpretation Service',
+                service_desc_13: 'Document translation and in-person interpretation in 10 key languages (French, English, Swahili, Chinese, Lingala, Portuguese, Japanese, Sona, Malagasy, Spanish) and others on request.',
+                service_title_14: 'DRC Mobile Network Services Sales',
+                service_desc_14: 'Booth selling credit, bundles, SIM cards, and mobile money transfer services for all networks in the DRC.',
+                service_title_15: 'Water and Natural Juice Production',
+                service_desc_15: 'Manufacturing and sales agency for fresh fruit juices and pure water, prioritizing natural and quality local ingredients.',
+                service_title_16: 'Fast Food (Kinshasa)',
+                service_desc_16: 'Sale of fast and tasty dishes, prepared locally in Kinshasa, for a quick and gourmet lunch or dinner break.',
+                service_title_17: 'Mutual Aid Service',
+                service_desc_17: 'Community platform for mutual support and resource sharing, aimed at connecting individuals with similar needs in Kinshasa.',
+                service_title_18: 'Reliable Transport Service',
+                service_desc_18: 'Reliable and secure transport in Kinshasa for schools, churches, universities, and special events (weddings, funerals, excursions, etc.).',
+                service_title_19: 'Film Agency',
+                service_desc_19: 'Production, directing, and distribution of films and short films. Professional equipment rental.',
+                service_title_20: 'Music Management & Promotion',
+                service_desc_20: 'Consulting, career management, and digital promotion for artists and labels.',
+                service_title_21: 'Drawing & Illustration Course',
+                service_desc_21: 'Practical workshops for learning drawing, digital and traditional illustration.',
+                service_title_22: 'Animation Production',
+                service_desc_22: 'Creation of animated films, explanatory videos, and 2D/3D motion design content.',
+                service_title_23: 'Information & Media Service',
+                service_desc_23: 'Strategic monitoring, news analysis, and creation of targeted information content.',
+                service_title_24: 'Digital Marketing & SEO',
+                service_desc_24: 'Comprehensive online marketing strategies, search engine optimization (SEO), paid advertising, and social media management.',
+                // NOUVEAU SERVICE
+                service_title_25: 'Electronic Assembly Creation Service',
+                service_desc_25: 'Design and manufacturing of custom electronic circuits. This includes the integration of light detectors, other types of detectors, 40W lamps, and other electronic devices useful to society (automation, home automation, etc.).',
+
+                footer_desc: 'A hub of innovation and multiple services in the heart of the DRC. We connect technology, training, and essential services.',
+                footer_nav_title: 'Quick Navigation',
+                footer_contact_title: 'Contact & Payment',
+                footer_social_title: 'Follow Us',
+                contact_title: 'Contact Us',
+                contact_subtitle: 'We are ready to start your project. Send us a message to discuss your needs.',
+                form_name: 'Full Name',
+                form_email: 'Email Address',
+                form_message: 'Your Request / Project',
+                form_submit: 'Send Message',
+            },
+            sw: {
+                nav_pricing: 'Bei',
+                nav_services: 'Huduma',
+                nav_explore: 'Gundua',
+                nav_support: 'Msaada',
+                nav_account: 'Akaunti Yangu',
+                nav_lang: 'Swahili',
+                mode_dark: 'Hali ya Giza',
+                mode_light: 'Hali ya Mwanga',
+                menu_blog: 'Blogu',
+                desc_blog: 'Habari zetu za hivi karibuni na sasisho',
+                menu_features: 'Vipengele na Zana',
+                desc_features: 'Matoleo ya hivi karibuni na vipengele vya bidhaa',
+                menu_story: 'Hadithi Yetu',
+                desc_story: 'Tunakotoka na tunakoelekea',
+                menu_clients: 'Hadithi za Wateja',
+                desc_clients: 'Mafanikio ya wateja wetu ni hadithi tunazopenda zaidi',
+                title: 'Huduma Zetu Mbalimbali | BANIKI LABS',
+                subtitle: 'Kituo kamili katika moyo wa Kinshasa: kutoka teknolojia hadi chakula, mafunzo, na huduma muhimu.',
+                btn_discover: 'Gundua',
+                service_title_0: 'Uundaji wa Tovuti',
+                service_desc_0: 'Kubuni na kuendeleza tovuti za kitaalamu (onyesho, biashara ya mtandaoni, blogu) maalum, zilizoboreshwa kwa simu na uboreshaji wa injini za utafutaji (SEO).',
+                service_title_1: 'Kituo cha Kompyuta cha Juu',
+                service_desc_1: 'Ufikiaji wa intaneti ya kasi, uchapishaji, uskanishaji, upigaji picha, ubadilishaji wa mfumo wa faili (PDF/Word, MP4/MP3, n.k.), matengenezo ya kompyuta na kozi za kompyuta kwa viwango vyote.',
+                service_title_2: 'Kozi za Lugha (KINGEREZA, KISWAHILI, KIFARANSA)',
+                service_desc_2: 'Programu za kina na kibinafsi za kujifunza Kiingereza, Kiswahili, Kifaransa cha biashara, kitaaluma au mazungumzo.',
+                service_title_3: 'Studio ya Kurekodi Podcast',
+                service_desc_3: 'Eneo lililotengwa na sauti na vifaa vya kurekodi, kuhariri na kutangaza podcast za ubora wa kitaalamu.',
+                service_title_4: 'Studio ya Kurekodi Muziki',
+                service_desc_4: 'Studio ya kisasa ya kurekodi, kuchanganya na kusanifisha (mastering) kazi zako za muziki (msanii, beatmaker, jingle).',
+                service_title_5: 'Mafunzo ya Ofisi ya Kompyuta',
+                service_desc_5: 'Kozi za vitendo kuhusu zana muhimu za uzalishaji (Word, Excel, PowerPoint) kwa ajili ya ulimwengu wa kazi.',
+                service_title_6: 'Wakala wa Majengo (Kununua/Kuuza)',
+                service_desc_6: 'Ushauri na miamala ya kukodisha, kununua, au kuuza mali za makazi na biashara huko Kinshasa.',
+                service_title_7: 'Huduma ya Upigaji Picha',
+                service_desc_7: 'Kuhusu matukio, picha za kitaalamu, picha za bidhaa, na vipindi vya ubunifu. Vifaa vya hali ya juu na usindikaji wa baadae vimejumuishwa.',
+                service_title_8: 'Huduma ya Video',
+                service_desc_8: 'Uzalishaji wa video za muziki, video za kampuni, makala, na matangazo. Kutoka wazo hadi uzalishaji wa baadae wa kitaalamu.',
+                service_title_9: 'Utoaji wa Haraka Nyumbani',
+                service_desc_9: 'Huduma ya utoaji wa haraka na wa kuaminika wa aina zote za vifurushi na milo kote Kinshasa. Ufuatiliaji wa wakati halisi na usaidizi wa wateja.',
+                service_title_10: 'Kituo cha Maendeleo ya Kibinafsi',
+                service_desc_10: 'Warsha, mafunzo na semina za kuimarisha uongozi, kujiamini na kufikia malengo ya kibinafsi na ya kitaaluma.',
+                service_title_11: 'Kituo cha Kujitegemea',
+                service_desc_11: 'Programu na rasilimali zinazojitolea kwa uhuru wa kifedha, kitaaluma na kibinafsi, hasa kwa wajasiriamali wachanga.',
+                service_title_12: 'Ofisi ya Kubadilishana Fedha',
+                service_desc_12: 'Huduma za kubadilishana fedha za haraka na salama na viwango vya ushindani, kuwezesha miamala yako ya kimataifa na ya ndani.',
+                service_title_13: 'Huduma ya Tafsiri na Ukalimani',
+                service_desc_13: 'Tafsiri ya hati na ukalimani ana kwa ana katika lugha 10 kuu (Kifaransa, Kiingereza, Kiswahili, Kichina, Kilingala, Kireno, Kijapani, Kisoma, Kimalagasi, Kihispania) na zingine kwa ombi.',
+                service_title_14: 'Uuzaji wa Huduma za Mitandao ya Simu DRC',
+                service_desc_14: 'Kibanda cha kuuza mikopo, vifurushi, kadi za SIM na huduma za kuhamisha pesa kwa njia ya simu kwa mitandao yote nchini DRC.',
+                service_title_15: 'Uzalishaji wa Maji na Juisi Asilia',
+                service_desc_15: 'Wakala wa utengenezaji na uuzaji wa juisi za matunda safi na maji safi, ukipa kipaumbele viungo asilia na vya ndani vya ubora.',
+                service_title_16: 'Chakula cha Haraka (Kinshasa)',
+                service_desc_16: 'Uuzaji wa sahani za haraka na kitamu, zilizotayarishwa ndani ya Kinshasa, kwa mapumziko ya chakula cha mchana au chakula cha jioni cha haraka na kitamu.',
+                service_title_17: 'Huduma ya Kusaidiana',
+                service_desc_17: 'Jukwaa la jamii la kusaidiana na kushiriki rasilimali, linalolenga kuunganisha watu wenye mahitaji yanayofanana huko Kinshasa.',
+                service_title_18: 'Huduma ya Usafiri wa Kuaminika',
+                service_desc_18: 'Usafiri wa kuaminika na salama Kinshasa kwa shule, makanisa, vyuo vikuu, na hafla maalum (harusi, mazishi, matembezi, n.k.).',
+                service_title_19: 'Wakala wa Filamu',
+                service_desc_19: 'Uzalishaji, uongozaji, na usambazaji wa filamu na filamu fupi. Kukodisha vifaa vya kitaalamu.',
+                service_title_20: 'Usimamizi & Utangazaji wa Muziki',
+                service_desc_20: 'Ushauri, usimamizi wa kazi na utangazaji wa kidijitali kwa wasanii na lebo.',
+                service_title_21: 'Kozi ya Kuchora & Mchoro',
+                service_desc_21: 'Warsha za vitendo za kujifunza kuchora, mchoro wa kidijitali na wa jadi.',
+                service_title_22: 'Uzalishaji wa Uhuishaji',
+                service_desc_22: 'Uundaji wa filamu za uhuishaji, video za maelezo, na maudhui ya muundo wa mwendo wa 2D/3D.',
+                service_title_23: 'Huduma ya Habari na Vyombo vya Habari',
+                service_desc_23: 'Ufuatiliaji wa kimkakati, uchambuzi wa habari, na uundaji wa maudhui ya habari yaliyolengwa.',
+                service_title_24: 'Uuzaji wa Kidijitali & SEO',
+                service_desc_24: 'Mikakati kamili ya uuzaji mtandaoni, uboreshaji wa injini za utafutaji (SEO), matangazo ya kulipwa, na usimamizi wa mitandao ya kijamii.',
+                // NOUVEAU SERVICE
+                service_title_25: 'Huduma ya Kuunda Mikusanyiko ya Kielektroniki',
+                service_desc_25: 'Ubunifu na utengenezaji wa nyaya za kielektroniki maalum. Hii inajumuisha kuunganisha vigunduzi vya mwanga, aina nyingine za vigunduzi, taa za 40W, na vifaa vingine vya kielektroniki muhimu kwa jamii (otomatiki, otomatiki ya nyumbani, n.k.).',
+
+                footer_desc: 'Kituo cha ubunifu na huduma nyingi katika moyo wa DRC. Tunaunganisha teknolojia, mafunzo, na huduma muhimu.',
+                footer_nav_title: 'Urambazaji wa Haraka',
+                footer_contact_title: 'Mawasiliano na Malipo',
+                footer_social_title: 'Tufuate',
+                contact_title: 'Wasiliana Nasi',
+                contact_subtitle: 'Tuko tayari kuanza mradi wako. Tutumie ujumbe kujadili mahitaji yako.',
+                form_name: 'Jina Kamili',
+                form_email: 'Anwani ya Barua pepe',
+                form_message: 'Ombi lako / Mradi',
+                form_submit: 'Tuma Ujumbe',
+            }
+        };
+
+        function updateContent(lang) {
+            currentLang = lang;
+            // 1. Mettre à jour le texte du bouton de langue
+            const langName = translations[lang]['nav_lang'] || lang.toUpperCase();
+            langBtn.childNodes[0].nodeValue = langName + ' '; // Ajout d'un espace pour l'icône
+
+            // 2. Traduire les autres éléments avec l'attribut data-key
+            document.querySelectorAll('[data-key]').forEach(element => {
+                const key = element.getAttribute('data-key');
+                if (!translations[lang] || !translations[lang][key]) return;
+
+                // Si c'est un titre de service, on met à jour le contenu HTML
+                if (key.startsWith('service_title_')) {
+                    element.textContent = translations[lang][key];
+                } 
+                // Pour les descriptions et autres éléments, on met à jour le contenu textuel
+                else {
+                    element.textContent = translations[lang][key];
+                }
+            });
+
+            // 3. Mise à jour des classes du menu de langue pour indiquer la langue active
+            document.querySelectorAll('.lang-option').forEach(option => {
+                option.classList.remove('text-gold-accent', 'font-bold', 'bg-main');
+                option.classList.add('text-main', 'hover:bg-gold-dark', 'hover:text-opposite');
+
+                if (option.getAttribute('data-lang') === lang) {
+                    option.classList.add('text-gold-accent', 'font-bold', 'bg-main');
+                    option.classList.remove('text-main', 'hover:bg-gold-dark', 'hover:text-opposite');
+                }
+            });
+
+            // Mettre à jour le texte du bouton du mode si besoin (il est déjà mis à jour dans toggleTheme, mais on s'assure que le texte de la clé est le bon)
+            const modeKey = isLightMode ? 'mode_light' : 'mode_dark';
+            modeToggle.querySelector('span').textContent = translations[lang][modeKey];
+            
+            // Enregistrer la préférence de langue
+            localStorage.setItem('lang', lang);
+        }
 
         document.addEventListener('DOMContentLoaded', () => {
-            const clientPage = document.getElementById('clientPage');
-            const loginPage = document.getElementById('loginPage');
-            const adminPage = document.getElementById('adminPage');
-            const commandeFormulaire = document.getElementById('commandeFormulaire');
-            const loginForm = document.getElementById('loginForm');
-            const totalElement = document.getElementById('totalPrix');
-            const quantiteInputs = document.querySelectorAll('.quantite-input');
-            const ordersTableBody = document.getElementById('ordersTableBody');
-
-            // Simuler une base de données de commandes
-            let commandesDB = [];
-
-            // Fonction pour changer de page
-            function showPage(page) {
-                clientPage.style.display = 'none';
-                loginPage.style.display = 'none';
-                adminPage.style.display = 'none';
-
-                if (page === 'client') {
-                    clientPage.style.display = 'block';
-                } else if (page === 'login') {
-                    loginPage.style.display = 'block';
-                } else if (page === 'admin') {
-                    adminPage.style.display = 'block';
-                    loadAdminOrders();
-                }
+            // Charger la préférence de thème
+            const savedTheme = localStorage.getItem('theme');
+            if (savedTheme === 'light') {
+                isLightMode = true;
+                document.body.classList.add('light-mode');
+                darkIcon.classList.add('hidden');
+                lightIcon.classList.remove('hidden');
+            } else {
+                isLightMode = false;
+                document.body.classList.remove('light-mode');
+                darkIcon.classList.remove('hidden');
+                lightIcon.classList.add('hidden');
             }
 
-            // Afficher la page client par défaut
-            showPage('client');
-
-
-            // -------------------------------------------------
-            // LOGIQUE CLIENT (CALCUL ET COMMANDE)
-            // -------------------------------------------------
-
-            function calculerTotal() {
-                let total = 0;
-                quantiteInputs.forEach(input => {
-                    const prixUnitaire = parseInt(input.getAttribute('data-prix'));
-                    const quantite = parseInt(input.value) || 0; // Utiliser 0 si NaN
-                    if (quantite > 0) {
-                        total += prixUnitaire * quantite;
-                    }
-                });
-                totalElement.textContent = total.toLocaleString('fr-FR');
-                return total;
+            // Charger la préférence de langue
+            const savedLang = localStorage.getItem('lang');
+            if (savedLang && translations[savedLang]) {
+                currentLang = savedLang;
             }
 
-            // Écouter les changements dans les champs de quantité
-            quantiteInputs.forEach(input => {
-                input.addEventListener('input', calculerTotal);
+            // Événement pour le menu Explorer
+            exploreBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                toggleMenu(exploreBtn, exploreMenu);
+                langMenu.classList.add('hidden'); // Fermer l'autre menu
             });
 
+            // Événement pour le menu de Langue
+            langBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                toggleMenu(langBtn, langMenu);
+                exploreMenu.classList.add('hidden'); // Fermer l'autre menu
+            });
 
-            // Gérer la soumission du formulaire de commande
-            commandeFormulaire.addEventListener('submit', (e) => {
-                e.preventDefault();
-                
-                const total = calculerTotal();
-
-                if (total === 0) {
-                    alert("Votre panier est vide. Veuillez sélectionner des produits.");
-                    return;
-                }
-                
-                // Récupérer les détails de la commande
-                let detailsCommande = [];
-                quantiteInputs.forEach(input => {
-                    const quantite = parseInt(input.value) || 0;
-                    if (quantite > 0) {
-                        // Chercher le nom du produit (logique simplifiée)
-                        const produitDiv = input.closest('.produit');
-                        let nomProduit = "Article Inconnu";
-                        if(produitDiv) {
-                             nomProduit = produitDiv.querySelector('.produit-info').textContent.trim();
-                        } else {
-                            // Pour les packs qui ne sont pas dans un div .produit
-                            const h3 = input.closest('h3');
-                            if(h3) nomProduit = h3.textContent.trim();
-                        }
-                        
-                        detailsCommande.push(`${quantite} x ${nomProduit.replace(/\(.+\)/, '').trim()}`);
-                    }
+            // Événement pour le sélecteur de Mode
+            modeToggle.addEventListener('click', toggleTheme);
+            
+            // Événement pour la sélection d'une langue
+            document.querySelectorAll('.lang-option').forEach(option => {
+                option.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    // On cherche l'élément le plus proche avec l'attribut data-lang pour éviter de cliquer sur le <span> interne
+                    const newLang = e.target.closest('.lang-option').getAttribute('data-lang');
+                    updateContent(newLang);
+                    langMenu.classList.add('hidden'); // Fermer le menu après la sélection
                 });
-
-                // Création de l'objet commande (Simule l'envoi au backend)
-                const nouvelleCommande = {
-                    id: commandesDB.length + 1,
-                    nomClient: document.getElementById('nomClient').value,
-                    adresse: document.getElementById('adresseClient').value,
-                    telephone: document.getElementById('telephoneClient').value,
-                    details: detailsCommande.join('; '),
-                    total: total,
-                    statut: 'Nouveau', // Statut initial
-                    livreur: 'Non Affecté'
-                };
-
-                commandesDB.push(nouvelleCommande);
-                alert(`Commande #${nouvelleCommande.id} de ${total.toLocaleString('fr-FR')}FC envoyée ! Votre commande sera traitée bientôt.`);
-
-                // Réinitialiser le formulaire
-                commandeFormulaire.reset();
-                calculerTotal();
             });
 
-
-            // -------------------------------------------------
-            // LOGIQUE LIVREUR (LOGIN)
-            // -------------------------------------------------
-
-            loginForm.addEventListener('submit', (e) => {
-                e.preventDefault();
-                const identifiant = document.getElementById('identifiant').value;
-                const password = document.getElementById('password').value;
-
-                // LOGIQUE D'AUTHENTIFICATION SIMPLIFIÉE :
-                if (identifiant === 'livreur' && password === '1234') {
-                    alert("Connexion réussie ! Bienvenue Livreur.");
-                    showPage('admin'); // Afficher la page Admin/Livreur
-                } else if (identifiant === 'admin' && password === 'admin') {
-                     alert("Connexion réussie ! Bienvenue Admin.");
-                    showPage('admin'); // Afficher la page Admin
-                } else {
-                    alert("Identifiant ou mot de passe incorrect.");
+            // Cacher les menus quand on clique à l'extérieur
+            document.addEventListener('click', (e) => {
+                if (!exploreBtn.contains(e.target) && !exploreMenu.contains(e.target)) {
+                    exploreMenu.classList.add('hidden');
                 }
-
-                loginForm.reset();
+                if (!langBtn.contains(e.target) && !langMenu.contains(e.target) && !modeToggle.contains(e.target)) {
+                    langMenu.classList.add('hidden');
+                }
             });
-
-
-            // -------------------------------------------------
-            // LOGIQUE ADMIN (ADMINORDERS)
-            // -------------------------------------------------
-
-            function loadAdminOrders() {
-                ordersTableBody.innerHTML = ''; // Vider le tableau
-                if (commandesDB.length === 0) {
-                    ordersTableBody.innerHTML = '<tr><td colspan="7" style="text-align:center;">Aucune commande en attente.</td></tr>';
-                    return;
-                }
-
-                commandesDB.forEach(cmd => {
-                    const row = ordersTableBody.insertRow();
-
-                    // Déterminer la classe du badge de statut
-                    let statusClass = 'status-new';
-                    if (cmd.statut.includes('livraison')) statusClass = 'status-delivery';
-                    if (cmd.statut === 'Livré') statusClass = 'status-delivered';
-
-                    row.innerHTML = `
-                        <td>#${cmd.id}</td>
-                        <td>${cmd.nomClient}<br>Tél: ${cmd.telephone}</td>
-                        <td>${cmd.adresse}</td>
-                        <td>${cmd.details.replace(/; /g, '<br>')}</td>
-                        <td>${cmd.total.toLocaleString('fr-FR')} FC</td>
-                        <td><span class="status-badge ${statusClass}">${cmd.statut}</span></td>
-                        <td>
-                            <button onclick="changeStatus(${cmd.id}, 'En cours de livraison')">Affecter & Livrer</button>
-                            <button onclick="changeStatus(${cmd.id}, 'Livré')" style="background-color: #007bff; color:white; border: none; margin-top:5px;">Terminer</button>
-                        </td>
-                    `;
-                });
-            }
-
-            // Rendre la fonction accessible globalement pour les boutons du tableau
-            window.changeStatus = (id, newStatus) => {
-                const cmd = commandesDB.find(c => c.id === id);
-                if (cmd) {
-                    cmd.statut = newStatus;
-                    alert(`Commande #${id} : Statut mis à jour vers "${newStatus}"`);
-                    loadAdminOrders(); // Recharger le tableau
-                }
-            };
+            
+            // Initialisation de la traduction au chargement
+            updateContent(currentLang);
         });
     </script>
-
 </body>
 </html>
