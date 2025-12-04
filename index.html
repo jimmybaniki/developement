@@ -3,422 +3,475 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Blite: Chat Anonyme Kinshasa</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <title>Eau Pure - Livraison à Domicile</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+        /* ================================================= */
+        /* == STYLES GÉNÉRAUX & CLIENT (CATALOGUE)        == */
+        /* ================================================= */
+
+        :root {
+            --couleur-primaire: #007bff; /* Bleu Eau */
+            --couleur-secondaire: #28a745; /* Vert Commande */
+            --couleur-fond: #f8f9fa;
+            --couleur-texte: #343a40;
+        }
+
         body {
-            font-family: 'Inter', sans-serif;
-            background-color: #f0f2f5;
+            font-family: 'Arial', sans-serif;
+            background-color: var(--couleur-fond);
+            color: var(--couleur-texte);
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
         }
-        /* Style to hide the scrollbar while keeping it functional */
-        #chat-window {
-            scrollbar-width: none; /* Firefox */
-            -ms-overflow-style: none;  /* IE and Edge */
+
+        .container {
+            max-width: 800px;
+            margin: 20px auto;
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
         }
-        #chat-window::-webkit-scrollbar {
-            display: none; /* Chrome, Safari, Opera */
+
+        h1, h2, h3 {
+            color: var(--couleur-primaire);
+            border-bottom: 2px solid #e9ecef;
+            padding-bottom: 5px;
+            margin-top: 25px;
         }
+
+        /* Catalogue des produits */
+        .produit {
+            margin-bottom: 15px;
+            padding: 10px 0;
+            border-bottom: 1px dashed #ced4da;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .produit-info {
+            flex-grow: 1;
+        }
+
+        .produit-prix {
+            font-weight: bold;
+            color: var(--couleur-secondaire);
+            margin-right: 15px;
+        }
+        
+        /* Champs de quantité */
+        .quantite-input {
+            width: 50px;
+            padding: 5px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            text-align: center;
+        }
+
+        /* Total */
+        .total-section {
+            padding: 15px;
+            background-color: #e9f7ef;
+            border-radius: 4px;
+            text-align: right;
+            font-size: 1.5em;
+            margin-top: 20px;
+        }
+
+        /* Formulaire de Livraison */
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+
+        /* Boutons */
+        .btn-commande {
+            width: 100%;
+            padding: 12px;
+            background-color: var(--couleur-secondaire);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1.1em;
+            font-weight: bold;
+            margin-top: 10px;
+            transition: background-color 0.3s;
+        }
+
+        .btn-commande:hover {
+            background-color: #1e7e34;
+        }
+
+        .lien-livreur {
+            display: block;
+            text-align: center;
+            margin-top: 20px;
+            color: var(--couleur-primaire);
+            text-decoration: none;
+        }
+
+        /* ================================================= */
+        /* == STYLES LIVREUR (LOGIN & ADMIN)              == */
+        /* ================================================= */
+
+        .page-login-livreur, .page-admin-orders {
+            padding: 40px;
+            max-width: 400px;
+            margin: 50px auto;
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Admin Orders Styles (pour le simple affichage ici) */
+        .page-admin-orders {
+             max-width: 90%; 
+        }
+
+        .table-orders {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            font-size: 0.9em;
+        }
+
+        .table-orders th, .table-orders td {
+            border: 1px solid #dee2e6;
+            padding: 8px;
+            text-align: left;
+        }
+
+        .table-orders th {
+            background-color: var(--couleur-primaire);
+            color: white;
+        }
+        
+        .status-badge {
+            padding: 5px 8px;
+            border-radius: 3px;
+            color: white;
+            font-weight: bold;
+            font-size: 0.8em;
+            text-transform: uppercase;
+        }
+
+        .status-new { background-color: #ffc107; color: #343a40; }
+        .status-delivery { background-color: #007bff; }
+        .status-delivered { background-color: var(--couleur-secondaire); }
+
+        /* Masquage des pages au chargement */
+        #loginPage, #adminPage {
+            display: none;
+        }
+
     </style>
 </head>
-<body class="p-4 sm:p-8 min-h-screen flex items-center justify-center">
+<body>
 
-    <div id="app" class="w-full max-w-2xl bg-white p-4 sm:p-6 rounded-xl shadow-2xl flex flex-col h-[90vh]">
-        <header class="text-center mb-4 border-b pb-2">
-            <h1 class="text-3xl font-bold text-gray-900">
-                <span class="text-indigo-600">Blite</span> | Le Salon Public <span class="text-sm font-normal text-gray-500">(Kinshasa)</span>
-            </h1>
-        </header>
+    <div id="clientPage" class="container">
+        <h1>💧 Eau Pure</h1>
+        <p>Livraison d'eau à votre porte</p>
 
-        <!-- User section (Pseudo and hidden JIA) -->
-        <div id="user-info" class="mb-4 bg-indigo-50 p-3 rounded-lg flex justify-between items-center text-sm">
-            <div class="flex items-center space-x-2">
-                <span class="font-semibold text-indigo-700">Votre Pseudo:</span>
-                <p id="current-pseudo" class="font-extrabold text-indigo-600 bg-indigo-100 px-2 py-0.5 rounded"></p>
+        <h2>Nos Eaux</h2>
+        <form id="commandeFormulaire">
+            <h3>Eau Pure</h3>
+            <div class="produit">
+                <div class="produit-info">Sachets individuels (150FC / sachet)</div>
+                <span class="produit-prix">150FC</span>
+                <input type="number" min="0" value="0" data-prix="150" class="quantite-input">
             </div>
-            <button id="toggle-pseudo-edit-btn" class="text-indigo-500 hover:text-indigo-700 transition duration-150 flex items-center">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-edit mr-1"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/></svg>
-                Éditer
-            </button>
-        </div>
+            <div class="produit">
+                <div class="produit-info">Pack de 12 sachets (1 500FC / pack)</div>
+                <span class="produit-prix">1 500FC</span>
+                <input type="number" min="0" value="0" data-prix="1500" class="quantite-input">
+            </div>
+
+            <h3>Eau Swissta</h3>
+            <div class="produit">
+                <div class="produit-info">Bouteilles individuelles (500FC / bouteille)</div>
+                <span class="produit-prix">500FC</span>
+                <input type="number" min="0" value="0" data-prix="500" class="quantite-input">
+            </div>
+            <div class="produit">
+                <div class="produit-info">Pack de 12 bouteilles (5 000FC / pack)</div>
+                <span class="produit-prix">5 000FC</span>
+                <input type="number" min="0" value="0" data-prix="5000" class="quantite-input">
+            </div>
+
+            <h3>Eau Spasso</h3>
+            <div class="produit">
+                <div class="produit-info">Bouteilles individuelles (500FC / bouteille)</div>
+                <span class="produit-prix">500FC</span>
+                <input type="number" min="0" value="0" data-prix="500" class="quantite-input">
+            </div>
+            <div class="produit">
+                <div class="produit-info">Pack de 12 bouteilles (5 000FC / pack)</div>
+                <span class="produit-prix">5 000FC</span>
+                <input type="number" min="0" value="0" data-prix="5000" class="quantite-input">
+            </div>
+
+            <h3>Eau America</h3>
+            <div class="produit">
+                <div class="produit-info">Bouteilles individuelles (500FC / bouteille)</div>
+                <span class="produit-prix">500FC</span>
+                <input type="number" min="0" value="0" data-prix="500" class="quantite-input">
+            </div>
+            <div class="produit">
+                <div class="produit-info">Pack de 12 bouteilles (5 000FC / pack)</div>
+                <span class="produit-prix">5 000FC</span>
+                <input type="number" min="0" value="0" data-prix="5000" class="quantite-input">
+            </div>
+
+            <div class="total-section">
+                Total: <span id="totalPrix">0</span>FC
+            </div>
+
+            <h2>Informations de Livraison</h2>
+            <div class="form-group"><input type="text" id="nomClient" placeholder="Nom" required></div>
+            <div class="form-group"><input type="text" id="adresseClient" placeholder="Adresse" required></div>
+            <div class="form-group"><input type="tel" id="telephoneClient" placeholder="Téléphone" required></div>
+
+            <button type="submit" class="btn-commande">Commander</button>
+        </form>
         
-        <!-- Pseudo edit form (hidden by default) -->
-        <div id="pseudo-edit-form" class="hidden mb-4 p-4 border rounded-lg bg-yellow-50">
-            <h2 class="text-lg font-semibold text-gray-800 mb-2">Mettre à jour votre Pseudo</h2>
-            <div class="flex space-x-3">
-                <input type="text" id="pseudo-input" placeholder="Nouveau Pseudo (ex: KinoisMalin)" maxlength="15"
-                       class="flex-grow p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 shadow-sm transition">
-                <button id="save-pseudo-btn"
-                        class="px-4 py-2 bg-indigo-600 text-white font-bold rounded-lg hover:bg-indigo-700 transition duration-300 shadow-md disabled:opacity-50" disabled>
-                    Sauver
-                </button>
-            </div>
-            <p id="message-area" class="mt-2 text-sm font-medium text-green-600"></p>
-        </div>
-
-        <!-- Chat Window -->
-        <div id="loading-state" class="text-center py-10">
-            <div class="animate-spin inline-block w-8 h-8 border-4 border-indigo-500 border-t-transparent rounded-full"></div>
-            <p class="mt-4 text-indigo-600 font-semibold">Chargement du salon de discussion...</p>
-        </div>
-
-        <div id="chat-window" class="flex-grow overflow-y-auto space-y-4 p-4 bg-gray-50 rounded-lg shadow-inner mb-4 border border-gray-200 hidden">
-            <!-- Messages will be inserted here -->
-        </div>
-
-        <!-- Message input area -->
-        <div id="message-input-area" class="flex space-x-3">
-            <input type="text" id="message-input" placeholder="Écrivez un message anonyme..." 
-                   class="flex-grow p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 shadow-sm transition" maxlength="300">
-            <button id="send-message-btn"
-                    class="px-6 py-3 bg-indigo-600 text-white font-bold rounded-lg hover:bg-indigo-700 transition duration-300 shadow-xl disabled:opacity-50 flex items-center justify-center">
-                Envoyer
-            </button>
-        </div>
+        <a href="#" class="lien-livreur" onclick="showPage('login')">Connexion Livreur</a>
     </div>
 
-    <!-- Modals and Overlays (Kept for first launch) -->
-    <div id="modal-container" class="hidden fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center p-4 z-50">
-        <div class="bg-white rounded-lg p-6 w-full max-w-sm shadow-xl">
-            <h3 class="text-xl font-bold text-gray-800 mb-4">Attention: Anonymat Éphémère</h3>
-            <p class="text-gray-600 mb-6">
-                Vous utilisez Blite sans compte. Votre identité **(<span id="modal-pseudo"></span>)** et vos messages sont liés uniquement à cet appareil.
-            </p>
-            <p class="text-sm text-red-500 font-semibold mb-6">
-                Si vous désinstallez l'application, vous perdrez votre identité Blite et votre historique.
-            </p>
-            <button id="modal-close-btn" class="w-full bg-indigo-600 text-white py-2 rounded-lg hover:bg-indigo-700 transition">
-                J'ai Compris
-            </button>
-        </div>
+    <div id="loginPage" class="page-login-livreur">
+        <h1>🔒 Connexion Livreur</h1>
+        <p>Accédez à vos commandes.</p>
+        
+        <form id="loginForm">
+            <div class="input-group">
+                <label for="identifiant">Identifiant</label>
+                <input type="text" id="identifiant" required>
+            </div>
+            
+            <div class="input-group">
+                <label for="password">Mot de passe</label>
+                <input type="password" id="password" required>
+            </div>
+            
+            <button type="submit" class="btn-commande">Se Connecter</button>
+            <a href="#" class="lien-livreur" onclick="showPage('client')">Retour Client</a>
+        </form>
     </div>
 
-    <script type="module">
-        // Mandatory Firebase Imports
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, doc, setDoc, getDoc, onSnapshot, collection, addDoc, query, getDocs } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
-        import { setLogLevel } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
-        
-        // setLogLevel('Debug'); // Uncomment for debugging
+    <div id="adminPage" class="container page-admin-orders">
+        <h1>⚙️ Gestion des Commandes</h1>
+        <p>Tableau de bord du Livreur/Admin.</p>
 
-        // --- Mandatory Global Variables ---
-        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-blite-app';
-        const firebaseConfig = JSON.parse(typeof __firebase_config !== 'undefined' ? __firebase_config : '{}');
-        const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+        <table class="table-orders">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Client / Tél.</th>
+                    <th>Adresse</th>
+                    <th>Détail Commande</th>
+                    <th>Total</th>
+                    <th>Statut</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody id="ordersTableBody">
+                </tbody>
+        </table>
+        <a href="#" class="lien-livreur" onclick="showPage('client')">Déconnexion / Client</a>
+    </div>
 
-        let app, db, auth;
-        let userId = null;
-        let isAuthReady = false;
-        let bliteID = null; // The Anonymous Identification Token (JIA)
-        let currentPseudo = '';
 
-        // Firestore Path Constants
-        const PUBLIC_CHAT_PATH = `artifacts/${appId}/public/data/kinshasa_chat`;
-        const USER_IDENTITY_PATH = `artifacts/${appId}/users/${userId}/blite_identity`;
+    <script>
+        // =================================================
+        // == LOGIQUE JAVASCRIPT                          ==
+        // =================================================
 
-        // --- Utilities ---
-        const $ = (id) => document.getElementById(id);
-        const uniqueId = () => crypto.randomUUID(); // Generates a UUID (JIA)
-        
-        /**
-         * Formats a Firestore timestamp into a readable time (HH:MM).
-         * @param {Date | Object} timestamp The Date object or a Firestore object { seconds, nanoseconds }
-         * @returns {string} The formatted time.
-         */
-        const formatTime = (timestamp) => {
-            let date;
-            if (timestamp && timestamp.toDate) {
-                date = timestamp.toDate();
-            } else if (timestamp instanceof Date) {
-                date = timestamp;
-            } else {
-                return 'Unknown';
+        document.addEventListener('DOMContentLoaded', () => {
+            const clientPage = document.getElementById('clientPage');
+            const loginPage = document.getElementById('loginPage');
+            const adminPage = document.getElementById('adminPage');
+            const commandeFormulaire = document.getElementById('commandeFormulaire');
+            const loginForm = document.getElementById('loginForm');
+            const totalElement = document.getElementById('totalPrix');
+            const quantiteInputs = document.querySelectorAll('.quantite-input');
+            const ordersTableBody = document.getElementById('ordersTableBody');
+
+            // Simuler une base de données de commandes
+            let commandesDB = [];
+
+            // Fonction pour changer de page
+            function showPage(page) {
+                clientPage.style.display = 'none';
+                loginPage.style.display = 'none';
+                adminPage.style.display = 'none';
+
+                if (page === 'client') {
+                    clientPage.style.display = 'block';
+                } else if (page === 'login') {
+                    loginPage.style.display = 'block';
+                } else if (page === 'admin') {
+                    adminPage.style.display = 'block';
+                    loadAdminOrders();
+                }
             }
-            return date.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
-        };
+
+            // Afficher la page client par défaut
+            showPage('client');
 
 
-        // --- Firebase Initialization ---
-        async function initializeBlite() {
-            try {
-                if (Object.keys(firebaseConfig).length === 0) {
-                    console.error("Error: Firebase configuration is empty.");
-                    $('loading-state').innerHTML = `<p class="text-red-600">Erreur: Configuration Firebase manquante.</p>`;
+            // -------------------------------------------------
+            // LOGIQUE CLIENT (CALCUL ET COMMANDE)
+            // -------------------------------------------------
+
+            function calculerTotal() {
+                let total = 0;
+                quantiteInputs.forEach(input => {
+                    const prixUnitaire = parseInt(input.getAttribute('data-prix'));
+                    const quantite = parseInt(input.value) || 0; // Utiliser 0 si NaN
+                    if (quantite > 0) {
+                        total += prixUnitaire * quantite;
+                    }
+                });
+                totalElement.textContent = total.toLocaleString('fr-FR');
+                return total;
+            }
+
+            // Écouter les changements dans les champs de quantité
+            quantiteInputs.forEach(input => {
+                input.addEventListener('input', calculerTotal);
+            });
+
+
+            // Gérer la soumission du formulaire de commande
+            commandeFormulaire.addEventListener('submit', (e) => {
+                e.preventDefault();
+                
+                const total = calculerTotal();
+
+                if (total === 0) {
+                    alert("Votre panier est vide. Veuillez sélectionner des produits.");
+                    return;
+                }
+                
+                // Récupérer les détails de la commande
+                let detailsCommande = [];
+                quantiteInputs.forEach(input => {
+                    const quantite = parseInt(input.value) || 0;
+                    if (quantite > 0) {
+                        // Chercher le nom du produit (logique simplifiée)
+                        const produitDiv = input.closest('.produit');
+                        let nomProduit = "Article Inconnu";
+                        if(produitDiv) {
+                             nomProduit = produitDiv.querySelector('.produit-info').textContent.trim();
+                        } else {
+                            // Pour les packs qui ne sont pas dans un div .produit
+                            const h3 = input.closest('h3');
+                            if(h3) nomProduit = h3.textContent.trim();
+                        }
+                        
+                        detailsCommande.push(`${quantite} x ${nomProduit.replace(/\(.+\)/, '').trim()}`);
+                    }
+                });
+
+                // Création de l'objet commande (Simule l'envoi au backend)
+                const nouvelleCommande = {
+                    id: commandesDB.length + 1,
+                    nomClient: document.getElementById('nomClient').value,
+                    adresse: document.getElementById('adresseClient').value,
+                    telephone: document.getElementById('telephoneClient').value,
+                    details: detailsCommande.join('; '),
+                    total: total,
+                    statut: 'Nouveau', // Statut initial
+                    livreur: 'Non Affecté'
+                };
+
+                commandesDB.push(nouvelleCommande);
+                alert(`Commande #${nouvelleCommande.id} de ${total.toLocaleString('fr-FR')}FC envoyée ! Votre commande sera traitée bientôt.`);
+
+                // Réinitialiser le formulaire
+                commandeFormulaire.reset();
+                calculerTotal();
+            });
+
+
+            // -------------------------------------------------
+            // LOGIQUE LIVREUR (LOGIN)
+            // -------------------------------------------------
+
+            loginForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                const identifiant = document.getElementById('identifiant').value;
+                const password = document.getElementById('password').value;
+
+                // LOGIQUE D'AUTHENTIFICATION SIMPLIFIÉE :
+                if (identifiant === 'livreur' && password === '1234') {
+                    alert("Connexion réussie ! Bienvenue Livreur.");
+                    showPage('admin'); // Afficher la page Admin/Livreur
+                } else if (identifiant === 'admin' && password === 'admin') {
+                     alert("Connexion réussie ! Bienvenue Admin.");
+                    showPage('admin'); // Afficher la page Admin
+                } else {
+                    alert("Identifiant ou mot de passe incorrect.");
+                }
+
+                loginForm.reset();
+            });
+
+
+            // -------------------------------------------------
+            // LOGIQUE ADMIN (ADMINORDERS)
+            // -------------------------------------------------
+
+            function loadAdminOrders() {
+                ordersTableBody.innerHTML = ''; // Vider le tableau
+                if (commandesDB.length === 0) {
+                    ordersTableBody.innerHTML = '<tr><td colspan="7" style="text-align:center;">Aucune commande en attente.</td></tr>';
                     return;
                 }
 
-                app = initializeApp(firebaseConfig);
-                db = getFirestore(app);
-                auth = getAuth(app);
+                commandesDB.forEach(cmd => {
+                    const row = ordersTableBody.insertRow();
 
-                // 1. Anonymous Authentication
-                await new Promise(resolve => {
-                    onAuthStateChanged(auth, async (user) => {
-                        if (user) {
-                            userId = user.uid;
-                        } else {
-                            if (initialAuthToken) {
-                                await signInWithCustomToken(auth, initialAuthToken).catch(err => {
-                                    console.error("Error signInWithCustomToken:", err);
-                                    return signInAnonymously(auth);
-                                });
-                            } else {
-                                await signInAnonymously(auth);
-                            }
-                            userId = auth.currentUser.uid;
-                        }
-                        isAuthReady = true;
-                        resolve();
-                    });
+                    // Déterminer la classe du badge de statut
+                    let statusClass = 'status-new';
+                    if (cmd.statut.includes('livraison')) statusClass = 'status-delivery';
+                    if (cmd.statut === 'Livré') statusClass = 'status-delivered';
+
+                    row.innerHTML = `
+                        <td>#${cmd.id}</td>
+                        <td>${cmd.nomClient}<br>Tél: ${cmd.telephone}</td>
+                        <td>${cmd.adresse}</td>
+                        <td>${cmd.details.replace(/; /g, '<br>')}</td>
+                        <td>${cmd.total.toLocaleString('fr-FR')} FC</td>
+                        <td><span class="status-badge ${statusClass}">${cmd.statut}</span></td>
+                        <td>
+                            <button onclick="changeStatus(${cmd.id}, 'En cours de livraison')">Affecter & Livrer</button>
+                            <button onclick="changeStatus(${cmd.id}, 'Livré')" style="background-color: #007bff; color:white; border: none; margin-top:5px;">Terminer</button>
+                        </td>
+                    `;
                 });
-
-                // 2. JIA (bliteID) Management
-                await manageBliteIdentity();
-                
-                // 3. Start Chat
-                loadMessages();
-
-            } catch (e) {
-                console.error("Critical error during Blite initialization:", e);
-                $('loading-state').innerHTML = `<p class="text-red-600">Erreur: Impossible de se connecter aux services.</p>`;
             }
-        }
 
-        // --- Anonymous Identification Token (JIA) Logic ---
-        async function manageBliteIdentity() {
-            if (!isAuthReady || !userId) return;
-
-            const userDocRef = doc(db, `artifacts/${appId}/users/${userId}/blite_identity`, 'jia');
-
-            try {
-                const docSnap = await getDoc(userDocRef);
-
-                if (docSnap.exists()) {
-                    // JIA exists: Identity retrieval
-                    bliteID = docSnap.data().jia;
-                    // The onSnapshot listener will handle pseudo retrieval
-                    setupSnapshotListener(userDocRef);
-                } else {
-                    // JIA does not exist: Creating a new Blite identity
-                    bliteID = uniqueId();
-                    const defaultPseudo = `KINOIS-${bliteID.substring(0, 4).toUpperCase()}`;
-
-                    const newIdentity = {
-                        jia: bliteID,
-                        pseudo: defaultPseudo,
-                        createdAt: new Date(),
-                        geo: "Kinshasa"
-                    };
-
-                    await setDoc(userDocRef, newIdentity);
-                    setupSnapshotListener(userDocRef);
-                    
-                    // Display warning modal for the first time
-                    $('modal-pseudo').textContent = defaultPseudo;
-                    $('modal-container').classList.remove('hidden');
+            // Rendre la fonction accessible globalement pour les boutons du tableau
+            window.changeStatus = (id, newStatus) => {
+                const cmd = commandesDB.find(c => c.id === id);
+                if (cmd) {
+                    cmd.statut = newStatus;
+                    alert(`Commande #${id} : Statut mis à jour vers "${newStatus}"`);
+                    loadAdminOrders(); // Recharger le tableau
                 }
-
-            } catch (error) {
-                console.error("Error managing JIA:", error);
-                // Display error in loading state if critical
-                $('loading-state').innerHTML = `<p class="text-red-600">Erreur lors du chargement de l'identité: ${error.message}</p>`;
-            }
-        }
-
-        // Real-Time Listener for Pseudo
-        function setupSnapshotListener(docRef) {
-            onSnapshot(docRef, (docSnap) => {
-                if (docSnap.exists()) {
-                    const data = docSnap.data();
-                    currentPseudo = data.pseudo;
-                    updatePseudoUI(currentPseudo);
-                } else {
-                    currentPseudo = 'Lost Anonymous';
-                    updatePseudoUI(currentPseudo);
-                }
-            }, (error) => {
-                console.error("Error onSnapshot (Identity):", error);
-            });
-        }
-        
-        // --- Public Chat Logic ---
-        
-        let allMessages = []; // Local cache for sorting
-
-        function loadMessages() {
-            if (!isAuthReady) return;
-
-            const q = query(collection(db, PUBLIC_CHAT_PATH));
-            
-            onSnapshot(q, (snapshot) => {
-                // Collect all messages into an array
-                allMessages = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-
-                // Local sort by timestamp (better than using Firestore orderBy without index)
-                allMessages.sort((a, b) => {
-                    const timeA = a.timestamp && a.timestamp.seconds ? a.timestamp.seconds : 0;
-                    const timeB = b.timestamp && b.timestamp.seconds ? b.timestamp.seconds : 0;
-                    return timeA - timeB;
-                });
-
-                renderMessages(allMessages);
-                
-                // Hide loading state and display chat
-                $('loading-state').classList.add('hidden');
-                $('chat-window').classList.remove('hidden');
-                
-            }, (error) => {
-                console.error("Error onSnapshot (Chat):", error);
-                $('chat-window').innerHTML = `<p class="text-red-500 text-center">Erreur de connexion au chat.</p>`;
-            });
-        }
-
-        /**
-         * Sends the message to the public channel.
-         */
-        async function sendMessage() {
-            const input = $('message-input');
-            const messageText = input.value.trim();
-            
-            if (!messageText || !bliteID || !currentPseudo) return;
-            
-            $('send-message-btn').disabled = true;
-            input.disabled = true;
-
-            const messageData = {
-                text: messageText,
-                pseudo: currentPseudo,
-                jia: bliteID, // The JIA for anonymous identification
-                timestamp: new Date(),
-                userId: userId, // The Firebase ID (for moderation/security)
             };
-
-            try {
-                // Adding the message to the public collection
-                await addDoc(collection(db, PUBLIC_CHAT_PATH), messageData);
-                input.value = ''; // Clear input after sending
-
-            } catch (e) {
-                console.error("Error sending message:", e);
-                // Use a temporary message area if sending fails
-                const tempMsg = $('message-area');
-                tempMsg.className = 'mt-2 text-sm font-medium text-red-600';
-                tempMsg.textContent = "Échec de l'envoi. Veuillez réessayer.";
-                setTimeout(() => tempMsg.textContent = '', 3000);
-            } finally {
-                $('send-message-btn').disabled = false;
-                input.disabled = false;
-                input.focus();
-            }
-        }
-
-        // --- User Interface (UI) Functions ---
-
-        function updatePseudoUI(pseudo) {
-            $('current-pseudo').textContent = pseudo;
-            $('pseudo-input').value = pseudo;
-        }
-
-        function renderMessages(messages) {
-            const chatWindow = $('chat-window');
-            // Save current scroll position if near the bottom
-            const shouldScroll = chatWindow.scrollHeight - chatWindow.scrollTop <= chatWindow.clientHeight + 50;
-
-            chatWindow.innerHTML = messages.map(msg => {
-                const isMine = msg.jia === bliteID; // Checks if the message comes from this device's JIA
-                
-                const alignment = isMine ? 'justify-end' : 'justify-start';
-                const bubbleColor = isMine ? 'bg-indigo-600 text-white' : 'bg-gray-200 text-gray-800';
-                const pseudoColor = isMine ? 'text-indigo-400' : 'text-indigo-600';
-
-                return `
-                    <div class="flex ${alignment}">
-                        <div class="max-w-xs sm:max-w-md">
-                            <div class="text-xs font-semibold ${pseudoColor} mb-0.5 ${isMine ? 'text-right' : 'text-left'}">
-                                ${msg.pseudo}
-                            </div>
-                            <div class="rounded-xl p-3 shadow-md ${bubbleColor}">
-                                <p class="text-sm break-words">${msg.text}</p>
-                                <span class="block text-right text-xs mt-1 ${isMine ? 'text-indigo-200' : 'text-gray-500'}">
-                                    ${formatTime(msg.timestamp)}
-                                </span>
-                            </div>
-                        </div>
-                    </div>
-                `;
-            }).join('');
-
-            // Automatic scroll to bottom if the user wasn't reading history
-            if (shouldScroll) {
-                chatWindow.scrollTop = chatWindow.scrollHeight;
-            }
-        }
-
-        // --- User Interaction Management ---
-
-        // Toggle the pseudo edit form display
-        $('toggle-pseudo-edit-btn').addEventListener('click', () => {
-            const form = $('pseudo-edit-form');
-            form.classList.toggle('hidden');
         });
-
-        // Pseudo Update
-        async function handleUpdatePseudo() {
-            const newPseudo = $('pseudo-input').value.trim();
-            const current = $('current-pseudo').textContent;
-
-            if (newPseudo === current) {
-                $('message-area').textContent = "Le pseudo est inchangé.";
-                return;
-            }
-            if (newPseudo.length < 3 || newPseudo.length > 15) {
-                $('message-area').className = 'mt-2 text-sm font-medium text-red-600';
-                $('message-area').textContent = "Le pseudo doit contenir entre 3 et 15 caractères.";
-                return;
-            }
-
-            try {
-                const userDocRef = doc(db, `artifacts/${appId}/users/${userId}/blite_identity`, 'jia');
-                await setDoc(userDocRef, { pseudo: newPseudo }, { merge: true });
-
-                $('message-area').className = 'mt-2 text-sm font-medium text-green-600';
-                $('message-area').textContent = "Pseudo mis à jour !";
-                $('save-pseudo-btn').disabled = true;
-
-            } catch (error) {
-                console.error("Error updating pseudo:", error);
-                $('message-area').className = 'mt-2 text-sm font-medium text-red-600';
-                $('message-area').textContent = "Erreur de sauvegarde.";
-            }
-        }
-
-        // Input and Send Button Management
-        $('pseudo-input').addEventListener('input', () => {
-            const current = $('current-pseudo').textContent;
-            const input = $('pseudo-input').value.trim();
-            $('save-pseudo-btn').disabled = (input === current || input.length < 3 || input.length > 15);
-            $('message-area').textContent = '';
-        });
-
-        $('save-pseudo-btn').addEventListener('click', handleUpdatePseudo);
-
-        $('send-message-btn').addEventListener('click', sendMessage);
-        
-        $('message-input').addEventListener('keydown', (e) => {
-            if (e.key === 'Enter') {
-                e.preventDefault();
-                sendMessage();
-            }
-        });
-        
-        $('modal-close-btn').addEventListener('click', () => {
-            $('modal-container').classList.add('hidden');
-        });
-
-        // Initialization
-        window.onload = initializeBlite;
-
     </script>
+
 </body>
 </html>
