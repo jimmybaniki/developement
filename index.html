@@ -3,218 +3,422 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bandal Food - Votre Livraison Rapide à Kinshasa</title>
-    <!-- Chargement de Tailwind CSS -->
+    <title>Blite: Chat Anonyme Kinshasa</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
-    <!-- Configuration Tailwind personnalisée -->
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        'primary': '#E3342F', // Un rouge vif, typique de la restauration rapide
-                        'secondary': '#F9A826', // Jaune/Orange pour l'énergie
-                        'dark-bg': '#1F2937', // Fond sombre pour le contraste
-                    },
-                    fontFamily: {
-                        sans: ['Inter', 'sans-serif'],
-                    },
-                }
-            }
-        }
-    </script>
     <style>
-        /* Style personnalisé pour les cartes d'articles du menu */
-        .food-card {
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f0f2f5;
         }
-        .food-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        /* Style to hide the scrollbar while keeping it functional */
+        #chat-window {
+            scrollbar-width: none; /* Firefox */
+            -ms-overflow-style: none;  /* IE and Edge */
         }
-        /* Style pour l'effet de bouton */
-        .btn-primary {
-            transition: background-color 0.3s ease;
-        }
-        .btn-primary:hover {
-            background-color: #CC2D29;
+        #chat-window::-webkit-scrollbar {
+            display: none; /* Chrome, Safari, Opera */
         }
     </style>
 </head>
-<body class="bg-gray-50 font-sans">
+<body class="p-4 sm:p-8 min-h-screen flex items-center justify-center">
 
-    <!-- En-tête (Header) -->
-    <header class="bg-white shadow-md sticky top-0 z-50">
-        <nav class="container mx-auto px-4 py-4 flex justify-between items-center">
-            <!-- Logo Bandal Food -->
-            <div class="text-3xl font-extrabold text-primary">
-                Bandal<span class="text-secondary">Food</span>
+    <div id="app" class="w-full max-w-2xl bg-white p-4 sm:p-6 rounded-xl shadow-2xl flex flex-col h-[90vh]">
+        <header class="text-center mb-4 border-b pb-2">
+            <h1 class="text-3xl font-bold text-gray-900">
+                <span class="text-indigo-600">Blite</span> | Le Salon Public <span class="text-sm font-normal text-gray-500">(Kinshasa)</span>
+            </h1>
+        </header>
+
+        <!-- User section (Pseudo and hidden JIA) -->
+        <div id="user-info" class="mb-4 bg-indigo-50 p-3 rounded-lg flex justify-between items-center text-sm">
+            <div class="flex items-center space-x-2">
+                <span class="font-semibold text-indigo-700">Votre Pseudo:</span>
+                <p id="current-pseudo" class="font-extrabold text-indigo-600 bg-indigo-100 px-2 py-0.5 rounded"></p>
             </div>
-            <!-- Menu de navigation (Masqué sur mobile) -->
-            <div class="hidden md:flex space-x-6 text-gray-700 font-semibold">
-                <a href="#menu" class="hover:text-primary transition duration-150">Menu</a>
-                <a href="#offres" class="hover:text-primary transition duration-150">Offres</a>
-                <a href="#apropos" class="hover:text-primary transition duration-150">À Propos</a>
-                <a href="#contact" class="hover:text-primary transition duration-150">Contact</a>
-            </div>
-            <!-- Bouton de commande (visible sur toutes les tailles) -->
-            <button class="btn-primary bg-primary text-white font-bold py-2 px-4 rounded-full shadow-lg hover:shadow-xl transition duration-300">
-                Commander Maintenant
+            <button id="toggle-pseudo-edit-btn" class="text-indigo-500 hover:text-indigo-700 transition duration-150 flex items-center">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-edit mr-1"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/></svg>
+                Éditer
             </button>
+        </div>
+        
+        <!-- Pseudo edit form (hidden by default) -->
+        <div id="pseudo-edit-form" class="hidden mb-4 p-4 border rounded-lg bg-yellow-50">
+            <h2 class="text-lg font-semibold text-gray-800 mb-2">Mettre à jour votre Pseudo</h2>
+            <div class="flex space-x-3">
+                <input type="text" id="pseudo-input" placeholder="Nouveau Pseudo (ex: KinoisMalin)" maxlength="15"
+                       class="flex-grow p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 shadow-sm transition">
+                <button id="save-pseudo-btn"
+                        class="px-4 py-2 bg-indigo-600 text-white font-bold rounded-lg hover:bg-indigo-700 transition duration-300 shadow-md disabled:opacity-50" disabled>
+                    Sauver
+                </button>
+            </div>
+            <p id="message-area" class="mt-2 text-sm font-medium text-green-600"></p>
+        </div>
 
-            <!-- Icône Hamburger pour mobile (non fonctionnel, à des fins de démonstration) -->
-            <button class="md:hidden text-gray-700 text-2xl">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" />
-                </svg>
+        <!-- Chat Window -->
+        <div id="loading-state" class="text-center py-10">
+            <div class="animate-spin inline-block w-8 h-8 border-4 border-indigo-500 border-t-transparent rounded-full"></div>
+            <p class="mt-4 text-indigo-600 font-semibold">Chargement du salon de discussion...</p>
+        </div>
+
+        <div id="chat-window" class="flex-grow overflow-y-auto space-y-4 p-4 bg-gray-50 rounded-lg shadow-inner mb-4 border border-gray-200 hidden">
+            <!-- Messages will be inserted here -->
+        </div>
+
+        <!-- Message input area -->
+        <div id="message-input-area" class="flex space-x-3">
+            <input type="text" id="message-input" placeholder="Écrivez un message anonyme..." 
+                   class="flex-grow p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 shadow-sm transition" maxlength="300">
+            <button id="send-message-btn"
+                    class="px-6 py-3 bg-indigo-600 text-white font-bold rounded-lg hover:bg-indigo-700 transition duration-300 shadow-xl disabled:opacity-50 flex items-center justify-center">
+                Envoyer
             </button>
-        </nav>
-    </header>
+        </div>
+    </div>
 
-    <main>
-        <!-- Section Hero (Accueil) -->
-        <section class="bg-primary text-white pt-16 pb-20 md:py-32">
-            <div class="container mx-auto px-4 flex flex-col md:flex-row items-center justify-between">
-                <!-- Texte d'accroche -->
-                <div class="md:w-1/2 mb-10 md:mb-0 text-center md:text-left">
-                    <h1 class="text-4xl sm:text-5xl lg:text-7xl font-extrabold mb-4 leading-tight">
-                        Le Goût Inégalé de Kinshasa, <span class="text-secondary">Livré Chaud !</span>
-                    </h1>
-                    <p class="text-xl mb-8 font-light opacity-90">
-                        Pizzas artisanales, plats locaux et desserts frais. Simplement meilleur.
-                    </p>
-                    <a href="#menu" class="btn-primary inline-block bg-secondary text-dark-bg font-extrabold py-4 px-8 rounded-full shadow-2xl uppercase tracking-wider text-lg transform hover:scale-105 transition duration-300">
-                        Voir Notre Menu Complet
-                    </a>
-                </div>
-                <!-- Image fictive de produit -->
-                <div class="md:w-1/2 flex justify-center">
-                    <img src="https://placehold.co/400x400/FFD700/000000?text=Pizza+Signature" alt="Pizza Bandal Food Signature" class="rounded-full shadow-2xl border-8 border-secondary/50 transform rotate-3 hover:rotate-0 transition duration-500 max-w-full h-auto">
-                </div>
-            </div>
-        </section>
+    <!-- Modals and Overlays (Kept for first launch) -->
+    <div id="modal-container" class="hidden fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center p-4 z-50">
+        <div class="bg-white rounded-lg p-6 w-full max-w-sm shadow-xl">
+            <h3 class="text-xl font-bold text-gray-800 mb-4">Attention: Anonymat Éphémère</h3>
+            <p class="text-gray-600 mb-6">
+                Vous utilisez Blite sans compte. Votre identité **(<span id="modal-pseudo"></span>)** et vos messages sont liés uniquement à cet appareil.
+            </p>
+            <p class="text-sm text-red-500 font-semibold mb-6">
+                Si vous désinstallez l'application, vous perdrez votre identité Blite et votre historique.
+            </p>
+            <button id="modal-close-btn" class="w-full bg-indigo-600 text-white py-2 rounded-lg hover:bg-indigo-700 transition">
+                J'ai Compris
+            </button>
+        </div>
+    </div>
 
-        <!-- Section des Offres Spéciales -->
-        <section id="offres" class="py-16 bg-white">
-            <div class="container mx-auto px-4 text-center">
-                <h2 class="text-4xl font-extrabold text-dark-bg mb-12 border-b-4 border-secondary inline-block pb-1">Offres Flash du Jour</h2>
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-                    <!-- Offre 1 -->
-                    <div class="food-card bg-white p-6 rounded-xl shadow-xl border border-primary/20">
-                        <span class="inline-block bg-primary text-white text-xs font-bold px-3 py-1 rounded-full mb-4">NOUVEAU</span>
-                        <img src="https://placehold.co/300x200/ff6b6b/ffffff?text=Combo+Famille" alt="Combo Famille" class="w-full h-48 object-cover rounded-lg mb-4">
-                        <h3 class="text-2xl font-bold text-dark-bg mb-2">Combo Famille Bandal</h3>
-                        <p class="text-gray-600 mb-4">2 Grandes Pizzas + 12 Ailes de Poulet + 4 Boissons. Économisez 30%!</p>
-                        <p class="text-3xl font-extrabold text-primary">35.000 CDF</p>
-                        <button class="mt-4 w-full bg-secondary text-dark-bg py-3 rounded-full font-bold hover:bg-secondary/80 transition duration-200">
-                            Ajouter au Panier
-                        </button>
-                    </div>
-                    <!-- Offre 2 -->
-                    <div class="food-card bg-white p-6 rounded-xl shadow-xl border border-primary/20">
-                        <span class="inline-block bg-secondary text-dark-bg text-xs font-bold px-3 py-1 rounded-full mb-4">POPULAIRE</span>
-                        <img src="https://placehold.co/300x200/38a169/ffffff?text=Burger+V%C3%A9g%C3%A9tal" alt="Burger Végétal" class="w-full h-48 object-cover rounded-lg mb-4">
-                        <h3 class="text-2xl font-bold text-dark-bg mb-2">Le Burger du Chef</h3>
-                        <p class="text-gray-600 mb-4">Un double steak de bœuf juteux, bacon, fromage suisse, sauce Bandal spéciale.</p>
-                        <p class="text-3xl font-extrabold text-primary">12.500 CDF</p>
-                        <button class="mt-4 w-full bg-secondary text-dark-bg py-3 rounded-full font-bold hover:bg-secondary/80 transition duration-200">
-                            Ajouter au Panier
-                        </button>
-                    </div>
-                    <!-- Offre 3 -->
-                    <div class="food-card bg-white p-6 rounded-xl shadow-xl border border-primary/20">
-                        <span class="inline-block bg-gray-400 text-white text-xs font-bold px-3 py-1 rounded-full mb-4">DESSERT</span>
-                        <img src="https://placehold.co/300x200/9b59b6/ffffff?text=Rouleaux+cannelle" alt="Rouleaux à la cannelle" class="w-full h-48 object-cover rounded-lg mb-4">
-                        <h3 class="text-2xl font-bold text-dark-bg mb-2">Rouleaux à la Cannelle</h3>
-                        <p class="text-gray-600 mb-4">Servis chauds avec notre glaçage à la vanille fait maison. Le rêve sucré.</p>
-                        <p class="text-3xl font-extrabold text-primary">5.000 CDF</p>
-                        <button class="mt-4 w-full bg-secondary text-dark-bg py-3 rounded-full font-bold hover:bg-secondary/80 transition duration-200">
-                            Ajouter au Panier
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </section>
+    <script type="module">
+        // Mandatory Firebase Imports
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, setDoc, getDoc, onSnapshot, collection, addDoc, query, getDocs } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { setLogLevel } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        
+        // setLogLevel('Debug'); // Uncomment for debugging
 
-        <!-- Section du Menu Détaillé -->
-        <section id="menu" class="py-16 bg-gray-100">
-            <div class="container mx-auto px-4">
-                <h2 class="text-4xl font-extrabold text-center text-dark-bg mb-12 border-b-4 border-primary inline-block pb-1 mx-auto">Notre Menu Complet</h2>
+        // --- Mandatory Global Variables ---
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-blite-app';
+        const firebaseConfig = JSON.parse(typeof __firebase_config !== 'undefined' ? __firebase_config : '{}');
+        const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
 
-                <!-- Catégorie: Pizzas Artisanales -->
-                <h3 class="text-3xl font-bold text-primary mb-6 mt-10">Pizzas Artisanales</h3>
-                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                    <!-- Article 1 -->
-                    <div class="food-card bg-white p-4 rounded-xl shadow-lg hover:shadow-2xl">
-                        <img src="https://placehold.co/300x200/FF0000/ffffff?text=Pizza+Pepperoni" alt="Pizza Pepperoni" class="w-full h-32 object-cover rounded-lg mb-3">
-                        <h4 class="font-bold text-lg text-dark-bg">Super Pepperoni</h4>
-                        <p class="text-sm text-gray-500 mb-2">Sauce tomate, double pepperoni, mozzarella fraîche.</p>
-                        <p class="font-extrabold text-xl text-primary">18.000 CDF</p>
-                    </div>
-                    <!-- Article 2 -->
-                    <div class="food-card bg-white p-4 rounded-xl shadow-lg hover:shadow-2xl">
-                        <img src="https://placehold.co/300x200/4CAF50/ffffff?text=Pizza+V%C3%A9g%C3%A9tarienne" alt="Pizza Végétarienne" class="w-full h-32 object-cover rounded-lg mb-3">
-                        <h4 class="font-bold text-lg text-dark-bg">Végétale Fraîcheur</h4>
-                        <p class="text-sm text-gray-500 mb-2">Légumes de saison, olives noires, pesto, feta.</p>
-                        <p class="font-extrabold text-xl text-primary">16.500 CDF</p>
-                    </div>
-                    <!-- Article 3 -->
-                    <div class="food-card bg-white p-4 rounded-xl shadow-lg hover:shadow-2xl">
-                        <img src="https://placehold.co/300x200/17A2B8/ffffff?text=Pizza+Fruits+de+Mer" alt="Pizza Fruits de Mer" class="w-full h-32 object-cover rounded-lg mb-3">
-                        <h4 class="font-bold text-lg text-dark-bg">Quatre Fromages</h4>
-                        <p class="text-sm text-gray-500 mb-2">Mozzarella, chèvre, gorgonzola et parmesan.</p>
-                        <p class="font-extrabold text-xl text-primary">19.000 CDF</p>
-                    </div>
-                    <!-- Article 4 -->
-                    <div class="food-card bg-white p-4 rounded-xl shadow-lg hover:shadow-2xl">
-                        <img src="https://placehold.co/300x200/FF5722/ffffff?text=Pizza+Poulet+BBQ" alt="Pizza Poulet BBQ" class="w-full h-32 object-cover rounded-lg mb-3">
-                        <h4 class="font-bold text-lg text-dark-bg">Poulet BBQ Piri-Piri</h4>
-                        <p class="text-sm text-gray-500 mb-2">Poulet grillé, sauce BBQ maison, un peu de piquant.</p>
-                        <p class="font-extrabold text-xl text-primary">20.000 CDF</p>
-                    </div>
-                </div>
+        let app, db, auth;
+        let userId = null;
+        let isAuthReady = false;
+        let bliteID = null; // The Anonymous Identification Token (JIA)
+        let currentPseudo = '';
 
-                <!-- Catégorie: Plats Locaux & Accompagnements -->
-                <h3 class="text-3xl font-bold text-primary mb-6 mt-10">Plats Locaux & Accompagnements</h3>
-                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                    <!-- Article 5 -->
-                    <div class="food-card bg-white p-4 rounded-xl shadow-lg hover:shadow-2xl">
-                        <img src="https://placehold.co/300x200/3498DB/ffffff?text=Fufu+et+Pondu" alt="Fufu et Pondu" class="w-full h-32 object-cover rounded-lg mb-3">
-                        <h4 class="font-bold text-lg text-dark-bg">Fufu et Pondu Express</h4>
-                        <p class="text-sm text-gray-500 mb-2">Feuilles de manioc mijotées. Un classique rapide.</p>
-                        <p class="font-extrabold text-xl text-primary">8.500 CDF</p>
-                    </div>
-                    <!-- Article 6 -->
-                    <div class="food-card bg-white p-4 rounded-xl shadow-lg hover:shadow-2xl">
-                        <img src="https://placehold.co/300x200/9C27B0/ffffff?text=Poulet+Mayo" alt="Poulet Mayo" class="w-full h-32 object-cover rounded-lg mb-3">
-                        <h4 class="font-bold text-lg text-dark-bg">Ntaba Grillée</h4>
-                        <p class="text-sm text-gray-500 mb-2">Viande de chèvre marinée grillée au feu de bois.</p>
-                        <p class="font-extrabold text-xl text-primary">15.000 CDF</p>
-                    </div>
-                    <!-- Article 7 -->
-                    <div class="food-card bg-white p-4 rounded-xl shadow-lg hover:shadow-2xl">
-                        <img src="https://placehold.co/300x200/FFC107/333333?text=Quartiers+de+pommes" alt="Quartiers de pommes de terre" class="w-full h-32 object-cover rounded-lg mb-3">
-                        <h4 class="font-bold text-lg text-dark-bg">Quartiers de Pommes de Terre</h4>
-                        <p class="text-sm text-gray-500 mb-2">Assaisonnés à l'ail et au paprika. Croustillants.</p>
-                        <p class="font-extrabold text-xl text-primary">5.500 CDF</p>
-                    </div>
-                    <!-- Article 8 -->
-                    <div class="food-card bg-white p-4 rounded-xl shadow-lg hover:shadow-2xl">
-                        <img src="https://placehold.co/300x200/607D8B/ffffff?text=Boissons" alt="Boissons" class="w-full h-32 object-cover rounded-lg mb-3">
-                        <h4 class="font-bold text-lg text-dark-bg">Sélection de Boissons</h4>
-                        <p class="text-sm text-gray-500 mb-2">Soda, Eau Minérale, et Jus de fruits locaux frais.</p>
-                        <p class="font-extrabold text-xl text-primary">Dès 2.000 CDF</p>
-                    </div>
-                </div>
-            </div>
-        </section>
+        // Firestore Path Constants
+        const PUBLIC_CHAT_PATH = `artifacts/${appId}/public/data/kinshasa_chat`;
+        const USER_IDENTITY_PATH = `artifacts/${appId}/users/${userId}/blite_identity`;
 
-        <!-- Section Call to Action: Application Mobile -->
-        <section class="bg-dark-bg text-white py-16">
-            <div class="container mx-auto px-4 text-center">
-                <h2 class="text-3xl font-extrabold mb-4">Téléchargez l'Application Bandal Food !</h2>
-                <p class="text-lg mb-8 opacity-80">Commandez plus rapidement, suivez votre livraison en temps réel et accédez à des offres exclusives.</p>
-                <div class="flex justify-center space-x-4">
-                    <a href="#" class="bg-gray-800 text-white font-bold py-3 px-6 rounded-lg flex items-center hover:bg-gray-700 transition duration-200">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" class="h-6 w-6 mr-2 fill-current"><path d="M194.2 322.4c-4.9 3.5-9.3 6.4-14.7 9.8 1.4-8.8 2-17.6 2-26.4 0-14.4-2.4-28.8-7.2-43.2-1.3-3.6-2.6-7.2-4.1-10.8-1.5-3.6-2.5-7.2-4.2-10.8-3.3-7.2-7.3-13.6-12.2-19.4-4.8-5.8-10.4-11.2-16.8-16.2-7.2-5.6-15.2-10.4-24-14.4-8.8-4-18.4-7.2-28.8-9.6-10.4-2.4-21.6-3.2-33.6-3.2-12 0-24 1-36 3.2-12 2.2-24 5.6-36 10.4-12 4.8-24 10.4-36 16.8-12 6.4-24 13.6-36 21.6-12 8.8-24 18.4-36 29.6-12 11.2-24 23.2-36 36-4.9 3.5-9.3 6.4-14.7 9.8 1.4-8.8 2-17.6 2-26.4 0-14.4-2.4-28.8-7.2-43.2-1.3-3.6-2.6-7.2-4.1-10.8-1.5-3.6-2.5-7.2-4.2-10.8-3.3-7.2-7.3-13.6-12.2-19.4-4.8-5.8-10.4-11.2-16.8-16.2-7.2-5.6-15.2-10.4-24-14.4-8.8-4-18.4-7.2-28.8-9.6-10.4-2.4-21.6-3.2-33.6-3.2-12 0-24 1-36 3.2-12 2.2-24 5.6-36 10.4-12 4.8-24 10.4-36 16.8-12 6.4-24 13.6-36 21.6-12 8.8-24 18.4-36 29.6-12 11.2-24 23.2-36 36-4.9 3.5-9.3 6.4-14.7 9.8 1.4-8.8 2-17.6 2-26.4 0-14.4-2.4-28.8-7.2-43.2-1.3-3.6-2.6-7.2-4.1-10.8-1.5-3.6-2.5-7.2-4.2-10.8-3.3-7.2-7.3-13.6-12.2-19.4-4.8-5.8-10.4-11.2-16.8-16.2-7.2-5.6-15.2-10.4-24-14.4-8.8-4-18.4-7.2-28.8-9.6-10.4-2.4-21.6-3.2-33.6-3.2-12 0-24 1-36 3.2-12 2.2-24 5.6-36 10.4-12 4.8-24 10.4-36 16.8-12 6.4-24 13.6-36 21.6-12 8.8-24 18.4-36 29.6-12 11.2-24 23.2-36 36-4.9 3.5-9.3 6.4-14.7 9.8 1.4-8.8 2-17.6 2-26.4 0-14.4-2.4-28.8-7.2-43.2-1.3-3.6-2.6-7.2-4.1-10.8-1.5-3.6-2.5-7.2-4.2-10.8-3.3-7.2-7.3-13.6-12.2-19.4-4.8-5.8-10.4-11.2-16.8-16.2-7.2-5.6-15.2-10.4-24-14.4-8.8-4-18.4-7.2-28.8-9.6-10.4-2.4-21.6-3.2-33.6-3.2-12 0-24 1-36 3.2-12 2.2-24 5.6-36 10.4-12 4.8-24 10.4-36 16.8-12 6.4-24 13.6-36 21.6-12 8.8-24 18.4-36 29.6-12 11.2-24 23.2-36 36-4.9 3.5-9.3 6.4-14.7 9.8 1.4-8.8 2-17.6 2-26.4 0-14.4-2.4-28.8-7.2-43.2-1.3-3.6-2.6-7.2-4.1-10.8-1.5-3.6-2.5-7.2-4.2-10.8-3.3-7.2-7.3-13.6-12.2-19.4-4.8-5.8-10.4-11.2-16.8-16.2-7.2-5.6-15.2-10.4-24-14.4-8.8-4-18.4-7.2-28.8-9.6-10.4-2.4-21.6-3.2-33.6-3.2-12 0-24 1-36 3.2-12 2.2-24 5.6-36 10.4-12 4.8-24 10.4-36 16.8-12 6.4-24 13.6-36 21.6-12 8.8-24 18.4-36 29.6-12 11.2-24 23.2-36 36-4.9 3.5-9.3 6.4-14.7 9.8 1.4-8.8 2-17.6 2-26.4 0-14.4-2.4-28.8-7.2-43.2-1.3-3.6-2.6-7.2-4.1-10.8-1.5-3.6-2.5-7.2-4.2-10.8-3.3-7.2-7.3-13.6-12.2-19.4-4.8-5.8-10.4-11.2-16.8-16.2-7.2-5.6-15.2-10.4-24-14.4-8.8-4-18.4-7.2-28.8-9.6-10.4-2.4-21.6-3.2-33.6-3.2-12 0-24 1-36 3.2-12 2.2-24 5.6-36 10.4-12 4.8-24 10.4-36 16.8-12 6.4-24 13.6-36 21.6-12 8.8-24 18.4-36 29.6-12 11.2-24 23.2-36 36-4.9 3.5-9.3 6.4-14.7 9.8 1.4-8.8 2-17.6 2-26.4 0-14.4-2.4-28.8-7.2-43.2-1.3-3.6-2.6-7.2-4.1-10.8-1.5-3.6-2.5-7.2-4.2-10.8-3.3-7.2-7.3-13.6-12.2-19.4-4.8-5.8-10.4-11.2-16.8-16.2-7.2-5.6-15.2-10.4-24-14.4-8.8-4-18.4-7.2-28.8-9.6-10.4-2.4-21.6-3.2-33.6-3.2-12 0-24 1-36 3.2-12 2.2-24 5.6-36 10.4-12 4.8-24 10.4-36 16.8-12 6.4-24 13.6-36 21.6-12 8.8-24 18.4-36 29.6-12 11.2-24 23.2-36 36-4.9 3.5-9.3 6.4-14.7 9.8 1.4-8.8 2-17.6 2-26.4 0-14.4-2.4-28.8-7.2-43.2-1.3-3.6-2.6-7.2-4.1-10.8-1.5-3.6-2.5-7.2-4.2-10.8-3.3-7.2-7.3-13.6-12.2-19.4-4.8-5.8-10.4-11.2-16.8-16.2-7.2-5.6-15.2-10.4-24-14.4-8.8-4-18.4-7.2-28.8-9.6-10.4-2.4-21.6-3.2-33.6-3.2-12 0-24 1-36 3.2-12 2.2-24 5.6-36 10.4-12 4.8-24 10.4-36 16.8-12 6.4-24 13.6-36 21.6-12 8.8-24 18.4-36 29.6-12 11.2-24 23.2-36 36-4.9 3.5-9.3 6.4-14.7 9.8 1.4-8.8 2-17.6 2-26.4 0-14.4-2.4-28.8-7.2-43.2-1.3-3.6-2.6-7.2-4.1-10.8-1.5-3.6-2.5-7.2-4.2-10.8-3.3-7.2-7.3-13.6-12.2-19.4-4.8-5.8-10.4-11.2-16.8-16.2-7.2-5.6-15.2-10.4-24-14.4-8.8-4-18.4-7.2-28.8-9.6-10.4-2.4-21.6-3.2-33.6-3.2-12 0-24 1-36 3.2-12 2.2-24 5.6-36 10.4-12 4.8-24 10.4-36 16.8-12 6.4-24 13.6-36 21.6-12 8.8-24 18.4-36 29.6-12 11.2-24 23.2-36 36-4.9 3.5-9.3 6.4-14.7 9.8 1.4-8.8 2-17.6 2-26.4 0-14.4-2.4-28.8-7.2-43.2-1.3-3.6-2.6-7.2-4.1-10.8-1.5-3.6-2.5-7.2-4.2-10.8-3.3-7.2-7.3-13.6-12.2-19.4-4.8-5.8-10.4-11.2-16.8-16.2-7.2-5.6-15.2-10.4-24-14.4-8.8-4-18.4-7.2-28.8-9.6-10.4-2.4-21.6-3.2-33.6-3.2-12 0-24 1-36 3.2-12 2.2-24 5.6-36 10.4-12 4.8-24 10.4-36 16.8-12 6.4-24 13.6-36 21.6-12 8.8-24 18.4-36 29.6-12 11.2-24 23.2-36 36-4.9 3.5-9.3 6.4-14.7 9.8 1.4-8.8 2-17.6 2-26.4 0-14.4-2.4-28.8-7.2-43.2-1.3-3.6-2.6-7.2-4.1-10.8-1.5-3.6-2.5-7.2-4.2-10.8-3.3-7.2-7.3-13.6-12.2-19.4-4.8-5.8-10.4-11.2-16.8-16.2-7.2-5.6-15.2-10.4-24-14.4-8.8-4-18.4-7.2-28.8-9.6-10.4-2.4-21.6-3.2-33.6-3.2-12 0-24 1-36 3.2-12 2.2-24 5.6-36 10.4-12 4.8-24 10.4-36 16.8-12 6.4-24 13.6-36 21.6-12 8.8-24 18.4-36 29.6-12 11.2-24 23.2-36 36-4.9 3.5-9.3 6.4-14.7 9.8 1.4-8.8 2-17.6 2-26.4 0-14.4-2.4-28.8-7.2-43.2-1.3-3.6-2.6-7.2-4.1-10.8-1.5-3.6-2.5-7.2-4.2-10.8-3.3-7.2-7.3-13.6-12.2-19.4-4.8-5.8-10.4-11.2-16.8-16.2-7.2-5.6-15.2-10.4-24-14.4-8.8-4-18.4-7.2-28.8-9.6-10.4-2.4-21.6-3.2-33.6-3.2-12 0-24 1-36 3.2-12 2.2-24 5.6-36 10.4-12 4.8-24 10.4-36 16.8-12 6.4-24 13.6-36 21.6-12 8.8-24 18.4-36 29.6-12 11.2-24 23.2-36 36-4.9 3.5-9.3 6.4-14.7 9.8 1.4-8.8 2-17.6 2-26.4 0-14.4-2.4-28.8-7.2-43.2-1.3-3.6-2.6-7.2-4.1-10.8-1.5-3.6-2.5-7.2-4.2-10.8-3.3-7.2-7.3-13.6-12.2-19.4-4.8-5.8-10.4-11.2-16.8-16.2-7.2-5.6-15.2-10.4-24-14.4-8.8-4-18.4-7.2-28.8-9.6-10.4-2.4-21.6-3.2-33.6-3.2-12 0-24 1-36 3.2-12 2.2-24 5.6-36 10.4-12 4.8-24 10.4-36 16.8-12 6.4-24 13.6-36 21.6-12 8.8-24 18.4-36 29.6-12 11.2-24 23.2-36 36-4.9 3.5-9.3 6.4-14.7 9.8 1.4-8.8 2-17.6 2-26.4 0-14.4-2.4-28.8-7.2-43.2-1.3-3.6-2.6-7.2-4.1-10.8-1.5-3.6-2.5-7.2-4.2-10.8-3.3-7.2-7.3-13.6-12.2-19.4-4.8-5.8-10.4-11.2-16.8-16.2-7.2-5.6-15.2-10.4-24-14.4-8.8-4-18.4-7.2-28.8-9.6-10.4-2.4-21.6-3.2-33.6-3.2-12 0-24 1-36 3.2-12 2.2-24 5.6-36 10.4-12 4.8-24 10.4-36 16.8-12 6.4-24 13.6-36 21.6-12 8.8-24 18.4-36 29.6-12 11.2-24 23.2-36 36-4.9 3.5-9.3 6.4-14.7 9.8 1.4-8.8 2-17.6 2-26.4 0-14.4-2.4-28.8-7.2-43.2-1.3-3.6-2.6-7.2-4.1-10.8-1.5-3.6-2.5-7.2-4.2-10.8-3.3-7.2-7.3-13.6-12.2-19.4-4.8-5.8-10.4-11.2-16.8-16.2-7.2-5.6-15.2-10.4-24-14.4-8.8-4-18.4-7.2-28.8-9.6-10.4-2.4-21.6-3.2-33.6-3.2-12 0-24 1-36 3.2-12 2.2-24 5.6-36 10.4-12 4.8-24 10.4-36 16.8-12 6.4-24 13.6-36 21.6-12 8.8-24 18.4-36 29.6-12 11.2-24 23.2-36 36-4.9 3.5-9.3 6.4-14.7 9.8 1.4-8.8 2-17.6 2-26.4 0-14.4-2.4-28.8-7.2-43.2-1.3-3.6-2.6-7.2-4.1-10.8-1.5-3.6-2.5-7.2-4.2-10.8-3.3-7.2-7.3-13.6-12.2-19.4-4.8-5.8-10.4-11.2-16.8-16.2-7.2-5.6-15.2-10.4-24-14.4-8.8-4-18.4-7.2-28.8-9.6-10.4-2.4-21.6-3.2-33.6-3.2-12 0-24 1-36 3.2-12 2.2-24 5.6-36 10.4-12 4.8-24 10.4-36 16.8-12 6.4-24 13.6-36 21.6-12 8.8-24 18.4-36 29.6-12 11.2-24 23.2-36 36-4.9 3.5-9.3 6.4-14.7 9.8 1.4-8.8 2-17.6 2-26.4 0-14.4-2.4-28.8-7.2-43.2-1.3-3.6-2.6-7.2-4.1-10.8-1.5-3.6-2.5-7.2-4.2-10.8-3.3-7.2-7.3-13.6-12.2-19.4-4.8-5.8-10.4-11.2-16.8-16.2-7.2-5.6-15.2-10.4-24-14.4-8.8-4-18.4-7.2-28.8-9.6-10.4-2.4-21.6-3.2-33.6-3.2-12 0-24 1-36 3.2-12 2.2-24 5.6-36 10.4-12 4.8-24 10.4-36 16.8-12 6.4-24 13.6-36 21.6-12 8.8-24 18.4-36 29.6-12 11.2-24 23.2-36 36-4.9 3.5-9.3 6.4-14.7 9.8 1.4-8.8 2-17.6 2-26.4 0-14.4-2.4-28.8-7.2-43.2-1.3-3.6-2.6-7.2-4.1-10.8-1.5-3.6-2.5-7.2-4.2-10.8-3.3-7.2-7.3-13.6-12.2-19.4-4.8-5.8-10.4-11.2-16.8-16.2-7.2-5.6-15.2-10.4-24-14.4-8.8-4-18.4-7.2-28.8-9.6-10.4-2.4-21.6-3.2-33.6-3.2-12 0-24 1-36 3.2-12 2.2-24 5.6-36 10.4-12 4.8-24 10.4-36 16.8-12 6.4-24 13.6-36 21.6-12 8.8-24 18.4-36 29.6-12 11.2-24 23.2-36 36-4.9 3.5-9.3 6.4-14.7 9.8 1.4-8.8 2-17.6 2-26.4 0-14.4-2.4-28.8-7.2-43.2-1.3-3.6-2.6-7.2-4.1-10.8-1.5-3.6-2.5-7.2-4.2-10.8-3.3-7.2-7.3-13.6-12.2-19.4-4.8-5.8-10.4-11.2-16.8-16.2-7.2-5.6-15.2-10.4-24-14.4-8.8-4-18.4-7.2-28.8-9.6-10.4-2.4-21.6-3.2-33.6-3.2-12 0-24 1-36 3.2-12 2.2-24 5.6-36 10.4-12 4.8-24 10.4-36 16.8-12 6.4-24 13.6-36 21.6-12 8.8-24 18.4-36 29.6-12 11.2-24 23.2-36 36-4.9 3.5-9.3 6.4-14.7 9.8 1.4-8.8 2-17.6 2-26.4 0-14.4-2.4-28.8-7.2-43.2-1.3-3.6-2.6-7.2-4.1-10.8-1.5-3.6-2.5-7.2-4.2-10.8-3.3-7.2-7.3-13.6-12.2-19.4-4.8-5.8-10.4-11.2-16.8-16.2-7.2-5.6-15.2-10.4-24-14.4-8.8-4-18.4-7.2-28.8-9.6-10.4-2.4-21.6-3.2-33.6-3.2-12 0-24 1-36 3.2-12 2.2-24 5.6-36 10.4-12 4.8-24 10.4-36 16.8-12 6.4-24 13.6-36 21.6-12 8.8-24 18.4-36 29.6-12 11.2-24 23.2-36 36-4.9 3.5-9.3 6.4-14.7 9.8 1.4-8.8 2-17.6 2-26.4 0-14.4-2.4-28.8-7.2-43.2-1.3-3.6-2.6-7.2-4.1-10.8-1.5-3.6-2.5-7.2-4.2-10.8-3.3-7.2-7.3-13.6-12.2-19.4-4.8-5.8-10.4-11.2-16.8-16.2-7.2-5.6-15.2-10.4-24-14.4-8.8-4-18.4-7.2-28.8-9.6-10.4-2.4-21.6-3.2-33.6-3.2-12 0-24 1-36 3.2-12 2.2-24 5.6-36 10.4-12 4.8-24 10.4-36 16.8-12 6.4-24 13.6-36 21.6-12 8.8-24 18.4-36 29.6-12 11.2-24 23.2-36 36-4.9 3.5-9.3 6.4-14.7 9.8 1.4-8.8 2-17.6 2-26.4 0-14.4-2.4-28.8-7.2-43.2-1.3-3.6-2.6-7.2-4.1-10.8-1.5-3.6-2.5-7.2-4.2-10.8-3.3-7.2-7.3-13.6-12.2-19.4-4.8-5.8-10.4-11.2-16.8-16.2-7.2-5.6-15.2-10.4-24-14.4-8.8-4-18.4-7.2-28.8-9.6-10.4-2.4-21.6-3.2-33.6-3.2-12 0-24 1-36 3.2-12 2.2-24 5.6-36 10.4-12 4.8-24 10.4-36 16.8-12 6.4-24 13.6-36 21.6-12 8.8-24 18.4-36 29.6-12 11.2-24 23.2-36 36-4.9 3.5-9.3 6.4-14.7 9.8 1.4-8.8 2-17.6 2-26.4 0-14.4-2.4-28.8-7.2-43.2-1.3-3.6-2.6-7.2-4.1-10.8-1.5-3.6-2.5-7.2-4.2-10.8-3.3-7.2-7.3-13.6-12.2-19.4-4.8-5.8-10.4-11.2-16.8-16.2-7.2-5.6-15.2-10.4-24-14.4-8.8-4-18.4-7.2-28.8-9.6-10.4-2.4-21.6-3.2-33.6-3.2-12 0-24 1-36 3.2-12 2.2-24 5.6-36 10.4-12 4.8-24 10.4-36 16.8-12 6.4-24 13.6-36 21.6-12 8.8-24 18.4-36 29.6-12 11.2-24 23.2-36 36-4.9 3.5-9.3 6.4-14.7 9.8 1.4-8.8 2-17.6 2-26.4 0-14.4-2.4-28.8-7.2-43.2-1.3-3.6-2.6-7.2-4.1-10.8-1.5-3.6-2.5-7.2-4.2-10.8-3.3-7.2-7.3-13.6-12.2-19.4-4.8-5.8-10.4-11.2-16.8-16.2-7.2-5.6-15.2-10.4-24-14.4-8.8-4-18.4-7.2-28.8-9.6-10.4-2.4-21.6-3.2-33.6-3.2-12 0-24 1-36 3.2-12 2.2-24 5.6-36 10.4-12 4.8-24 10.4-36 16.8-12 6.4-24 13.6-36 21.6-12 8.8-24 18.4-36 29.6-12 11.2-24 23.2-36 36-4.9 3.5-9.3 6.4-14.7 9.8 1.4-8.8 2-17.6 2-26.4 0-14.4-2.4-28.8-7.2-43.2-1.3-3.6-2.6-7.2-4.1-10.8-1.5-3.6-2.5-7.2-4.2-10.8-3.3-7.2-7.3-13.6-12.2-19.4-4.8-5.8-10.4-11.2-16.8-16.2-7.2-5.6-15.2-10.4-24-14.4-8.8-4-18.4-7.2-28.8-9.6-10.4-2.4-21.6-3.2-33.6-3.2-12 0-24 1-36 3.2-12 2.2-24 5.6-36 10.4-12 4.8-24 10.4-36 16.8-12 6.4-24 13.6-36 21.6-12 8.8-24 18.4-36 29.6-12 11.2-24 23.2-36 36-4.9 3.5-9.3 6.4-14.7 9.8 1.4-8.8 2-17.6 2-26.4 0-14.4-2.4-28.8-7.2-43.2-1.3-3.6-2.6-7.2-4.1-10.8-1.5-3.6-2.5-7.2-4.2-10.8-3.3-7.2-7.3-13.6-12.2-19.4-4.8-5.8-10.4-11.2-16.8-16.2-7.2-5.6-15.2-10.4-24-14.4-8.8-4-18.4-7.2-28.8-9.6-10.4-2.4-21.6-3.2-33.6-3.2-12 0-24 1-36 3.2-12 2.2-24 5.6-36 10.4-12 4.8-24 10.4-36 16.8-12 6.4-24 13.6-36 21.6-12 8.8-24 18.4-36 29.6-12 11.2-24 23.2-36 36-4.9 3.5-9.3 6.4-14.7 9.8 1.4-8.8 2-17.6 2-26.4 0-14.4-2.4-28.8-7.2-43.2-1.3-3.6-2.6-7.2-4.1-10.8-1.5-3.6-2.5-7.2-4.2-10.8-3.3-7.2-7.3-13.6-12.2-19.4-4.8-5.8-10.4-11.2-16.8-16.2-7.2-5.6-15.2-10.4-24-14.4-8.8-4-18.4-7.2-28.8-9.6-10.4-2.4-21.6-3.2-33.6-3.2-12 0-24 1-36 3.2-12 2.2-24 5.6-36 10.4-12 4.8-24 10.4-36 16.8-12 6.4-24 13.6-36 21.6-12 8.8-24 18.4-36 29.6-12 11.2-24 23.2-36 36-4.9 3.5-9.3 6.4-14.7 9.8 1.4-8.8 2-17.6 2-26.4 0-14.4-2.4-28.8-7.2-43.2-1.3-3.6-2.6-7.2-4.1-10.8-1.5-3.6-2.5-7.2-4.2-10.8-3.3-7.2-7.3-13.6-12.2-19.4-4.8-5.8-10.4-11.2-16.8-16.2-7.2-5.6-15.2-10.4-24-14.4-8.8-4-18.4-7.2-28.8-9.6-10.4-2.4-21.6-3.2-33.6-3.2-12 0-24 1-36 3.2-12 2.2-24 5.6-36 10.4-12 4.8-24 10.4-36 16.8-12 6.4-24 13.6-36 21.6-12 8.8-24 18.4-36 29.6-12 11.2-24 23.2-36 36-4.9 3.5-9.3 6.4-14.7 9.8 1.4-8.8 2-17.6 2-26.4 0-14.4-2.4-28.8-7.2-43.2-1.3-3.6-2.6-7.2-4.1-10.8-1.5-3.6-2.5-7.2-4.2-10.8-3.3-7.2-7.3-13.6-12.2-19.4-4.8-5.8-10.4-11.2-16.8-16.2-7.2-5.6-15.2-10.4-24-14.4-8.8-4-18.4-7.2-28.8-9.6-10.4-2.4-21.6-3.2-33.6-3.2-12 0-24 1-36 3.2-12 2.2-24 5.6-36 10.4-12 4.8-24 10.4-36 16.8-12 6.4-24 13.6-36 21.6-12 8.8-24 18.4-36 29.6-12 11.2-24 23.2-36 36-4.9 3.5-9.3 6.4-14.7 9.8 1.4-8.8 2-17.6 2-26.4 0-14.4-2.4-28.8-7.2-43.2-1.3-3.6-2.6-7.2-4.1-10.8-1.5-3.6-2.5-7.2-4.2-10.8-3.3-7.2-7.3-13.6-12.2-19.4-4.8-5.8-10.4-11.2-16.8-16.2-7.2-5.6-15.2-10.4-24-14.4-8.8-4-18.4-7.2-28.8-9.6-10.4-2.4-21.6-3.2-33.6-3.2-12 0-24 1-36 3.2-12 2.2-24 5.6-36 10.4-12 4.8-24 10.4-36 16.8-12 6.4-24 13.6-36 21.6-12 8.8-24 18.4-36 29.6-12 11.2-24 23.2-36 36-4.9 3.5-9.3 6.4-14.7 9.8 1.4-8.8 2-17.6 2-26.4 0-14.4-2.4-28.8-7.2-43.2-1.3-3.6-2.6-7.2-4.1-10.8-1.5-3.6-2.5-7.2-4.2-10.8-3.3-7.2-7.3-13.6-12.2-19.4-4.8-5.8-10.4-11.2-16.8-16.2-7.2-5.6-15.2-10.4-24-14.4-8.8-4-18.4-7.2-28.8-9.6-10.4-2.4-21.6-3.2-33.6-3.2-12 0-24 1-36 3.2-12 2.2-24 5.6-36 10.4-12 4.8-24 10.4-36 16.8-12 6.4-24 13.6-36 21.6-12 8.8-24 18.4-36 29.6-12 11.2-24 23.2-36 36-4.9 3.5-9.3 6.4-14.7 9.8 1.4-8.8 2-17.6 2-26.4 0-14.4-2.4-28.8-7.2-43.2-1.3-3.6-2.6-7.2-4.1-10.8-1.5-3.6-2.5-7.2-4.2-10.8-3.3-7.2-7.3-13.6-12.2-19.4-4.8-5.8-10.4-11.2-16.8-16.2-7.2-5.6-15.2-10.4-24-14.4-8.8-4-18.4-7.2-28.8-9.6-10.4-2.4-21.6-3.2-33.6-3.2-12 0-24 1-36 3.2-12 2.2-24 5.6-36 10.4-12 4.8-24 10.4-36 16.8-12 6.4-24 13.6-36 21.6-12 8.8-24 18.4-36 29.6-12 11.2-24 23.2-36 36-4.9 3.5-9.3 6.4-14.7 9.8 1.4-8.8 2-17.6 2-26.4 0-14.4-2.4-28.8-7.2-43.2-1.3-3.6-2.6-7.2-4.1-10.8-1.5-3.6-2.5-7.2-4.2-10.8-3.3-7.2-7.3-13.6-12.2-19.4-4.8-5.8-10.4-11.2-16.8-16.2-7.2-5.6-15.2-10.4-24-14.4-8.8-4-18.4-7.2-28.8-9.6-10.4-2.4-21.6-3.2-33.6-3.2-12 0-24 1-36 3.2-12 2.2-24 5.6-36 10.4-12 4.8-24 10.4-36 16.8-12 6.4-24 13.6-36 21.6-12 8.8-24 18.4-36 29.6-12 11.2-24 23.2-36 36-4.9 3.5-9.3 6.4-14.7 9.8 1.4-8.8 2-17.6 2-26.4 0-14.4-2.4-28.8-7.2-43.2-1.3-3.6-2.6-7.2-4.1-10.8-1.5-3.6-2.5-7.2-4.2-10.8-3.3-7.2-7.3-13.6-12.2-19.4-4.8-5.8-10.4-11.2-16.8-16.2-7.2-5.6-15.2-10.4-24-14.4-8.8-4-18.4-7.2-28.8-9.6-10.4-2.4-21.6-3.2-33.6-3.2-12 0-24 1-36 3.2-12 2.2-24 5.6-36 10.4-12 4.8-24 10.4-36 16.8-12 6.4-24 13.6-36 21.6-12 8.8-24 18.4-36 29.6-12 11.2-24 23.2-36 36-4.9 3.5-9.3 6.4-14.7 9.8 1.4-8.8 2-17.6 2-26.4 0-14.4-2.4-28.8-7.2-43.2-1.3-3.6-2.6-7.2-4.1-10.8-1.5-3.6-2.5-7.2-4.2-10.8-3.3-7.2-7.3-13.6-12.2-19.4-4.8-5.8-10.4-11.2-16.8-16.2-7.2-5.6-15.2-10.4-24-14.4-8.8-4-18.4-7.2-28.8-9.6-10.4-2.4-21.6-3.2-33.6-3.2-12 0-24 1-36 3.2-12 2.2-24 5.6-36 10.4-12 4.8-24 10.4-36 16.8-12 6.4-24 13.6-36 21.6-12 8.8-24 18.4-36 29.6-12 11.2-24 23.2-36 36-4.9 3.5-9.3 6.4-14.7 9.8 1.4-8.8 2-17.6 2-26.4 0-14.4-2.4-28.8-7.2-43.2-1.3-3.6-2.6-7.2-4.1-10.8-1.5-3.6-2.5-7.2-4.2-10.8-3.3-7.2-7.3-13.6-12.2-19.4-4.8-5.8-10.4-11.2-16.8-16.2-7.2-5.6-15.2-10.4-24-14.4-8.8-4-18.4-7.2-28.8-9.6-10.4-2.4-21.6-3.2-33.6-3.2-12 0-24 1-36 3.2-12 2.2-24 5.6-36 10.4-12 4.8-24 10.4-36 16.8-12 6.4-24 13.6-36 21.6-12 8.8-24 18.4-36 29.6-12 11.2-24 23.2-36 36-4.9 3.5-9.3 6.4-14.7 9.8 1.4-8.8 2-17.6 2-26.4 0-14.4-2.4-28.8-7.2-43.2-1.3-3.6-2.6-7.2-4.1-10.8-1.5-3.6-2.5-7.2-4.2-10.8-3.3-7.2-7.3-13.6-12.2-19.4-4.8-5.8-10.4-11.2-16.8-16.2-7.2-5.6-15.2-10.4-24-14.4-8.8-4-18.4-7.2-28.8-9.6-10.4-2.4-21.6-3.2-33.6-3.2-12 0-24 1-36 3.2-12 2.2-24 5.6-36 10.4-12 4.8-24 10.4-36 16.8-12 6.4-24 13.6-36 21.6-12 8.8-24 18.4-36 29.6-12 11.2-24 23.2-36 36-4.9 3.5-9.3 6.4-14.7 9.8 1.4-8.8 2-17.6 2-26.4 0-14.4-2.4-28.8-7.2-43.2-1.3-3.6-2.6-7.2-4.1-10.8-1.5-3.6-2.5-7.2-4.2-10.8-3.3-7.2-7.3-13.6-12.2-19.4-4.8-5.8-10.4-11.2-16.8-16.2-7.2-5.6-15.2-10.4-24-14.4-8.8-4-18.4-7.2-28.8-9.6-10.4-2.4-21.6-3.2-33.6-3.2-12 0-24 1-36 3.2-12 2.2-24 5.6-36 10.4-12 4.8-24 10.4-36 16.8-12 6.4-24 13.6-36 21.6-12 8.8-24 18.4-36 29.6-12 11.2-24 23.2-36 36-4.9 3.5-9.3 6.4-14.7 9.8 1.4-8.8 2-17.6 2-26.4 0-14.4-2.4-28.8-7.2-43.2-1.3-3.6-2.6-7.2-4.1-10.8-1.5-3.6-2.5-7.2-4.2-10.8-3.3-7.2-7.3-13.6-12.2-19.4-4.8-5.8-10.4-11.2-16.8-16.2-7.2-5.6-15.2-10.4-24-14.4-8.8-4-18.4-7.2-28.8-9.6-10.4-2.4-21.6-3.2-33.6-3.2-12 0-24 1-36 3.2-12 2.2-24 5.6-36 10.4-12 4.8-24 10.4-36 16.8-12 6.4-24 13.6-36 21.6-12 8.8-24 18.4-36 29.6-12 11.2-24 23.2-36 36-4.9 3.5-9.3 6.4-14.7 9.8 1.4-8.8 2-17.6 2-26.4 0-14.4-2.4-28.8-7.2-43.2-1.3-3.6-2.6-7.2-4.1-10.8-1.5-3.6-2.5-7.2-4.2-10.8-3.3-7.2-7.3-13.6-12.2-19.4-4.8-5.8-10.4-11.2-16.8-16.2-7.2-5.6-15.2-10.4-24-14.4-8.8-4-18.4-7.2-28.8-9.6-10.4-2.4-21.6-3.2-33.6-3.2-12 0-24 1-36 3.2-12 2.2-24 5.6-36 10.4-12 4.8-24 10.4-36 16.8-12 6.4-24 13.6-36 21.6-12 8.8-24 18.4-36 29.6-12 11.2-24 23.2-36 36-4.9 3.5-9.3 6.4-14.7 9.8 1.4-8.8 2-17.6 2-26.4 0-14.4-2.4-28.8-7.2-43.2-1.3-3.6-2.6-7.2-4.1-10.8-1.5-3.6-2.5-7.2-4.2-10.8-3.3-7.2-7.3-13.6-12.2-19.4-4.8-5.8-10.4-11.2-16.8-16.2-7.2-5.6-15.2-10.4-24-14.4-8.8-4-18.4-7.2-28.8-9.6-10.4-2.4-21.6-3.2-33.6-3.2-12 0-24 1-36 3.2-12 2.2-24 5.6-36 10.4-12 4.8-24 10.4-36 16.8-12 6.4-24 13.6-36 21.6-12 8.8-24 18.4-36 29.6-12 11.2-24 23.2-36 36-4.9 3.5-9.3 6.4-14.7 9.8 1.4-8.8 2-17.6 2-26.4 0-14.4-2.4-28.8-7.2-43.2-1.3-3.6-2.6-7.2-4.1-10.8-1.5-3.6-2.5-7.2-4.2-10.8-3.3-7.2-7.3-13.6-12.2-19.4-4.8-5.8-10.4-11.2-16.8-16.2-7.2-5.6-15.2-10.4-24-14.4-8.8-4-18.4-7.2-28.8-9.6-10.4-2.4-21.6-3.2-33.6-3.2-12 0-24 1-36 3.2-12 2.2-24 5.6-36 10.4-12 4.8-24 10.4-36 16.8-12 6.4-24 13.6-36 21.6-12 8.8-24 18.4-36 29.6-12 11.2-24 23.2-36 36-4.9 3.5-9.3 6.4-14.7 9.8 1.4-8.8 2-17.6 2-26.4 0-14.4-2.4-28.8-7.2-43.2-1.3-3.6-2.6-7.2-4.1-10.8-1.5-3.6-2.5-7.2-4.2-10.8-3.3-7.2-7.3-13.6-12.2-19.4-4.8-5.8-10.4-11.2-16.8-16.2-7.2-5.6-15.2-10.4-24-14.4-8.8-4-18.4-7.2-28.8-9.6-10.4-2.4-21.6-3.2-33.6-3.2-12 0-24 1-36 3.2-12 2.2-24 5.6-36 10.4-12 4.8-24 10.4-36 16.8-12 6.4-24 13.6-36 21.6-12 8.8-24 18.4-36 29.6-12 11.2-24 23.2-36 36-4.9 3.5-9.3 6.4-14.7 9.8 1.4-8.8 2-17.6 2-26.4 0-14.4-2.4-28.8-7.2-43.2-1.3-3.6-2.6-7.2-4.1-10.8-1.5-3.6-2.5-7.2-4.2-10.8-3.3-7.2-7.3-13.6-12.2-19.4-4.8-5.8-10.4-11.2-16.8-16.2-7.2-5.6-15.2-10.4-24-14.4-8.8-4-18.4-7.2-28.8-9.6-10.4-2.4-21.6-3.2-33.6-3.2-12 0-24 1-36 3.2-12 2.2-24 5.6-36 10.4-12 4.8-24 10.4-36 16.8-12 6.4-24 13.6-36 21.6-12 8.8-24 18.4-36 29.6-12 11.2-24 23.2-36 36-4.9 3.5-9.3 6.4-14.7 9.8 1.4-8.8 2-17.6 2-26.4 0-14.4-2.4-28.8-7.2-43.2-1.3-3.6-2.6-7.2-4.1-10.8-1.5-3.6-2.5-7.2-4.2-10.8-3.3-7.2-7.3-13.6-12.2-19.4-4.8-5.8-10.4-11.2-16.8-16.2-7.2-5.6-15.2-10.4-24-14.4-8.8-4-18.4-7.2-28.8-9.6-10.4-2.4-21.6-3.2-33.6-3.2-12 0-24 1-36 3.2-12 2.2-24 5.6-36 10.4-12 4.8-24 10.4-36 16.8-12 6.4-24 13.6-36 21.6-12 8.8-24 18.4-36 29.6-12 11.2-24 23.2-36 36-4.9 3.5-9.3 6.4-14.7 9.8 1.4-8.8 2-17.6 2-26.4 0-14.4-2.4-28.8-7.2-43.2-1.3-3.6-2.6-7.2-4.1-10.8-1.5-3.6-2.5-7.2-4.2-10.8-3.3-7.2-7.3-13.6-12.2-19.4-4.8-5.8-10.4-11.2-16.8-16.2-7.2-5.6-15.2-10.4-24-14.4-8.8-4-18.4-7.2-28.8-9.6-10.4-2.4-21.6-3.2-33.6-3.2-12 0-24 1-36 3.2-12 2.2-24 5.6-36 10.4-12 4.8-24 10.4-36 16.8-12 6.4-24 13.6-36 21.6-12 8.8-24 18.4-36 29.6-12 11.2-24 23.2-36 36-4.9 3.5-9.3 6.4-14.7 9.8 1.4-8.8 2-17.6 2-26.4 0-14.4-2.4-28.8-7.2-43.2-1.3-3.6-2.6-7.2-4.1-10.8-1.5-3.6-2.5-7.2-4.2-10.8-3.3-7.2-7.3-13.6-12.2-19.4-4.8-5.8-10.4-11.2-16.8-16.2-7.2-5.6-15.2-10.4-24-14.4-8.8-4-18.4-7.2-28.8-9.6-10.4-2.4-21.6-3.2-33.6-3.2-12 0-24 1-36 3.2-12 2.2-24 5.6-36 10.4-12 4.8-24 10.4-36 16.8-12 6.4-24 13.6-36 21.6-12 8.8-24 18.4-36 29.6-12 11.2-24 23.2-36 36-4.9 3.5-9.3 6.4-14.7 9.8 1.4-8.8 2-17.6 2-26.4 0-14.4-2.4-28.8-7.2-43.2-1.3-3.6-2.6-7.2-4.1-10.8-1.5-3.6-2.5-7.2-4.2-10.8-3.3-7.2-7.3-13.6-12.2-19.4-4.8-5.8-10.4-11.2-16.8-16.2-7.2-5.6-15.2-10.4-24-14.4-8.8-4-18.4-7.2-28.8-9.6-10.4-2.4-21.6-3.2-33.6-3.2-12 0-24 1-36 3.2-12 2.2-24 5.6-36 10.4-12 4.8-24 10.4-36 16.8-12 6.4-24 13.6-36 21.6-12 8.8-24 18.4-36 29.6-12 11.2-24 23.2-36 36-4.9 3.5-9.3 6.4-14.7 9.8 1.4-8.8 2-17.6 2-26.4 0-14.4-2.4-28.8-7.2-43.2-1.3-3.6-2.6-7.2-4.1-10.8-1.5-3.6-2.5-7.2-4.2-10.8-3.3-7.2-7.3-13.6-12.2-19.4-4.8-5.8-10.4-11.2-16.8-16.2-7.2-5.6-15.2-10.4-24-14.4-8.8-4-18.4-7.2-28.8-9.6-10.4-2.4-21.6-3.2-33.6-3.2-12 0-24 1-36 3.2-12 2.2-24 5.6-36 10.4-12 4.8-24 10.4-36 16.8-12 6.4-24 13.6-36 21.6-12 8.8-24 18.4-36 29.6-12 11.2-24 23.2-36 36-4.9 3.5-9.3 6.4-14.7 9.8 1.4-8.8 2-17.6 2-26.4 0-14.4-2.4-28.8-7.2-43.2-1.3-3.6-2.6-7.2-4.1-10.8-1.5-3.6-2.5-7.2-4.2-10.8-3.3-7.2-7.3-13.6-12.2-19.4-4.8-5.8-10.4-11.2-16.8-16.2-7.2-5.6-15.2-10.4-24-14.4-8.8-4-18.4-7.2-28.8-9.6-10.4-2.4-21.6-3.2-33.6-3.2-12 0-24 1-36 3.2-12 2.2-24 5.6-36 10.4-12 4.8-24 10.4-36 16.8-12 6.4-24 13.6-36 21.6-12 8.8-24 18.4-36 29.6-12 11.2-24 23.2-36 36-4.9 3.5-9.3 6.4-14.7 9.8 1.4-8.8 2-17.6 2-26.4 0-14.4-2.4-28.8-7.2-43.2-1.3-3.6-2.6-7.2-4.1-10.8-1.5-3.6-2.5-7.2-4.2-10.8-3.3-7.2-7.3-13.6-12.2-19.4-4.8-5.8-10.4-11.2-16.8-16.2-7.2-5.6-15.2-10.4-24-14.4-8.8-4-18.4-7.2-28.8-9.6-10.4-2.4-21.6-3.2-33.6-3.2-12 0-24 1-36 3.2-12 2.2-24 5.6-36 10.4-12 4.8-24 10.4-36 16.8-12 6.4-24 13.6-36 21.6-12 8.8-24 18.4-36 29.6-12 11.2-24 23.2-36 36-4.9 3.5-9.3 6.4-14.7 9.8 1.4-8.8 2-17.6 2-26.4 0-14.4-2.4-28.8-7.2-43.2-1.3-3.6-2.6-7.2-4.1-10.8-1.5-3.6-2.5-7.2-4.2-10.8-3.3-7.2-7.3-13.6-12.2-19.4-4.8-5.8-10.4-11.2-16.8-16.2-7.2-5.6-15.2-10.4-24-14.4-8.8-4-18.4-7.2-28.8-9.6-10.4-2.4-21.6-3.2-33.6-3.2-12 0-24 1-36 3.2-12 2.2-24 5.6-36 10.4-12 4.8-24 10.4-36 16.8-12 6.4-24 13.6-36 21.6-12 8.8-24 18.4-36 29.6-12 11.2-24 23.2-36 36-4.9 3.5-9.3 6.4-14.7 9.8 1.4-8.8 2-17.6 2-26.4 0-14.4-2.4-28.8-7.2-43.2-1.3-3.6-2.6-7.2-4.1-10.8-1.5-3.6-2.5-7.2-4.2-10.8-3.3-7.2-7.3-13.6-12.2-19.4-4.8-5.8-10.4-11.2-16.8-16.2-7.2-5.6-15.2-10.4-24-14.4-8.8-4-18.4-7.2-28.8-9.6-10.4-2.4-21.6-3.2-33.6-3.2-12 0-24 1-36 3.2-12 2.2-24 5.6-36 10.4-12 4.8-24 10.4-36 16.8-12 6.4-24 13.6-36 21.6-12 8.8-24 18.4-36 29.6-12 11.2-24 23.2-36 36-4.9 3.5-9.3 6.4-14.7 9.8 1.4-8.8 2-17.6 2-26.4 0-14.4-2.4-28.8-7.2-43.2-1.3-3.6-2.6-7.2-4.1-10.8-1.5-3.6-2.5-7.2-4.2-10.8-3.3-7.2-7.3-13.6-12.2-19.4-4.8-5.8-10.4-11.2-16.8-16.2-7.2-5.6-15.2-10.4-24-14.4-8.8-4-18.4-7.2-28.8-9.6-10.4-2.4-21.6-3.2-33.6-3.2-12 0-24 1-36 3.2-12 2.2-24 5.6-36 10.4-12 4.8-24 10.4-36 16.8-12 6.4-24 13.6-36 21.6-12 8.8-24 18.4-36 29.6-12 11.2-24 23.2-36 36-4.9 3.5-9.3 6.4-14.7 9.8 1.4-8.8 2-17.6 2-26.4 0-14.4-2.4-28.8-7.2-43.2-1.3-3.6-2.6-7.2-4.1-10.8-1.5-3.6-2.5-7.2-4.2-10.8-3.3-7.2-7.3-13.6-12.2-19.4-4.8-5.8-10.4-11.2-16.8-16.2-7.2-5.6-15.2-10.4-24-14.4-8.8-4-18.4-7.2-28.8-9.6-10.4-2.4-21.6-3.2-33.6-3.2-12 0-24 1-36 3.2-12 2.2-24 5.6-36 10.4-12 4.8-24 10.4-36 16.8-12 6.4-24 13.6-36 21.6-12 8.8-24 18.4-36 29.6-12 11.2-24 23.2-36 36-4.9 3.5-9.3 6.4-14.7 9.8 1.4-8.8 2-17.6 2-26.4 0-14.4-2.4-28.8-7.2-43.2-1.3-3.6-2.6-7.2-4.1-10.8-1.5-3.6-2.5-7.2-4.2-10.8-3.3-7.2-7.3-13.6-12.2-19.4-4.8-5.8-10.4-11.2-16.8-16.2-7.2-5.6-15.2-10.4-24-14.4-8.8-4-18.4-7.2-28.8-9.6-10.4-2.4-21.6-3.2-33.6-3.2-12 0-24 1-36 3.2-12 2.2-24 5.6-36 10.4-12 4.8-24 10.4-36 16.8-12 6.4-24 13.6-36 21.6-12 8.8-24 18.4-36 29.6-12 11.2-24 23.2-36 36-4.9 3.5-9.3 6.4-14.7 9.8 1.4-8.8 2-17.6 2-26.4 0-14.4-2.4-28.8-7.2-43.2-1.3-3.6-2.6-7.2-4.1-10.8-1.5-3.6-2.5-7.2-4.2-10.8-3.3-7.2-7.3-13.6-12.2-19.4-4.8-5.8-10.4-11.2-16.8-16.2-7.2-5.6-15.2-10.4-24-14.4-8.8-4-18.4-7.2-28.8-9.6-10.4-2.4-21.6-3.2-33.6-3.2-12 0-24 1-36 3.2-12 2.2-24 5.6-36 10.4-12 4.8-24 10.4-36 16.8-12 6.4-24 13.6-36 21.6-12 8.8-24 18.4-36 29.6-12 11.2-24 23.2-36 36-4.9 3.5-9.3 6.4-14.7 9.8 1.4-8.8 2-17.6 2-26.4 0-14.4-2.4-28.8-7.2-43.2-1.3-3.6-2.6-7.2-4.1-10.8-1.5-3.6-2.5-7.2-4.2-10.8-3.3-7.2-7.3-13.6-12.2-19.4-4.8-5.8-10.4-11.2-16.8-16.2-7.2-5.6-15.2-10.4-24-14.4-8.8-4-18.4-7.2-28.8-9.6-10.4-2.4-21.6-3.2-33.6-3.2-12 0-24 1-36 3.2-12 2.2-24 5.6-36 10.4-12 4.8-24 10.4-36 16.8-12 6.4-24 13.6-36 21.6-12 8.8-24 18.4-36 29.6-12 11.2-24 23.2-36 36-4.9 3.5-9.3 6.4-14.7 9.8 1.4-8.8 2-17.6 2-26.4 0-14.4-2.4-28.8-7.2-43.2-1.3-3.6-2.6-7.2-4.1-10.8-1.5-3.6-2.5-7.2-4.2-10.8-3.3-7.2-7.3-13.6-12.2-19.4-4.8-5.8-10.4-11.2-16.8-16.2-7.2-5.6-15.2-10.4-24-14.4-8.8-4-18.4-7.2-28.8-9.6-10.4-2.4-21.6-3.2-33.6-3.2-12 0-24 1-36 3.2-12 2.2-24 5.6-36 10.4-12 4.8-24 10.4-36 16.8-12 6.4-24 13.6-36 21.6-12 8.8-24 18.4-36 29.6-12 11.2-24 23.2-36 36-4.9 3.5-9.3 6.4-14.7 9.8 1.4-8.8 2-17.6 2-26.4 0-14.4-2.4-28.8-7.2-43.2-1.3-3.6-2.6-7.2-4.1-10.8-1.5-3.6-2.5-7.2-4.2-10.8-3.3-7.2-7.3-13.6-12.2-19.4-4.8-5.8-10.4-11.2-16.8-16.2-7.2-5.6-15.2-10.4-24-14.4-8.8-4-18.4-7.2-28.8-9.6-10.4-2.4-21.6-3.2-33.6-3.2-12 0-24 1-36 3.2-12 2.2-24 5.6-36 10.4-12 4.8-24 10.4-36 16.8-12 6.4-24 13.6-36 21.6-12 8.8-24 18.4-36 29.6-12 11.2-24 23.2-36 36-4.9 3.5-9.3 6.4-14.7 9.8 1.4-8.8 2-17.6 2-26.4 0-14.4-2.4-28.8-7.2-43.2-1.3-3.6-2.6-7.2-4.1-10.8-1.5-3.6-2.5-7.2-4.2-10.8-3.3-7.2-7.3-13.6-12.2-19.4-4.8-5.8-10.4-11.2-16.8-16.2-7.2-5.6-15.2-10.4-24-14.4-8.8-4-18.4-7.2-28.8-9.6-10.4-2.4-21.6-3.2-33.6-3.2-12 0-24 1-36 3.2-12 2.2-24 5.6-36 10.4-12 4.8-24 10.4-36 16.8-12 6.4-24 13.6-36 21.6-12 8.8-24 18.4-36 29.6-12 11.2-24 23.2-36 36-4.9 3.5-9.3 6.4-14.7 9.8 1.4-8.8 2-17.6 2-26.4 0-14.4-2.4-28.8-7.2-43.2-1.3-3.6-2.6-7.2-4.1-10.8-1.5-3.6-2.5-7.2-4.2-10.8-3.3-7.2-7.3-13.6-12.2-19.4-4.8-5.8-10.4-11.2-16.8-16.2-7.2-5.6-15.2-10.4-24-14.4-8.8-4-18.4-7.2-28.8-9.6-10.4-2.4-21.6-3.2-33.6-3.2-12 0-24 1-36 3.2-12 2.2-24 5.6-36 10.4-12 4.8-24 10.4-36 16.8-12 6.4-24 13.6-36 21.6-12 8.8-24 18.4-36 29.6-12 11.2-24 23.2-36 36-4.9 3.5-9.3 6.4-14.7 9.8 1.4-8.8 2-17.6 2-26.4 0-14.4-2.4-28.8-7.2-43.2-1.3-3.6-2.6-7.2-4.1-10.8-1.5-3.6-2.5-7.2-4.2-10.8-3.3-7.2-7.3-13.6-12.2-19.4-4.8-5.8-10.4-11.2-16.8-16.2-7.2-5.6-15.2-10.4-24-14.4-8.8-4-18.4-7.2-28.8-9.6-10.4-2.4-21.6-3.2-33.6-3.2-12 0-24 1-36 3.2-12 2.2-24 5.6-36 10.4-12 4.8-24 10.4-36 16.8-12 6.4-24 13.6-36 21.6-12 8.8-24 18.4-36 29.6-12 11.2-24 23.2-36 36-4.9 3.5-9.3 6.4-14.7 9.8 1.4-8.8 2-17.6 2-26.4 0-14.4-2.4-28.8-7.2-43.2-1.3-3.6-2.6-7.2-4.1-10.8-1.5-3.6-2.5-7.2-4.2-10.8-3.3-7.2-7.3-13.6-12.2-19.4-4.8-5.8-10.4-11.2-16.8-16.2-7.2-5.6-15.2-10.4-24-14.4-8.8-4-18.4-7.2-28.8-9.6-10.4-2.4-21.6-3.2-33.6-3.2-12 0-24 1-36 3.2-12 2.2-24 5.6-36 10.4-12 4.8-24 10.4-36 16.8-12 6.4-24 13.6-36 21.6-12 8.8-24 18.4-36 29.6-12 11.2-24 23.2-36 36-4.9 3.5-9.3 6.4-14.7 9.8 1.4-8.8 2-17.6 2-26.4 0-14.4-2.4-28.8-7.2-43.2-1.3-3.6-2.6-7.2-4.1-10.8-1.5-3.6-2.5-7.2-4.2-10.8-3.3-7.2-7.3-13.6-12.2-19.4-4.8-5.8-10.4-11.2-16.8-16.2-7.2-5.6-15.2-10.4-24-14.4-8.8-4-18.4-7.2-28.8-9.6-10.4-2.4-21.6-3.2-33.6-3.2-12 0-24 1-36 3.2-12 2.2-24 5.6-36 10.4-12 4.8-24 10.4-36 16.8-12 6.4-24 13.6-36 21.6-12 8.8-24 18.4-36 29.6-12 11.2-24 23.2-36 36-4.9 3.5-9.3 6.4-14.7 9.8 1.4-8.8 2-17.6 2-26.4 0-14.4-2.4-28.8-7.2-43.2-1.3-3.6-2.6-7.2-4.1-10.8-1.5-3.6-2.5-7.2-4.2-10.8-3.3-7.2-7.3-13.6-12.2-19.4-4.8-5.8-10.4-11.2-16.8-16.2-7.2-5.6-15.2-10.4-24-14.4-8.8-4-18.4-7.2-28.8-9.6-10.4-2.4-21.6-3.2-33.6-3.2-12 0-24 1-36 3.2-12 2.2-24 5.6-36 10.4-12 4.8-24 10.4-36 16.8-12 6.4-24 13.6-36 21.6-12 8.8-24 18.4-36 29.6-12 11.2-24 23.2-36 36-4.9 3.5-9.3 6.4-14.7 9.8 1.4-8.8 2-17.6 2-26.4 0-14.4-2.4-28.8-7.2-43.2-1.3-3.6-2.6-7.2-4.1-10.8-1.5-3.6-2.5-7.2-4.2-10.8-3.3-7.2-7.3-13.6-12.2-19.4-4.8-5.8-10.4-11.2-16.8-16.2-7.2-5.6-15.2-10.4-24-14.4-8.8-4-18.4-7.2-28.8-9.6-10.4-2.4-21.6-3.2-33.6-3.2-12 0-24 1-36 3.2-12 2.2-24 5.6-36 10.4-12 4.8-24 10.4-36 16.8-12 6.4-24 13.6-36 21.6-12 8.8-24 18.4-36 29.6-12 11.2-24 23.2-36 36-4.9 3.5-9.3 6.4-14.7 9.8 1.4-8.8 2-17.6 2-26.4 0-14.4-2.4-28.8-7.2-43.2-1.3-3.6-2.6-7.2-4.1-10.8-1.5-3.6-2.5-7.2-4.2-10.8-3.3-7.2-7.3-13.6-12.2-19.4-4.8-5.8-10.4-11.2-16.8-16.2-7.2-5.6-15.2-10.4-24-14.4-8.8-4-18.4-7.2-28.8-9.6-10.4-2.4-21.6-3.2-33.6-3.2-12 0-24 1-36 3.2-12 2.2-24 5.6-36 10.4-12 4.8-24 10.4-36 16.8-12 6.4-24 13.6-36 21.6-12 8.8-24 18.4-36 29.6-12 11.2-24 23.2-36 36-4.9 3.5-9.3 6.4-14.7 9.8 1.4-8.8 2-17.6 2-26.4 0-14.4-2.4-28.8-7.2-43.2-1.3-3.6-2.6-7.2-4.1-10.8-1.5-3.6-2.5-7.2-4.2-10.8-3.3-7.2-7.3-13.6-12.2-19.4-4.8-5.8-10.4-11.2-16.8-16.2-7.2-5.6-15.2-10.4-24-14.4-8.8-4-18.4-7.2-28.8-9.6-10.4-2.4-21.6-3.2-33.6-3.2-12 0-24 1-36 3.2-12 2.2-24 5.6-36 10.4-12 4.8-24 10.4-36 16.8-12 6.4-24 13.6-36 21.6-12 8.8-24 18.4-36 29.6-12 11.2-24 23.2-36 36-4.9 3.5-9.3 6.4-14.7 9.8 1.4-8.8 2-17.6 2-26.4 0-14.4-2.4-28.8-7.2-43.2-1.3-3.6-2.6-7.2-4.1-10.8-1.5-3.6-2.5-7.2-4.2-10.8-3.3-7.2-7.3-13.6-12.2-19.4-4.8-5.8-10.4-11.2-16.8-16.2-7.2-5.6-15.2-10.4-24-14.4-8.8-4-18.4-7.2-28.8-9.6-10.4-2.4-21.6-3.2-33.6-3.2-12 0-24 1-36 3.2-12 2.2-24 5.6-36 10.4-12 4.8-24 10.4-36 16.8-12 6.4-24 13.6-36 21.6-12 8.8-24 18.4-36 29.6-12 11.2-24 23.2-36 36-4.9 3.5-9.3 6.4-14.7 9.8 1.4-8.8 2-17.6 2-26.4 0-14.4-2.4-28.8-7.2-43.2-1.3-3.6-2.6-7.2-4.1-10.8-1.5-3.6-2.5-7.2-4.2-10.8-3.3-7.2-7.3-13.6-12.2-19.4-4.8-5.8-10.4-11.2-16.8-16.2-7.2-5.6-15.2-10.4-24-14.4-8.8-4-18.4-7.2-28.8-9.6-10.4-2.4-21.6-3.2-33.6-3.2-12 0-24 1-36 3.2-12 2.2-24 5.6-36 10.4-12 4.8-24 10.4-36 16.8-12 6.4-24 13.6-36 21.6-12 8.8-24 18.4-36 29.6-12 11.2-24 23.2-36 36-4.9 3.5-9.3 6.4-14.7 9.8 1.4-8.8 2-17.6 2-26.4 0-14.4-2.4-28.8-7.2-43.2-1.3-3.6-2.6-7.2-4.1-10.8-1.5-3.6-2.5-7.2-4.2-10.8-3.3-7.2-7.3-13.6-12.2-19.4-4.8-5.8-10.4-11.2-16.8-16.2-7.2-5.6-15.2-10.4-24-14.4-8.8-4-18.4-7.2-28.8-9.6-10.4-2.4-21.6-3.2-33.6-3.2-12 0-24 1-36 3.2-12 2.2-24 5.6-36 10.4-12 4.8-24 10.4-36 16.8-12 6.4-24 13.6-36 21.6-12 8.8-24 18.4-36 29.6-12 11.2-24 23.2-36 36-4.9 3.5-9.3 6.4-14.7 9.8 1.4-8.8 2-17.6 2-26.4 0-14.4-2.4-28.8-7.2-43.2-1.3-3.6-2.6-7.2-4.1-10.8-1.5-3.6-2.5-7.2-4.2-10.8-3.3-7.2-7.3-13.6-12.2-19.4-4.8-5.8-10.4-11.2-16.8-16.2-7.2-5.6-15.2-10.4-24-14.4-8.8-4-18.4-7.2-28.8-9.6-10.4-2.4-21.6-3.2-33.6-3.2-12 0-24 1-36 3.2-12 2.2-24 5.6-36 10.4-12 4.8-24 10.4-36 16.8-12 6.4-24 13.6-36 21.6-12 8.8-24 18.4-36 29.6-12 11.2-24 23.2-36 36-4.9 3.5-9.3 6.4-14.7 9.8 1.4-8.8 2-17.6 2-26.4 0-14.4-2.4-28.8-7.2-43.2-1.3-3.6-2.6-7.2-4.1-10.8-1.5-3.6-2.5-7.2-4.2-10.8-3.3-7.2-7.3-13.6-12.2-19.4-4.8-5.8-10.4-11.2-16.8-16.2-7.2-5.6-15.2-10.4-24-14.4-8.8-4-18.4-7.2-28.8-9.6-10.4-2.4-21.6-3.2-33.6-3.2-12 0-24 1-36 3.2-12 2.2-24 5.6-36 10.4-12 4.8-24 10.4-36 16.8-12 6.4-24 13.6-36 21.6-12 8.8-24 18.4-36 29.6-12 11.2-24 23.2-36 36-4.9 3.5-9.3 6.4-14.7 9.8 1.4-8.8 2-17.6 2-26.4 0-14.4-2.4-28.8-7.2-43.2-1.3-3.6-2.6-7.2-4.1-10.8-1.5-3.6-2.5-7.2-4.2-10.8-3.3-7.2-7.3-13.6-12.2-19.4-4.8-5.8-10.4-11.2-16.8-16.2-7.2-5.6-15.2-10.4-24-14.4-8.8-4-18.4-7.2-28.8-9.6-10.4-2.4-21.6-3.2-33.6-3.2-12 0-24 1-36 3.2-12 2.2-24 5.6-36 10.4-12 4.8-24 10.4-36 16.8-12 6.4-24 13.6-36 21.6-12 8.8-24 18.4-36 29.6-12 11.2-24 23.2-36 36-4.9 3.5-9.3 6.4-14.7 9.8 1.4-8.8 2-17.6 2-26.4 0-14.4-2.4-28.8-7.2-43.2-1.3-3.6-2.6-7.2-4.1-10.8-1.5-3.6-2.5-7.2-4.2-10.8-3.3-7.2-7.3-13.6-12.2-19.4-4.8-5.8-10.4-11.2-16.8-16.2-7.2-5.6-15.2-10.4-24-14.4-8.8-4-18.4-7.2-28.8-9.6-10.4-2.4-21.6-3.2-33.6-3.2-12 0-24 1-36 3.2-12 2.2-24 5.6-36 10.4-12 4.8-24 10.4-36 16.8-12 6.4-24 13.6-36 21.6-12 8.8-24 18.4-36 29.6-12 11.2-24 23.2-36 36-4.9 3.5-9.3 6.4-14.7 9.8 1.4-8.8 2-17.6 2-26.4 0-14.4-2.4-28.8-7.2-43.2-1.3-3.6-2.6-7.2-4.1-10.8-1.5-3.6-2.5-7.2-4.2-10.8-3.3-7.2-7.3-13.6-12.2-19.4-4.8-5.8-10.4-11.2-16.8-16.2-7.2-5.6-15.2-10.4-24-14.4-8.8-4-18.4-7.2-28.8-9.6-10.4-2.4-21.6-3.2-33.6-3.2-12 0-24 1-36 3.2-12 2.2-24 5.6-36 10.4-12 4.8-24 10.4-36 16.8-12 6.4-24 13.6-36 21.6-12 8.8-24 18.4-36 29.6-12 11.2-24 23.2-36 36-4.9 3.5-9.3 6.4-14.7 9.8 1.4-8.8 2-17.6 2-26.4 0-14.4-2.4-28.8-7.2-43.2-1.3-3.6-2.6-7.2-4.1-10.8-1.5-3.6-2.5-7.2-4.2-10.8-3.3-7.2-7.3-13.6-12.2-19.4-4.8-5.8-10.4-11.2-16.8-16.2-7.2-5.6-15.2-10.4-24-14.4-8.8-4-18.4-7.2-28.8-9.6-10.4-2.4-21.6-3.2-33.6-3.2-12 0-24 1-36 3.2-12 2.2-24 5.6-36 10.4-12 4.8-24 10.4-36 16.8-12 6.4-24 13.6-36 21.6-12 8.8-24 18.4-36 29.6-12 11.2-24 23.2-36 36-4.9 3.5-9.3 6.4-14.7 9.8 1.4-8.8 2-17.6 2-26.4 0-14.4-2.4-28.8-7.2-43.2-1.3-3.6-2.6-7.2-4.1-10.8-1.5-3.6-2.5-7.2-4.2-10.8-3.3-7.2-7.3-13.6-12.2-19.4-4.8-5.8-10.4-11.2-16.8-16.2-7.2-5.6-15.2-10.4-24-14.4-8.8-4-18.4-7.2-28.8-9.6-10.4-2.4-21.6-3.2-33.6-3.2-12 0-24 1-36 3.2-12 2.2-24 5.6-36 10.4-12 4.8-24 10.4-36 16.8-12 6.4-24 13.6-36 21.6-12 8.8-24 18.4-36 29.6-12 11.2-24 23.2-36 36-4.9 3.5-9.3 6.4-14.7 9.8 1.4-8.8 2-17.6 2-26.4 0-14.4-2.4-28.8-7.2-43.2-1.3-3.6-2.6-7.2-4.1-10.8-1.5-3.6-2.5-7.2-4.2-10.8-3.3-7.2-7.3-13.6-12.2-19.4-4.8-5.8-10.4-11.2-16.8-16.2-7.2-5.6-15.2-10.4-24-14.4-8.8-4-18.4-7.2-28.8-9.6-10.4-2.4-21.6-3.2-33.6-3.2-12 0-24 1-36 3.2-12 2.2-24 5.6-36 10.4-12 4.8-24 10.4-36 16.8-12 6.4-24 13.6-36 21.6-12 8.8-24 18.4-36 29.6-12 11.2-24 23.2-36 36-4.9 3.5-9.3 6.4-14.7 9.8 1.4-8.8 2-17.6 2-26.4 0-14.4-2.4-28.8-7.2-43.2-1.3-3.6-2.6-7.2-4.1-10.8-1.5-3.6-2.5-7.2-4.2-10.8-3.3-7.2-7.3-13.6-12.2-19.4-4.8-5.8-10.4-11.2-16.8-16.2-7.2-5.6-15.2-10.4-24-14.4-8.8-4-18.4-7.2-28.8-9.6-10.4-2.4-21.6-3.2-33.6-3.2-12 0-24 1-36 3.2-12 2.2-24 5.6-36 10.4-12 4.8-24 10.4-36 16.8-12 6.4-24 13.6-36 21.6-12 8.8-24 18.4-36 29.6-12 11.2-24 23.2-36 36-4.9 3.5-9.3 6.4-14.7 9.8 1.4-8.8 2-17.6 2-26.4 0-14.4-2.4-28.8-7.2-43.2-1.3-3.6-2.6-7.2-4.1-10.8-1.5-3.6-2.5-7.2-4.2-10.8-3.3-7.2-7.3-13.6-12.2-19.4-4.8-5.8-10.4-11.2-16.8-16.2-7.2-5.6-15.2-10.4-24-14.4-8.8-4-18.4-7.2-28.8-9.6-10.4-2.4-21.6-3.2-33.6-3.2-12 0-24 1-36 3.2-12 2.2-24 5.6-36 10.4-12 4.8-24 10.4-36 16.8-12 6.4-24 13.6-36 21.6-12 8.8-24 18.4-36 29.6-12 11.2-24 23.2-36 36-4.9 3.5-9.3 6.4-14.7 9.8 1.4-8.8 2-17.6 2-26.4 0-14.4-2.4-28.8-7.2-43.2-1.3-3.6-2.6-7.2-4.1-10.8-1.5-3.6-2.5-7.2-4.2-10.8-3.3-7.2-7.3-13.6-12.2-19.4-4.8-5.8-10.4-11.2-16.8-16.2-7.2-5.6-15.2-10.4-24-14.4-8.8-4-18.4-7.2-28.8-9.6-10.4-2.4-21.6-3.2-33.6-3.2-12 0-24 1-36 3.2-12 2.2-24 5.6-36 10.4-12 4.8-24 10.4-36 16.8-12 6.4-24 13.6-36 21.6-12 8.8-24 18.4-36 29.6-12 11.2-24 23.2-36 36-4.9 3.5-9.3 6.4-14.7 9.8 1.4-8.8 2-17.6 2-26.4 0-14.4-2.4-28.8-7.2-43.2-1.3-3.6-2.6-7.2-4.1-10.8-1.5-3.6-2.5-7.2-4.2-10.8-3.3-7.2-7.3-13.6-12.2-19.4-4.8-5.8-10.4-11.2-16.8-16.2-7.2-5.6-15.2-10.4-24-14.4-8.8-4-18.4-7.2-28.8-9.6-10.4-2.4-21.6-3.2-33.6-3.2-12 0-24 1-36 3.2-12 2.2-24 5.6-36 10.4-12 4.8-24 10.4-36 16.8-12 6.4-24 13.6-36 21.6-12 8.8-24 18.4-36 29.6-12 11.2-24 23.2-36 36-4.9 3.5-9.3 6.4-14.7 9.8 1.4-8.8 2-17.6 2-26.4 0-14.4-2.4-28.8-7.2-43.2-1.3-3.6-2.6-7.2-4.1-10.8-1.5-3.6-2.5-7.2-4.2-10.8-3.3-7.2-7.3-13.6-12.2-19.4-4.8-5.8-10.4-11.2-16.8-16.2-7.2-5.6-15.2-10.4-24-14.4-8.8-4-18.4-7.2-28.8-9.6-10.4-2.4-21.6-3.2-33.6-3.2-12 0-24 1-36 3.2-12 2.2-24 5.6-36 10.4-12 4.8-24 10.4-36 16.8-12 6.4-24 13.6-36 21.6-12 8.8-24 18.4-36 29.6-12 11.2-24 23.2-36 36-4.9 3.5-9.3 6.4-14.7 9.8 1.4-8.8 2-17.6 2-26.4 0-14.4-2.4-28.8-7.2-43.2-1.3-3.6-2.6-7.2-4.1-10.8-1.5-3.6-2.5-7.2-4.2-10.8-3.3-7.2-7.3-13.6-12.2-19.4-4.8-5.8-10.4-11.2-16.8-16.2-7.2-5.6-15.2-10.4-24-14.4-8.8-4-18.4-7.2-28.8-9.6-10.4-2.4-21.6-3.2-33.6-3.2-12 0-24 1-36 3.2-12 2.2-24 5.6-36 10.4-12 4.8-24 10.4-36 16.8-12 6.4-24 13.6-36 21.6-12 8.8-24 18.4-36 29.6-12 11.2-24 23.2-36 36-4.9 3.5-9.3 6.4-14.7 9.8 1.4-8.8 2-17.6 2-26.4 0-14.4-2.4-28.8-7.2-43.2-1.3-3.6-2.6-7.2-4.1-10.8-1.5-3.6-2.5-7.2-4.2-10.8-3.3-7.2-7.3-13.6-12.2-19.4-4.8-5.8-10.4-11.2-16.8-16.2-7.2-5.6-15.2-10.4-24-14.4-8.8-4-18.4-7.2-28.8-9.6-10.4-2.4-21.6-3.2-33.6-3.2-12 0-24 1-36 3.2-12 2.2-24 5.6-36 10.4-12 4.8-24 10.4-36 16.8-12 6.4-24 13.6-36 21.6-12 8.8-24 18.4-36 29.6-12 11.2-24 23.2-36 36-4.9 3.5-9.3 6.4-14.7 9.8 1.4-8.8 2-17.6 2-26.4 0-14.4-2.4-28.8-7.2-43.2-1.3-3.6-2.6-7.2-4.1-10.8-1.5-3.6-2.5-7.2-4.2-10.8-3.3-7.2-7.3-13.6-12.2-19.4-4.8-5.8-10.4-11.2-16.8-16.2-7.2-5.6-15.2-10.4-24-14.4-8.8-4-18.4-7.2-28.8-9.6-10.4-2.4-21.6-3.2-33.6-3.2-12 0-24 1-36 3.2-12 2.2-24 5.6-36 10.4-12 4.8-24 10.4-36 16.8-12 6.4-24 13.6-36 21.6-12 8.8-24 18.4-36 29.6-12 11.2-24 23.2-36 36-4.9 3.5-9.3 6.4-14.7 9.8 1.4-8.8 2-17.6 2-26.4 0-14.4-2.4-28.8-7.2-43.2-1.3-3.6-2.6-7.2-4.1-10.8-1.5-3.6-2.5-7.2-4.2-10.8-3.3-7.2-7.3-13.6-12.2-19.4-4.8-5.8-10.4-11.2-16.8-16.2-7.2-5.6-15.2-10.4-24-14.4-8.8-4-18.4-7.2-28.8-9.6-10.4-2.4-21.6-3.2-33.6-3.2-12 0-24 1-36 3.2-12 2.2-24 5.6-36 10.4-12 4.8-24 10.4-36 16.8-12 6.4-24 13.6-36 21.6-12 8.8-24 18.4-36 29.6-12 11.2-24 23.2-36 36-4.9 3.5-9.3 6.4-14.7 9.8 1.4-8.8 2-17.6 2-26.4 0-14.4-2.4-28.8-7.2-43.2-1.3-3.6-2.6-7.2-4.1-10.8-1.5-3.6-2.5-7.2-4.2-10.8-3.3-7.2-7.3-13.6-12.2-19.4-4.8-5.8-10.4-11.2-16.8-16.2-7.2-5.6-15.2-10.4-24-14.4-8.8-4-18.4-7.2-28.8-9.6-10.4-2.4-21.6-3.2-33.6-3.2-12 0-24 1-36 3.2-12 2.2-24 5.6-36 10.4-12 4.8-24 10.4-36 16.8-12 6.4-24 13.6-36 21.6-12 8.8-24 18.4-36 29.6-12 11.2-24 23.2-36 36-4.9 3.5-9.3 6.4-14.7 9.8 1.4-8.8 2-17.6 2-26.4 0-14.4-2.4-28.8-7.2-43.2-1.3-3.6-2.6-7.2-4.1-10.8-1.5-3.6-2.5-7.2-4.2-10.8-3.3-7.2-7.3-13.6-12.2-19.4-4.8-5.8-10.4-11.2-16.8-16.2-7.2-5.6-15.2-10.4-24-14.4-8.8-4-18.4-7.2-28.8-9.6-10.4-2.4-21.6-3.2-33.6-3.2-12 0-24 1-36 3.2-12 2.2-24 5.6-36 10.4-12 4.8-24 10.4-36 16.8-12 6.4-24 13.6-36 21.6-12 8.8-24 18.4-36 29.6-12 11.2-24 23.2-36 36-4.9 3.5-9.3 6.4-14.7 9.8 1.4-8.8 2-17.6 2-26.4 0-14.4-2.4-28.8-7.2-43.2-1.3-3.6-2.6-7.2-4.1-10.8-1.5-3.6-2.5-7.2-4.2-10.8-3.3-7.2-7.3-13.6-12.2-19.4-4.8-5.8-10.4-11.2-16.8-16.2-7.2-5.6-15.2-10.4-24-14.4-8.8-4-18.4-7.2-28.8-9.6-10.4-2.4-21.6-3.2-33.6-3.2-12 0-24 1-36 3.2-12 2.2-24 5.6-36 10.4-12 4.8-24 10.4-36 16.8-12 6.4-24 13.6-36 21.6-12 8.8-24 18.4-36 29.6-12 11.2-24 23.2-36 36-4.9 3.5-9.3 6.4-14.7 9.8 1.4-8.8 2-17.6 2-26.4 0-14.4-2.4-28.8-7.2-43.2-1.3-3.6-2.6-7.2-4.1-10.8-1.5-3.6-2.5-7.2-4.2-10.8-3.3-7.2-7.3-13.6-12.2-19.4-4.8-5.8-10.4-11.2-16.8-16.2-7.2-5.6-15.2-10.4-24-14.4-8.8-4-18.4-7.2-28.8-9.6-10.4-2.4-21.6-3.2-33.6-3.2-12 0-24 1-36 3.2-12 2.2-24 5.6-36 10.4-12 4.8-24 10.4-36 16.8-12 6.4-24 13.6-36 21.6-12 8.8-24 18.4-36 29.6-12 11.2-24 23.2-36 36-4.9 3.5-9.3 6.4-14.7 9.8 1.4-8.8 2-17.6 2-26.4 0-14.4-2.4-28.8-7.2-43.2-1.3-3.6-2.6-7.2-4.1-10.8-1.5-3.6-2.5-7.2-4.2-10.8-3.3-7.2-7.3-13.6-12.2-19.4-4.8-5.8-10.4-11.2-16.8-16.2-7.2-5.6-15.2-10.4-24-14.4-8.8-4-18.4-7.2-28.8-9.6-10.4-2.4-21.6-3.2-33.6-3.2-12 0-24 1-36 3.2-12 2.2-24 5.6-36 10.4-12 4.8-24 10.4-36 16.8-12 6.4-24 13.6-36 21.6-12 8.8-24 18.4-36 29.6-12 11.2-24 23.2-36 36-4.9 3.5-9.3 6.4-14.7 9.8 1.4-8.8 2-17.6 2-26.4 0-14.4-2.4-28.8-7.2-43.2-1.3-3.6-2.6-7.2-4.1-10.8-1.5-3.6-2.5-7.2-4.2-10.8-3.3-7.2-7.3-13.6-12.2-19.4-4.8-5.8-10.4-11.2-16.8-16.2-7.2-5.6-15.2-10.4-24-14.4-8.8-4-18.4-7.2-28.8-9.6-10.4-2.4-21.6-3.2-33.6-3.2-12 0-24 1-36 3.2-12 2.2-24 5.6-36 10.4-12 4.8-24 10.4-36 16.8-12 6.4-24 13.6-36 21.6-12 8.8-24 18.4-36 29.6-12 11.2-24 23.2-36 36-4.9 3.5-9.3 6.4-14.7 9.8 1.4-8.8 2-17.6 2-26.4 0-14.4-2.4-28.8-7.2-43.2-1.3-3.6-2.6-7.2-4.1-10.8-1.5-3.6-2.5-7.2-4.2-10.8-3.3-7.2-7.3-13.6-12.2-19.4-4.8-5.8-10.4-11.2-16.8-16.2-7.2-5.6-15.2-10.4-24-14.4-8.8-4-18.4-7.2-28.8-9.6-10.4-2.4-21.6-3.2-33.6-3.2-12 0-24 1-36 3.2-12 2.2-24 5.6-36 10.4-12 4.8-24 10.4-36 16.8-12 6.4-24 13.6-36 21.6-12 8.8-24 18.4-36 29.6-12 11.2-24 23.2-36 36-4.9 3.5-9.3 6.4-14.7 9.8 1.4-8.8 2-17.6 2-26.4 0-14.4-2.4-28.8-7.2-43.2-1.3-3.6-2.6-7.2-4.1-10.8-1.5-3.6-2.5-7.2-4.2-10.8-3.3-7.2-7.3-13.6-12.2-19.4-4.8-5.8-10.4-11.2-16.8-16.2-7.2-5.6-15.2-10.4-24-14.4-8.8-4-18.4-7.2-28.8-9.6-10.4-2.4-21.6-3.2-33.6-3.2-12 0-24 1-36 3.2-12 2.2-24 5.6-36 10.4-12 4.8-24 10.4-36 16.8-12 6.4-24 13.6-36 21.6-12 8.8-24 18.4-36 29.6-12 11.2-24 23.2-36 36-4.9 3.5-9.3 6.4-14.7 9.8 1.4-8.8 2-17.6 2-26.4 0-14.4-2.4-28.8-7.2-43.2-1.3-3.6-2.6-7.2-4.1-10.8-1.5-3.6-2.5-7.2-4.2-10.8-3.3-7.2-7.3-13.6-12.2-19.4-4.8-5.8-10.4-11.2-16.8-16.2-7.2-5.6-15.2-10.4-24-14.4-8.8-4-18.4-7.2-28.8-9.6-10.4-2.4-21.6-3.2-33.6-3.2-12 0-24 1-36 3.2-12 2.2-24 5.6-36 10.4-12 4.8-24 10.4-36 16.8-12 6.4-24 13.6-36 21.6-12 8.8-24 18.4-36 29.6-12 11.2-24 23.2-36 36-4.9 3.5-9.3 6.4-14.7 9.8 1.4-8.8 2-17.6 2-26.4 0-14.4-2.4-28.8-7.2-43.2-1.3-3.6-2.6-7.2-4.1-10.8-1.5-3.6-2.5-7.2-4.2-10.8-3.3-7.2-7.3-13.6-12.2-19.4-4.8-5.8-10.4-11.2-16.8-16.2-7.2-5.6-15.2-10.4-24-14.4-8.8-4-18.4-7.2-28.8-9.6-10.4-2.4-21.6-3.2-33.6-3.2-12 0-24 1-36 3.2-12 2.2-24 5.6-36 10.4-12 4.8-24 10.4-36 16.8-12 6.4-24 13.6-36 21.6-12 8.8-24 18.4-36 29.6-12 11.2-24 23.2-36 36-4.9 3.5-9.3 6.4-14.7 9.8 1.4-8.8 2-17.6 2-26.4 0-14.4-2.4-28.8-7.2-43.2-1.3-3.6-2.6-7.2-4.1-10.8-1.5-3.6-2.5-7.2-4.2-10.8-3.3-7.2-7.3-13.6-12.2-19.4-4.8-5.8-10.4-11.2-16.8-16.2-7.2-5.6-15.2-10.4-24-14.4-8.8-4-18.4-7.2-28.8-9.6-10.4-2.4-21.6-3.2-33.6-3.2-12 0-24 1-36 3.2-12 2.2-24 5.6-36 10.4-12 4.8-24 10.4-36 16.8-12 6.4-24 13.6-36 21.6-12 8.8-24 18.4-36 29.6-12 11.2-24 23.2-36 36-4.9 3.5-9.3 6.4-14.7 9.8 1.4-8.8 2-17.6 2-26.4 0-14.4-2.4-28.8-7.2-43.2-1.3-3.6-2.6-7.2-4.1-10.8-1.5-3.6-2.5-7.2-4.2-10.8-3.3-7.2-7.3-13.6-12.2-19.4-4.8-5.8-10.4-11.2-16.8-16.2-7.2-5.6-15.2-10.4-24-14.4-8.8-4-18.4-7.2-28.8-9.6-10.4-2.4-21.6-3.2-33.6-3.2-12 0-24 1-36 3.2-12 2.2-24 5.6-36 10.4-12 4.8-24 10.4-36 16.8-12 6.4-24 13.6-36 21.6-12 8.8-24 18.4-36 29.6-12 11.2-24 23.2-36 36-4.9 3.5-9.3 6.4-14.7 9.8 1.4-8.8 2-17.6 2-26.4 0-14.4-2.4-28.8-7.2-43.2-1.3-3.6-2.6-7.2-4.1-10.8-1.5-3.6-2.5-7.2-4.2-10.8-3.3-7.2-7.3-13.6-12.2-19.4-4.8-5.8-10.4-11.2-16.8-16.2-7.2-5.6-15.2-10.4-24-14.4-8.8-4-18.4-7.2-28.8-9.6-10.4-2.4-21.6-3.2-33.6-3.2-12 0-24 1-36 3.2-12 2.2-24 5.6-36 10.4-12 4.8-24 10.4-36 16.8-12 6.4-24 13.6-36 21.6-12 8.8-24 18.4-36 29.6-12 11.2-24 23.2-36 36-4.9 3.5-9.3 6.4-14.7 9.8 1.4-8.8 2-17.6 2-26.4 0-14.4-2.4-28.8-7.2-43.2-1.3-3.6-2.6-7.2-4.1-10.8-1.5-3.6-2.5-7.2-4.2-10.8-3.3-7.2-7.3-13.6-12.2-19.4-4.8-5.8-10.4-11.2-16.8-16.2-7.2-5.6-15.2-10.4-24-14.4-8.8-4-18.4-7.2-28.8-9.6-10.4-2.4-21.6-3.2-33.6-3.2-12 0-24 1-36 3.2-12 2.2-24 5.6-36 10.4-12 4.8-24 10.4-36 16.8-12 6.4-24 13.6-36 21.6-12 8.8-24 18.4-36 29.6-12 11.2-24 23.2-36 36-4.9 3.5-9.3 6.4-14.7 9.8 1.4-8.8 2-17.6 2-26.4 0-14.4-2.4-28.8-7.2-43.2-1.3-3.6-2.6-7.2-4.1-10.8-1.5-3.6-2.5-7.2-4.2-10.8-3.3-7.2-7.3-13.6-12.2-19.4-4.8-5.8-10.4-11.2-16.8-16.2-7.2-5.6-15.2-10.4-24-14.4-8.8-4-18.4-7.2-28.8-9.6-10.4-2.4-21.6-3.2-33.6-3.2-12 0-24 1-36 3.2-12 2.2-24 5.6-36 10.4-12 4.8-24 10.4-36 16.8-12 6.4-24 13.6-36 21.6-12 8.8-24 18.4-36 29.6-12 11.2-24 23.2-36 36-4.9 3.5-9.3 6.4-14.7 9.8 1.4-8.8 2-17.6 2-26.4 0-14.4-2.4-28.8-7.2-43.2-1.3-3.6-2.6-7.2-4.1-10.8-1.5-3.6-2.5-7.2-4.2-10.8-3.3-7.2-7.3-13.6-12.2-19.4-4.8-5.8-10.4-11.2-16.8-16.2-7.2-5.6-15.2-10.4-24-14.4-8.8-4-18.4-7.2-28.8-9.6-10.4-2.4-21.6-3.2-33.6-3.2-12 0-24 1-36 3.2-12 2.2-24 5.6-36 10.4-12 4.8-24 10.4-36 16.8-12 6.4-24 13.6-36 21.6-12 8.8-24 18.4-36 29.6-12 11.2-24 23.2-36 36-4.9 3.5-9.3 6.4-14.7 9.8 1.4-8.8 2-17.6 2-26.4 0-14.4-2.4-28.8-7.2-43.2-1.3-3.6-2.6-7.2-4.1-10.8-1.5-3.6-2.5-7.2-4.2-10.8-3.3-7.2-7.3-13.6-12.2-19.4-4.8-5.8-10.4-11.2-16.8-16.2-7.2-5.6-15.2-10.4-24-14.4-8.8-4-18.4-7.2-28.8-9.6-10.4-2.4-21.6-3.2-33.6-3.2-12 0-24 1-36 3.2-12 2.2-24 5.6-36 10.4-12 4.8-24 10.4-36 16.8-12 6.4-24 13.6-36 21.6-12 8.8-24 18.4-36 29.6-12 11.2-24 23.2-36 36-4.9 3.5-9.3 6.4-14.7 9.8 1.4-8.8 2-17.6 2-26.4 0-14.4-2.4-28.8-7.2-43.2-1.3-3.6-2.6-7.2-4.1-10.8-1.5-3.6-2.5-7.2-4.2-10.8-3.3-7.2-7.3-13.6-12.2-19.4-4.8-5.8-10.4-11.2-16.8-16.2-7.2-5.6-15.2-10.4-24-14.4-8.8-4-18.4-7.2-28.8-9.6-10.4-2.4-21.6-3.2-33.6-3.2-12 0-24 1-36 3.2-12 2.2-24 5.6-36 10.4-12 4.8-24 10.4-36 16.8-12 6.4-24 13.6-36 21.6-12 8.8-24 18.4-36 29.6-12 11.2-24 23.2-36 36-4.9 3.5-9.3 6.4-14.7 9.8 1.4-8.8 2-17.6 2-26.4 0-14.4-2.4-28.8-7.2-43.2-1.3-3.6-2.6-7.2-4.1-10.8-1.5-3.6-2.5-7.2-4.2-10.8-3.3-7.2-7.3-13.6-12.2-19.4-4.8-5.8-10.4-11.2-16.8-16.2-7.2-5.6-15.2-10.4-24-14.4-8.8-4-18.4-7.2-28.8-9.6-10.4-2.4-21.6-3.2-33.6-3.2-12 0-24 1-36 3.2-12 2.2-24 5.6-36 10.4-12 4.8-24 10.4-36 16.8-12 6.4-24 13.6-36 21.6-12 8.8-24 18.4-36 29.6-12 11.2-24 23.2-36 36-4.9 3.5-9.3 6.4-14.7 9.8 1.4-8.8 2-17.6 2-26.4 0-14.4-2.4-28.8-7.2-43.2-1.3-3.6-2.6-7.2-4.1-10.8-1.5-3.6-2.5-7.2-4.2-10.8-3.3-7.2-7.3-13.6-12.2-19.4-4.8-5.8-10.4-11.2-16.8-16.2-7.2-5.6-15.2-10.4-24-14.4-8.8-4-18.4-7.2-28.8-9.6-10.4-2.4-21.6-3.2-33.6-3.2-12 0-24 1-36 3.2-12 2.2-24 5.6-36 10.4-12 4.8-24 10.4-36 16.8-12 6.4-24 13.6-36 21.6-12 8.8-24 18.4-36 29.6-12 11.2-24 23.2-36 36-4.9 3.5-9.3 6.4-14.7 9.8 1.4-8.8 2-17.6 2-26.4 0-14.4-2.4-28.8-7.2-43.2-1.3-3.6-2.6-7.2-4.1-10.8-1.5-3.6-2.5-7.2-4.2-10.8-3.3-7.2-7.3-13.6-12.2-19.4-4.8-5.8-10.4-11.2-16.8-16.2-7.2-5.6-15.2-10.4-24-14.4-8.8-4-18.4-7.2-28.8-9.6-10.4-2.4-21.6-3.2-33.6-3.2-12 0-24 1-36 3.2-12 2.2-24 5.6-36 10.4-12 4.8-24 10.4-36 16.8-12 6.4-24 13.6-36 21.6-12 8.8-24 18.4-36 29.6-12 11.2-24 23.2-36 36-4.9 3.5-9.3 6.4-14.7 9.8 1.4-8.8 2-17.6 2-26.4 0-14.4-2.4-28.8-7.2-43.2-1.3-3.6-2.6-7.2-4.1-10.8-1.5-3.6-2.5-7.2-4.2-10.8-3.3-7.2-7.3-13.6-12.2-19.4-4.8-5.8-10.4-11.2-16.8-16.2-7.2-5.6-15.2-10.4-24-14.4-8.8-4-18.4-7.2-28.8-9.6-10.4-2.4-21.6-3.2-33.6-3.2-12 0-24 1-36 3.2-12 2.2-24 5.6-36 10.4-12 4.8-24 10.4-36 16.8-12 6.4-24 13.6-36 21.6-12 8.8-24 18.4-36 29.6-12 11.2-24 23.2-36 36-4.9 3.5-9.3 6.4-14.7 9.8 1.4-8.8 2-17.6 2-26.4 0-14.4-2.4-28.8-7.2-43.2-1.3-3.6-2.6-7.2-4.1-10.8-1.5-3.6-2.5-7.2-4.2-10.8-3.3-7.2-7.3-13.6-12.2-19.4-4.8-5.8-10.4-11.2-16.8-16.2-7.2-5.6-15.2-10.4-24-14.4-8.8-4-18.4-7.2-28.8-9.6-10.4-2.4-21.6-3.2-33.6-3.2-12 0-24 1-36 3.2-12 2.2-24 5.6-36 10.4-12 4.8-24 10.4-36 16.8-12 6.4-24 13.6-36 21.6-12 8.8-24 18.4-36 29.6-12 11.2-24 23.2-36 36-4.9 3.5-9.3 6.4-14.7 9.8 1.4-8.8 2-17.6 2-26.4 0-14.4-2.4-28.8-7.2-43.2-1.3-3.6-2.6-7.2-4.1-10.8-1.5-3.6-2.5-7.2-4.2-10.8-3.3-7.2-7.3-13.6-12.2-19.4-4.8-5.8-10.4-11.2-16.8-16.2-7.2-5.6-15.2-10.4-24-14.4-8.8-4-18.4-7.2-28.8-9.6-10.4-2.4-21.6-3.2-33.6-3.2-12 0-24 1-36 3.2-12 2.2-24 5.6-36 10.4-12 4.8-24 10.4-36 16.8-12 6.4-24 13.6-36 21.6-12 8.8-24 18.4-36 29.6-12 11.2-24 23.2-36 36-4.9 3.5-9.3 6.4-14.7 9.8 1.4-8.8 2-17.6 2-26.4 0-14.4-2.4-28.8-7.2-43.2-1.3-3.6-2.6-7.2-4.1-10.8-1.5-3.6-2.5-7.2-4.2-10.8-3.3-7.2-7.3-13.6-12.2-19.4-4.8-5.8-10.4-11.2-16.8-16.2-7.2-5.6-15.2-10.4-24-14.4-8.8-4-18.4-7.2-28.8-9.6-10.4-2.4-21.6-3.2-33.6-3.2-12 0-24 1-36 3.2-12 2.2-24 5.6-36 10.4-12 4.8-24 10.4-36 16.8-12 6.4-24 13.6-36 21.6-12 8.8-24 18.4-36 29.6-12 11.2-24 23.2-36 36-4.9 3.5-9.3 6.4-14.7 9.8 1.4-8.8 2-17.6 2-26.4 0-14.4-2.4-28.8-7.2-43.2-1.3-3.6-2.6-7.2-4.1-10.8-1.5-3.6-2.5-7.2-4.2-10.8-3.3-7.2-7.3-13.6-12.2-19.4-4.8-5.8-10.4-11.2-16.8-16.2-7.2-5.6-15.2-10.4-24-14.4-8.8-4-18.4-7.2-28.8-9.6-10.4-2.4-21.6-3.2-33.6-3.2-12 0-24 1-36 3.2-12 2.2-24 5.6-36 10.4-12 4.8-24 10.4-36 16.8-12 6.4-24 13.6-36 21.6-12 8.8-24 18.4-36 29.6-12 11.2-24 23.2-36 36-4.9 3.5-9.3 6.4-14.7 9.8 1.4-8.8 2-17.6 2-26.4 0-14.4-2.4-28.8-7.2-43.2-1.3-3.6-2.6-7.2-4.1-10.8-1.5-3.6-2.5-7.2-4.2-10.8-3.3-7.2-7.3-13.6-12.2-19.4-4.8-5.8-10.4-11.2-16.8-16.2-7.2-5.6-15.2-10.4-24-14.4-8.8-4-18.4-7.2-28.8-9.6-10.4-2.4-21.6-3.2-33.6-3.2-12 0-24 1-36 3.2-12 2.2-24 5.6-36 10.4-12 4.8-24 10.4-36 16.8-12 6.4-24 13.6-36 21.6-12 8.8-24 18.4-36 29.6-12 11.2-24 23.2-36 36-4.9 3.5-9.3 6.4-14.7 9.8 1.4-8.8 2-17.6 2-26.4 0-14.4-2.4-28.8-7.2-43.2-1.3-3.6-2.6-7.2-4.1-10.8-1.5-3.6-2.5-7.2-4.2-10.8-3.3-7.2-7.3-13.6-12.2-19.4-4.8-5.8-10.4-11.2-16.8-16.2-7.2-5.6-15.2-10.4-24-14.4-8.8-4-18.4-7.2-28.8-9.6-10.4-2.4-21.6-3.2-33.6-3.2-12 0-24 1-36 3.2-12 2.2-24 5.6-36 10.4-12 4.8-24 10.4-36 16.8-12 6.4-24 13.6-36 21.6-12 8.8-24 18.4-36 29.6-12 11.2-24 23.2-36 36-4.9 3.5-9.3 6.4-14.7 9.8 1.4-8.8 2-17.6 2-26.4 0-14.4-2.4-28.8-7.2-43.2-1.3-3.6-2.6-7.2-4.1-10.8-1.5-3.6-2.5-7.2-4.2-10.8-3.3-7.2-7.3-13.6-12.2-19.4-4.8-5.8-10.4-11.2-16.8-16.2-7.2-5.6-15.2-10.4-24-14.4-8.8-4-18.4-7.2-28.8-9.6-10.4-2.4-21.6-3.2-33.6-3.2-12 0-24 1-36 3.2-12 2.2-24 5.6-36 10.4-12 4.8-24 10.4-36 16.8-12 6.4-24 13.6-36 21.6-12 8.8-24 18.4-36 29.6-12 11.2-24 23.2-36 36-4.9 3.5-9.3 6.4-14.7 9.8 1.4-8.8 2-17.6 2-26.4 0-14.4-2.4-28.8-7.2-43.2-1.3-3.6-2.6-7.2-4.1-10.8-1.5-3.6-2.5-7.2-4.2-10.8-3.3-7.2-7.3-13.6-12.2-19.4-4.8-5.8-10.4-11.2-16.8-16.2-7.2-5.6-15.2-10.4-24-14.4-8.8-4-18.4-7.2-28.8-9.6-10.4-2.4-21.6-3.2-33.6-3.2-12 0-24 1-36 3.2-12 2.2-24 5.6-36 10.4-12 4.8-24 10.4-36 16.8-12 6.4-24 13.6-36 21.6-12 8.8-24 18.4-36 29.6-12 11.2-24 23.2-36 36-4.9 3.5-9.3 6.4-14.7 9.8 1.4-8.8 2-17.6 2-26.4 0-14.4-2.4-28.8-7.2-43.2-1.3-3.6-2.6-7.2-4.1-10.8-1.5-3.6-2.5-7.2-4.2-10.8-3.3-7.2-7.3-13.6-12.2-19.4-4.8-5.8-10.4-11.2-16.8-16.2-7.2-5.6-15.2-10.4-24-14.4-8.8-4-18.4-7.2-28.8-9.6-10.4-2.4-21.6-3.2-33.6-3.2-12 0-24 1-36 3.2-12 2.2-24 5.6-36 10.4-12 4.8-24 10.4-36 16.8-12 6.4-24 13.6-36 21.6-12 8.8-24 18.4-36 29.6-12 11.2-24 23.2-36 36-4.9 3.5-9.3 6.4-14.7 9.8 1.4-8.8 2-17.6 2-26.4 0-14.4-2.4-28.8-7.2-43.2-1.3-3.6-2.6-7.2-4.1-10.8-1.5-3.6-2.5-7.2-4.2-10.8-3.3-7.2-7.3-13.6-12.2-19.4-4.8-5.8-10.4-11.2-16.8-16.2-7.2-5.6-15.2-10.4-24-14.4-8.8-4-18.4-7.2-28.8-9.6-10.4-2.4-21.6-3.2-33.6-3.2-12 0-24 1-36 3.2-12 2.2-24 5.6-36 10.4-12 4.8-24 10.4-36 16.8-12 6.4-24 13.6-36 21.6-12 8.8-24 18.4-36 29.6-12 11.2-24 23.2-36 36-4.9 3.5-9.3 6.4-14.7 9.8 1.4-8.8 2-17.6 2-26.4 0-14.4-2.4-28.8-7.2-43.2-1.3-3.6-2.6-7.2-4.1-10.8-1.5-3.6-2.5-7.2-4.2-10.8-3.3-7.2-7.3-13.6-12.2-19.4-4.8-5.8-10.4-11.2-16.8-16.2-7.2-5.6-15.2-10.4-24-14.4-8.8-4-18.4-7.2-28.8-9.6-10.4-2.4-21.6-3.2-33.6-3.2-12 0-24 1-36 3.2-12 2.2-24 5.6-36 10.4-12 4.8-24 10.4-36 16.8-12 6.4-24 13.6-36 21.6-12 8.8-24 18.4-36 29.6-12 11.2-24 23.2-36 36-4.9 3.5-9.3 6.4-14.7 9.8 1.4-8.8 2-17.6 2-26.4 0-14.4-2.4-28.8-7.2-43.2-1.3-3.6-2.6-7.2-4.1-10.8-1.5-3.6-2.5-7.2-4.2-10.8-3.3-7.2-7.3-13.6-12.2-19.4-4.8-5.8-10.4-11.2-16.8-16.2-7.2-5.6-15.2-10.4-24-14.4-8.8-4-18.4-7.2-28.8-9.6-10.4-2.4-21.6-3.2-33.6-3.2-12 0-24 1-36 3.2-12 2.2-24 5.6-36 10.4-12 4.8-24 10.4-36 16.8-12 6.4-24 13.6-36 21.6-12 8.8-24 18.4-36 29.6-12 11.2-24 23.2-36 36-4.9 3.5-9.3 6.4-14.7 9.8 1.4-8.8 2-17.6 2-26.4 0-14.4-2.4-28.8-7.2-43.2-1.3-3.6-2.6-7.2-4.1-10.8-1.5-3.6-2.5-7.2-4.2-10.8-3.3-7.2-7.3-13.6-12.2-19.4-4.8-5.8-10.4-11.2-16.8-16.2-7.2-5.6-15.2-10.4-24-14.4-8.8-4-18.4-7.2-28.8-9.6-10.4-2.4-21.6-3.2-33.6-3.2-12 0-24 1-36 3.2-12 2.2-24 5.6-36 10.4-12 4.8-24 10.4-36 16.8-12 6.4-24 13.6-36 21.6-12 8.8-24 18.4-36 29.6-12 11.2-24 23.2-36 36-4.9 3.5-9.3 6.4-14.7 9.8 1.4-8.8 2-17.6 2-26.4 0-14.4-2.4-28.8-7.2-43.2-1.3-3.6-2.6-7.2-4.1-10.8-1.5-3.6-2.5-7.2-4.2-10.8-3.3-7.2-7.3-13.6-12.2-19.4-4.8-5.8-10.4-11.2-16.8-16.2-7.2-5.6-15.2-10.4-24-14.4-8.8-4-18.4-7.2-28.8-9.6-10.4-2.4-21.6-3.2-33.6-3.2-12 0-24 1-36 3.2-12 2.2-24 5.6-36 10.4-12 4.8-24 10.4-36 16.8-12 6.4-24 13.6-36 21.6-12 8.8-24 18.4-36 29.6-12 11.2-24 23.2-36 36-4.9 3.5-9.3 6.4-14.7 9.8 1.4-8.8 2-17.6 2-26.4 0-14.4-2.4-28.8-7.2-43.2-1.3-3.6-2.6-7.2-4.1-10.8-1.5-3.6-2.5-7.2-4.2-10.8-3.3-7.2-7.3-13.6-12.2-19.4-4.8-5.8-10.4-11.2-16.8-16.2-7.2-5.6-15.2-10.4-24-14.4-8.8-4-18.4-7.2-28.8-9.6-10.4-2.4-21.6-3.2-33.6-3.2-12 0-24 1-36 3.2-12 2.2-24 5.6-36 10.4-12 4.8-24 10.4-36 16.8-12 6.4-24 13.6-36 21.6-12 8.8-24 18.4-36 29.6-12 11.2-24 23.2-36 36-4.9 3.5-9.3 6.4-14.7 9.8 1.4-8.8 2-17.6 2-26.4 0-14.4-2.4-28.8-7.2-43.2-1.3-3.6-2.6-7.2-4.1-10.8-1.5-3.6-2.5-7.2-4.2-10.8-3.3-7.2-7.3-13.6-12.2-19.4-4.8-5.8-10.4-11.2-16.8-16.2-7.2-5.6-15.2-10.4-24-14.4-8.8-4-18.4-7.2-28.8-9.6-10.4-2.4-21.6-3.2-33.6-3.2-12 0-24 1-36 3.2-12 2.2-24 5.6-36 10.4-12 4.8-24 10.4-36 16.8-12 6.4-24 13.6-36 21.6-12 8.8-24 18.4-36 29.6-12 11.2-24 23.2-36 36-4.9 3.5-9.3 6.4-14.7 9.8 1.4-8.8 2-17.6 2-26.4 0-14.4-2.4-28.8-7.2-43.2-1.3-3.6-2.6-7.2-4.1-10.8-1.5-3.6-2.5-7.2-4.2-10.8-3.3-7.2-7.3-13.6-12.2-19.4-4.8-5.8-10.4-11.2-16.8-16.2-7.2-5.6-15.2-10.4-24-14.4-8.8-4-18.4-7.2-28.8-9.6-10.4-2.4-21.6-3.2-33.6-3.2-12 0-24 1-36 3.2-12 2.2-24 5.6-36 10.4-12 4.8-24 10.4-36 16.8-12 6.4-24 13.6-36 21.6-12 8.8-24 18.4-36 29.6-12 11.2-24 23.2-36 36-4.9 3.5-9.3 6.4-14.7 9.8 1.4-8.8 2-17.6 2-26.4 0-14.4-2.4-28.8-7.2-43.2-1.3-3.6-2.6-7.2-4.1-10.8-1.5-3.6-2.5-7.2-4.2-10.8-3.3-7.2-7.3-13.6-12.2-19.4-4.8-5.8-10.4-11.2-16.8-16.2-7.2-5.6-15.2-10.4-24-14.4-8.8-4-18.4-7.2-28.8-9.6-10.4-2.4-21.6-3.2-33.6-3.2-12 0-24 1-36 3.2-12 2.2-24 5.6-36 10.4-12 4.8-24 10.4-36 16.8-12 6.4-24 13.6-36 21.6-12 8.8-24 18.4-36 29.6-12 11.2-24 23.2-36 36-4.9 3.5-9.3 6.4-14.7 9.8 1.4-8.8 2-17.6 2-26.4 0-14.4-2.4-28.8-7.2-43.2-1.3-3.6-2.6-7.2-4.1-10.8-1.5-3.6-2.5-7.2-4.2-10.8-3.3-7.2-7.3-13.6-12.2-19.4-4.8-5.8-10.4-11.2-16.8-16.2-7.2-5.6-15.2-10.4-24-14.4-8.8-4-18.4-7.2-28.8-9.6-10.4-2.4-21.6-3.2-33.6-3.2-12 0-24 1-36 3.2-12 2.2-24 5.6-36 10.4-12 4.8-24 10.4-36 16.8-12 6.4-24 13.6-36 21.6-12 8.8-24 18.4-36 29.6-12 11.2-24 23.2-36 36-4.9 3.5-9.3 6.4-14.7 9.8 1.4-8.8 2-17.6 2-26.4 0-14.4-2.4-28.8-7.2-43.2-1.3-3.6-2.6-7.2-4.1-10.8-1.5-3.6-2.5-7.2-4.2-10.8-3.3-7.2-7.3-13.6-12.2-19.4-4.8-5.8-10.4-11.2-16.8-16.2-7.2-5.6-15.2-10.4-24-14.4-8.8-4-18.4-7.2-28.8-9.6-10.4-2.4-21.6-3.2-33.6-3.2-12 0-24 1-36 3.2-12 2.2-24 5.6-36 10.4-12 4.8-24 10.4-36 16.8-12 6.4-24 13.6-36 21.6-12 8.8-24 18.4-36 29.6-12 11.2-24 23.2-36 36-4.9 3.5-9.3 6.4-14.7 9.8 1.4-8.8 2-17.6 2-26.4 0-14.4-2.4-28.8-7.2-43.2-1.3-3.6-2.6-7.2-4.1-10.8-1.5-3.6-2.5-7.2-4.2-10.8-3.3-7.2-7.3-13.6-12.2-19.4-4.8-5.8-10.4-11.2-16.8-16.2-7.2-5.6-15.2-10.4-24-14.4-8.8-4-18.4-7.2-28.8-9.6-10.4-2.4-21.6-3.2-33.6-3.2-12 0-24 1-36 3.2-12 2.2-24 5.6-36 10.4-12 4.8-24 10.4-36 16.8-12 6.4-24 13.6-36 21.6-12 8.8-24 18.4-36 29.6-12 11.2-24 23.2-36 36-4.9 3.5-9.3 6.4-14.7 9.8 1.4-8.8 2-17.6 2-26.4 0-14.4-2.4-28.8-7.2-43.2-1.3-3.6-2.6-7.2-4.1-10.8-1.5-3.6-2.5-7.2-4.2-10.8-3.3-7.2-7.3-13.6-12.2-19.4-4.8-5.8-10.4-11.2-16.8-16.2-7.2-5.6-15.2-10.4-24-14.4-8.8-4-18.4-7.2-28.8-9.6-10.4-2.4-21.6-3.2-33.6-3.2-12 0-24 1-36 3.2-12 2.2-24 5.6-36 10.4-12 4.8-24 10.4-36 16.8-12 6.4-24 13.6-36 21.6-12 8.8-24 18.4-36 29.6-12 11.2-24 23.2-36 36-4.9 3.5-9.3 6.4-14.7 9.8 1.4-8.8 2-17.6 2-26.4 0-14.4-2.4-28.8-7.2-43.2-1.3-3.6-2.6-7.2-4.1-10.8-1.5-3.6-2.5-7.2-4.2-10.8-3.3-7.2-7.3-13.6-12.2-19.4-4.8-5.8-10.4-11.2-16.8-16.2-7.2-5.6-15.2-10.4-24-14.4-8.8-4-18.4-7.2-28.8-9.6-10.4-2.4-21.6-3.2-33.6-3.2-12 0-24 1-36 3.2-12 2.2-24 5.6-36 10.4-12 4.8-24 10.4-36 16.8-12 6.4-24 13.6-36 21.6-12 8.8-24 18.4-36 29.6-12 11.2-24 23.2-36 36-4.9 3.5-9.3 6.4-14.7 9.8 1.4-8.8 2-17.6 2-26.4 0-14.4-2.4-28.8-7.2-43.2-1.3-3.6-2.6-7.2-4.1-10.8-1.5-3.6-2.5-7.2-4.2-10.8-3.3-7.2-7.3-13.6-12.2-19.4-4.8-5.8-10.4-11.2-16.8-16.2-7.2-5.6-15.2-10.4-24-14.4-8.8-4-18.4-7.2-28.8-9.6-10.4-2.4-21.6-3.2-33.6-3.2-12 0-24 1-36 3.2-12 2.2-24 5.6-36 10.4-12 4.8-24 10.4-36 16.8-12 6.4-24 13.6-36 21.6-12 8.8-24 18.4-36 29.6-12 11.2-24 23.2-36 36-4.9 3.5-9.3 6.4-14.7 9.8 1.4-8.8 2-17.6 2-26.4 0-14.4-2.4-28.8-7.2-43.2-1.3-3.6-2.6-7.2-4.1-10.8-1.5-3.6-2.5-7.2-4.2-10.8-3.3-7.2-7.3-13.6-12.2-19.4-4.8-5.8-10.4-11.2-16.8-16.2-7.2-5.6-15.2-10.4-24-14.4-8.8-4-18.4-7.2-28.8-9.6-10.4-2.4-21.6-3.2-33.6-3.2-12 0-24 1-36 3.2-12 2.2-24 5.6-36 10.4-12 4.8-24 10.4-36 16.8-12 6.4-24 13.6-36 21.6-12 8.8-24 18.4-36 29.6-12 11.2-24 23.2-36 36-4.9 3.5-9.3 6.4-14.7 9.8 1.4-8.8 2-17.6 2-26.4 0-14.4-2.4-28.8-7.2-43.2-1.3-3.6-2.6-7.2-4.1-10.8-1.5-3.6-2.5-7.2-4.2-10.8-3.3-7.2-7.3-13.6-12.2-19.4-4.8-5.8-10.4-11.2-16.8-16.2-7.2-5.6-15.2-10.4-24-14.4-8.8-4-18.4-7.2-28.8-9.6-10.4-2.4-21.6-3.2-33.6-3.2-12 0-24 1-36 3.2-12 2.2-24 5.6-36 10.4-12 4.8-24 10.4-36 16.8-12 6.4-24 13.6-36 21.6-12 8.8-24 18.4-36 29.6-12 11.2-24 23.2-36 36-4.9 3.5-9.3 6.4-14.7 9.8 1.4-8.8 2-17.6 2-26.4 0-14.4-2.4-28.8-7.2-43.2-1.3-3.6-2.6-7.2-4.1-10.8-1.5-3.6-2.5-7.2-4.2-10.8-3.3-7.2-7.3-13.6-12.2-19.4-4.8-5.8-10.4-11.2-16.8-16.2-7.2-5.6-15.2-10.4-24-14.4-8.8-4-18.4-7.2-28.8-9.6-10.4-2.4-21.6-3.2-33.6-3.2-12 0-24 1-36 3.2-12 2.2-24 5.6-36 10.4-12 4.8-24 10.4-36 16.8-12 6.4-24 13.6-36 21.6-12 8.8-24 18.4-36 29.6-12 11.2-24 23.2-36 36-4.9 3.5-9.3 6.4-14.7 9.8 1.4-8.8 2-17.6 2-26.4 0-14.4-2.4-28.8-7.2-43.2-1.3-3.6-2.6-7.2-4.1-10.8-1.5-3.6-2.5-7.2-4.2-10.8-3.3-7.2-7.3-13.6-12.2-19.4-4.8-5.8-10.4-11.2-16.8-16.2-7.2-5.6-15.2-10.4-24-14.4-8.8-4-18.4-7.2-28.8-9.6-10.4-2.4-21.6-3.2-33.6-3.2-12 0-24 1-36 3.2-12 2.2-24 5.6-36 10.4-12 4.8-24 10.4-36 16.8-12 6.4-24 13.6-36 21.6-12 8.8-24 18.4-36 29.6-12 11.2-24 23.2-36 36-4.9 3.5-9.3 6.4-14.7 9.8 1.4-8.8 2-17.6 2-26.4 0-14.4-2.4-28.8-7.2-43.2-1.3-3.6-2.6-7.2-4.1-10.8-1.5-3.6-2.5-7.2-4.2-10.8-3.3-7.2-7.3-13.6-12.2-19.4-4.8-5.8-10.4-11.2-16.8-16.2-7.2-5.6-15.2-10.4-24-14.4-8.8-4-18.4-7.2-28.8-9.6-10.4-2.4-21.6-3.2-33.6-3.2-12 0-24 1-36 3.2-12 2.2-24 5.6-36 10.4-12 4.8-24 10.4-36 16.8-12 6.4-24 13.6-36 21.6-12 8.8-24 18.4-36 29.6-12 11.2-24 23.2-36 36-4.9 3.5-9.3 6.4-14.7 9.8 1.4-8.8 2-17.6 2-26.4 0-14.4-2.4-28.8-7.2-43.2-1.3-3.6-2.6-7.2-4.1-10.8-1.5-3.6-2.5-7.2-4.2-10.8-3.3-7.2-7.3-13.6-12.2-19.4-4.8-5.8-10.4-11.2-16.8-16.2-7.2-5.6-15.2-10.4-24-14.4-8.8-4-18.4-7.2-28.8-9.6-10.4-2.4-21.6-3.2-33.6-3.2-12 0-24 1-36 3.2-12 2.2-24 5.6-36 10.4-12 4.8-24 10.4-36 16.8-12 6.4-24 13.6-36 21.6-12 8.8-24 18.4-36 29.6-12 11.2-24 23.2-36 36-4.9 3.5-9.3 6.4-14.7 9.8 1.4-8.8 2-17.6 2-26.4 0-14.4-2.4-28.8-7.2-43.2-1.3-3.6-2.6-7.2-4.1-10.8-1.5-3.6-2.5-7.2-4.2-10.8-3.3-7.2-7.3-13.6-12.2-19.4-4.8-5.8-10.4-11.2-16.8-16.2-7.2-5.6-15.2-10.4-24-14.4-8.8-4-18.4-7.2-28.8-9.6-10.4-2.4-21.6-3.2-33.6-3.2-12 0-24 1-36 3.2-12 2.2-24 5.6-36 10.4-12 4.8-24 10.4-36 16.8-12 6.4-24 13.6-36 21.6-12 8.8-24 18.4-36 29.6-12 11.2-24 23.2-36 36-4.9 3.5-9.3 6.4-14.7 9.8 1.4-8.8 2-17.6 2-26.4 0-14.4-2.4-28.8-7.2-43.2-1.3-3.6-2.6-7.2-4.1-10.8-1.5-3.6-2.5-7.2-4.2-10.8-3.3-7.2-7.3-13.6-12.2-19.4-4.8-5.8-10.4-11.2-16.8-16.2-7.2-5.6-15.2-10.4-24-14.4-8.8-4-18.4-7.2-28.8-9.6-10.4-2.4-21.6-3.2-33.6-3.2-12 0-24 1-36 3.2-12 2.2-24 5.6-36 10.4-12 4.8-24 10.4-36 16.8-12 6.4-24 13.6-36 21.6-12 8.8-24 18.4-36 29.6-12 11.2-24 23.2-36 36-4.9 3.5-9.3 6.4-14.7 9.8 1.4-8.8 2-17.6 2-26.4 0-14.4-2.4-28.8-7.2-43.2-1.3-3.6-2.6-7.2-4.1-10.8-1.5-3.6-2.5-7.2-4.2-10.8-3.3-7.2-7.3-13.6-12.2-19.4-4.8-5.8-10.4-11.2-16.8-16.2-7.2-5.6-15.2-10.4-24-14.4-8.8-4-18.4-7.2-28.8-9.6-10.4-2.4-21.6-3.2-33.6-3.2-12 0-24 1-36 3.2-12 2.2-24 5.6-36 10.4-12 4.8-24 10.4-36 16.8-12 6.4-24 13.6-36 21.6-12 8.8-24 18.4-36 29.6-12 11.2-24 23.2-36 36-4.9 3.5-9.3 6.4-14.7 9.8 1.4-8.8 2-17.6 2-26.4 0-14.4-2.4-28.8-7.2-43.2-1.3-3.6-2.6-7.2-4.1-10.8-1.5-3.6-2.5-7.2-4.2-10.8-3.3-7.2-7.3-13.6-12.2-19.4-4.8-5.8-10.4-11.2-16.8-16.2-7.2-5.6-15.2-10.4-24-14.4-8.8-4-18.4-7.2-28.8-9.6-10.4-2.4-21.6-3.2-33.6-3.2-12 0-24 1-36 3.2-12 2.2-24 5.6-36 10.4-12 4.8-24 10.4-36 16.8-12 6.4-24 13.6-36 21.6-12 8.8-24 18.4-36 29.6-12 11.2-24 23.2-36 36-4.9 3.5-9.3 6.4-14.7 9.8 1.4-8.8 2-17.6 2-26.4 0-14.4-2.4-28.8-7.2-43.2-1.3-3.6-2.6-7.2-4.1-10.8-1.5-3.6-2.5-7.2-4.2-10.8-3.3-7.2-7.3-13.6-12.2-19.4-4.8-5.8-10.4-11.2-16.8-16.2-7.2-5.6-15.2-10.4-24-14.4-8.8-4-18.4-7.2-28.8-9.6-10.4-2.4-21.6-3.2-33.6-3.2-12 0-24 1-36 3.2-12 2.2-24 5.6-36 10.4-12 4.8-24 10.4-36 16.8-12 6.4-24 13.6-36 21.6-12 8.8-24 18.4-36 29.6-12 11.2-24 23.2-36 36-4.9 3.5-9.3 6.4-14.7 9.8 1.4-8.8 2-17.6 2-26.4 0-14.4-2.4-28.8-7.2-43.2-1.3-3.6-2.6-7.2-4.1-10.8-1.5-3.6-2.5-7.2-4.2-10.8-3.3-7.2-7.3-13.6-12.2-19.4-4.8-5.8-10.4-11.2-16.8-16.2-7.2-5.6-15.2-10.4-24-14.4-8.8-4-18.4-7.2-28.8-9.6-10.4-2.4-21.6-3.2-33.6-3.2-12 0-24 1-36 3.2-12 2.2-24 5.6-36 10.4-12 4.8-24 10.4-36 16.8-12 6.4-24 13.6-36 21.6-12 8.8-24 18.4-36 29.6-12 11.2-24 23.2-36 36-4.9 3.5-9.3 6.4-14.7 9.8 1.4-8.8 2-17.6 2-26.4 0-14.4-2.4-28.8-7.2-43.2-1.3-3.6-2.6-7.2-4.1-10.8-1.5-3.6-2.5-7.2-4.2-10.8-3.3-7.2-7.3-13.6-12.2-19.4-4.8-5.8-10.4-11.2-16.8-16.2-7.2-5.6-15.2-10.4-24-14.4-8.8-4-18.4-7.2-28.8-9.6-10.4-2.4-21.6-3.2-33.6-3.2-12 0-24 1-36 3.2-12 2.2-24 5.6-36 10.4-12 4.8-24 10.4-36 16.8-12 6.4-24 13.6-36 21.6-12 8.8-24 18.4-36 29.6-12 11.2-24 23.2-36 36-4.9 3.5-9.3 6.4-14.7 9.8 1.4-8.8 2-17.6 2-26.4 0-14.4-2.4-28.8-7.2-43.2-1.3-3.6-2.6-7.2-4.1-10.8-1.5-3.6-2.5-7.2-4.2-10.8-3.3-7.2-7.3-13.6-12.2-19.4-4.8-5.8-10.4-11.2-16.8-16.2-7.2-5.6-15.2-10.4-24-14.4-8.8-4-18.4-7.2-28.8-9.6-10.4-2.4-21.6-3.2-33.6-3.2-12 0-24 1-36 3.2-12 2.2-24 5.6-36 10.4-12 4.8-24 10.4-36 16.8-12 6.4-24 13.6-36 21.6-12 8.8-24 18.4-36 29.6-12 11.2-24 23.2-36 36-4.9 3.5-9.3 6.4-14.7 9.8 1.4-8.8 2-17.6 2-26.4 0-14.4-2.4-28.8-7.2-43.2-1.3-3.6-2.6-7.2-4.1-10.8-1.5-3.6-2.5-7.2-4.2-10.8-3.3-7.2-7.3-13.6-12.2-19.4-4.8-5.8-10.4-11.2-16.8-16.2-7.2-5.6-15.2-10.4-24-14.4-8.8-4-18.4-7.2-28.8-9.6-10.4-2.4-21.6-3.2-33.6-3.2-12 0-24 1-36 3.2-12 2.2-24 5.6-36 10.4-12 4.8-24 10.4-36 16.8-12 6.4-24 13.6-36 21.6-12 8.8-24 18.4-36 29.6-12 11.2-24 23.2-36 36-4.9 3.5-9.3 6.4-14.7 9.8 1.4-8.8 2-17.6 2-26.4 0-14.4-2.4-28.8-7.2-43.2-1.3-3.6-2.6-7.2-4.1-10.8-1.5-3.6-2.5-7.2-4.2-10.8-3.3-7.2-7.3-13.6-12.2-19.4-4.8-5.8-10.4-11.2-16.8-16.2-7.2-5.6-15.2-10.4-24-14.4-8.8-4-18.4-7.2-28.8-9.6-10.4-2.4-21.6-3.2-33.6-3.2-12 0-24 1-36 3.2-12 2.2-24 5.6-36 10.4-12 4.8-24 10.4-36 16.8-12 6.4-24 13.6-36 21.6-12 8.8-24 18.4-36 29.6-12 11.2-24 23.2-36 36-4.9 3.5-9.3 6.4-14.7 9.8 1.4-8.8 2-17.6 2-26.4 0-14.4-2.4-28.8-7.2-43.2-1.3-3.6-2.6-7.2-4.1-10.8-1.5-3.6-2.5-7.2-4.2-10.8-3.3-7.2-7.3-13.6-12.2-19.4-4.8-5.8-10.4-11.2-16.8-16.2-7.2-5.6-15.2-10.4-24-14.4-8.8-4-18.4-7.2-28.8-9.6-10.4-2.4-21.6-3.2-33.6-3.2-12 0-24 1-36 3.2-12 2.2-24 5.6-36 10.4-12 4.8-24 10.4-36 16.8-12 6.4-24 13.6-36 21.6-12 8.8-24 18.4-36 29.6-12 11.2-24 23.2-36 36-4.9 3.5-9.3 6.4-14.7 9.8 1.4-8.8 2-17.6 2-26.4 0-14.4-2.4-28.8-7.2-43.2-1.3-3.6-2.6-7.2-4.1-10.8-1.5-3.6-2.5-7.2-4.2-10.8-3.3-7.2-7.3-13.6-12.2-19.4-4.8-5.8-10.4-11.2-16.8-16.2-7.2-5.6-15.2-10.4-24-14.4-8.8-4-18.4-7.2-28.8-9.6-10.4-2.4-21.6-3.2-33.6-3.2-12 0-24 1-36 3.2-12 2.2-24 5.6-36 10.4-12 4.8-24 10.4-36 16.8-12 6.4-24 13.6-36 21.6-12 8.8-24 18.4-36 29.6-12 11.2-24 23.2-36 36-4.9 3.5-9.3 6.4-14.7 9.8 1.4-8.8 2-17.6 2-26.4 0-14.4-2.4-28.8-7.2-43.2-1.3-3.6-2.6-7.2-4.1-10.8-1.5-3.6-2.5-7.2-4.2-10.8-3.3-7.2-7.3-13.6-12.2-19.4-4.8-5.8-10.4-11.2-16.8-16.2-7.2-5.6-15.2-10.4-24-14.4-8.8-4-18.4-7.2-28.8-9.6-10.4-2.4-21.6-3.2-33.6-3.2-12 0-24 1-36 3.2-12 2.2-24 5.6-36 10.4-12 4.8-24 10.4-36 16.8-12 6.4-24 13.6-36 21.6-12 8.8-24 18.4-36 29.6-12 11.2-24 23.2-36 36-4.9 3.5-9.3 6.4-14.7 9.8 1.4-8.8 2-17.6 2-26.4 0-14.4-2.4-28.8-7.2-43.2-1.3-3.6-2.6-7.2-4.1-10.8-1.5-3.6-2.5-7.2-4.2-10.8-3.3-7.2-7.3-13.6-12.2-19.4-4.8-5.8-10.4-11.2-16.8-16.2-7.2-5.6-15.2-10.4-24-14.4-8.8-4-18.4-7.2-28.8-9.6-10.4-2.4-21.6-3.2-33.6-3.2-12 0-24 1-36 3.2-12 2.2-24 5.6-36 10.4-12 4.8-24 10.4-36 16.8-12 6.4-24 13.6-36 21.6-12 8.8-24 18.4-36 29.6-12 11.2-24 23.2-36 36-4.9 3.5-9.3 6.4-14.7 9.8 1.4-8.8 2-17.6 2-26.4 0-14.4-2.4-28.8-7.2-43.2-1.3-3.6-2.6-7.2-4.1-10.8-1.5-3.6-2.5-7.2-4.2-10.8-3.3-7.2-7.3-13.6-12.2-19.4-4.8-5.8-10.4-11.2-16.8-16.2-7.2-5.6-15.2-10.4-24-14.4-8.8-4-18.4-7.2-28.8-9.6-10.4-2.4-21.6-3.2-33.6-3.2-12 0-24 1-36 3.2-12 2.2-24 5.6-36 10.4-12 4.8-24 10.4-36 16.8-12 6.4-24 13.6-36 21.6-12 8.8-24 18.4-36 29.6-12 11.2-24 23.2-36 36-4.9 3.5-9.3 6.4-14.7 9.8 1.4-8.8 2-17.6 2-26.4 0-14.4-2.4-28.8-7.2-43.2-1.3-3.6-2.6-7.2-4.1-10.8-1.5-3.6-2.5-7.2-4.2-10.8-3.3-7.2-7.3-13.6-12.2-19.4-4.8-5.8-10.4-11.2-16.8-16.2-7.2-5.6-15.2-10.4-24-14.4-8.8-4-18.4-7.2-28.8-9.6-10.4-2.4-21.6-3.2-33.6-3.2-12 0-24 1-36 3.2-12 2.2-24 5.6-36 10.4-12 4.8-24 10.4-36 16.8-12 6.4-24 13.6-36 21.6-12 8.8-24 18.4-36 29.6-12 11.2-24 23.2-36 36-4.9 3.5-9.3 6.4-14.7 9.8 1.4-8.8 2-17.6 2-26.4 0-14.4-2.4-28.8-7.2-43.2-1.3-3.6-2.6-7.2-4.1-10.8-1.5-3.6-2.5-7.2-4.2-10.8-3.3-7.2-7.3-13.6-12.2-19.4-4.8-5.8-10.4-11.2-16.8-16.2-7.2-5.6-15.2-10.4-24-14.4-8.8-4-18.4-7.2-28.8-9.6-10.4-2.4-21.6-3.2-33.6-3.2-12 0-24 1-36 3.2-12 2.2-24 5.6-36 10.4-12 4.8-24 10.4-36 16.8-12 6.4-24 13.6-36 21.6-12 8.8-24 18.4-36 29.6-12 11.2-24 23.2-36 36-4.9 3.5-9.3 6.4-14.7 9.8 1.4-8.8 2-17.6 2-26.4 0-14.4-2.4-28.8-7.2-43.2-1.3-3.6-2.6-7.2-4.1-10.8-1.5-3.6-2.5-7.2-4.2-10.8-3.3-7.2-7.3-13.6-12.2-19.4-4.8-5.8-10.4-11.2-16.8-16.2-7.2-5.6-15.2-10.4-24-14.4-8.8-4-18.4-7.2-28.8
+        // --- Utilities ---
+        const $ = (id) => document.getElementById(id);
+        const uniqueId = () => crypto.randomUUID(); // Generates a UUID (JIA)
+        
+        /**
+         * Formats a Firestore timestamp into a readable time (HH:MM).
+         * @param {Date | Object} timestamp The Date object or a Firestore object { seconds, nanoseconds }
+         * @returns {string} The formatted time.
+         */
+        const formatTime = (timestamp) => {
+            let date;
+            if (timestamp && timestamp.toDate) {
+                date = timestamp.toDate();
+            } else if (timestamp instanceof Date) {
+                date = timestamp;
+            } else {
+                return 'Unknown';
+            }
+            return date.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+        };
+
+
+        // --- Firebase Initialization ---
+        async function initializeBlite() {
+            try {
+                if (Object.keys(firebaseConfig).length === 0) {
+                    console.error("Error: Firebase configuration is empty.");
+                    $('loading-state').innerHTML = `<p class="text-red-600">Erreur: Configuration Firebase manquante.</p>`;
+                    return;
+                }
+
+                app = initializeApp(firebaseConfig);
+                db = getFirestore(app);
+                auth = getAuth(app);
+
+                // 1. Anonymous Authentication
+                await new Promise(resolve => {
+                    onAuthStateChanged(auth, async (user) => {
+                        if (user) {
+                            userId = user.uid;
+                        } else {
+                            if (initialAuthToken) {
+                                await signInWithCustomToken(auth, initialAuthToken).catch(err => {
+                                    console.error("Error signInWithCustomToken:", err);
+                                    return signInAnonymously(auth);
+                                });
+                            } else {
+                                await signInAnonymously(auth);
+                            }
+                            userId = auth.currentUser.uid;
+                        }
+                        isAuthReady = true;
+                        resolve();
+                    });
+                });
+
+                // 2. JIA (bliteID) Management
+                await manageBliteIdentity();
+                
+                // 3. Start Chat
+                loadMessages();
+
+            } catch (e) {
+                console.error("Critical error during Blite initialization:", e);
+                $('loading-state').innerHTML = `<p class="text-red-600">Erreur: Impossible de se connecter aux services.</p>`;
+            }
+        }
+
+        // --- Anonymous Identification Token (JIA) Logic ---
+        async function manageBliteIdentity() {
+            if (!isAuthReady || !userId) return;
+
+            const userDocRef = doc(db, `artifacts/${appId}/users/${userId}/blite_identity`, 'jia');
+
+            try {
+                const docSnap = await getDoc(userDocRef);
+
+                if (docSnap.exists()) {
+                    // JIA exists: Identity retrieval
+                    bliteID = docSnap.data().jia;
+                    // The onSnapshot listener will handle pseudo retrieval
+                    setupSnapshotListener(userDocRef);
+                } else {
+                    // JIA does not exist: Creating a new Blite identity
+                    bliteID = uniqueId();
+                    const defaultPseudo = `KINOIS-${bliteID.substring(0, 4).toUpperCase()}`;
+
+                    const newIdentity = {
+                        jia: bliteID,
+                        pseudo: defaultPseudo,
+                        createdAt: new Date(),
+                        geo: "Kinshasa"
+                    };
+
+                    await setDoc(userDocRef, newIdentity);
+                    setupSnapshotListener(userDocRef);
+                    
+                    // Display warning modal for the first time
+                    $('modal-pseudo').textContent = defaultPseudo;
+                    $('modal-container').classList.remove('hidden');
+                }
+
+            } catch (error) {
+                console.error("Error managing JIA:", error);
+                // Display error in loading state if critical
+                $('loading-state').innerHTML = `<p class="text-red-600">Erreur lors du chargement de l'identité: ${error.message}</p>`;
+            }
+        }
+
+        // Real-Time Listener for Pseudo
+        function setupSnapshotListener(docRef) {
+            onSnapshot(docRef, (docSnap) => {
+                if (docSnap.exists()) {
+                    const data = docSnap.data();
+                    currentPseudo = data.pseudo;
+                    updatePseudoUI(currentPseudo);
+                } else {
+                    currentPseudo = 'Lost Anonymous';
+                    updatePseudoUI(currentPseudo);
+                }
+            }, (error) => {
+                console.error("Error onSnapshot (Identity):", error);
+            });
+        }
+        
+        // --- Public Chat Logic ---
+        
+        let allMessages = []; // Local cache for sorting
+
+        function loadMessages() {
+            if (!isAuthReady) return;
+
+            const q = query(collection(db, PUBLIC_CHAT_PATH));
+            
+            onSnapshot(q, (snapshot) => {
+                // Collect all messages into an array
+                allMessages = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+
+                // Local sort by timestamp (better than using Firestore orderBy without index)
+                allMessages.sort((a, b) => {
+                    const timeA = a.timestamp && a.timestamp.seconds ? a.timestamp.seconds : 0;
+                    const timeB = b.timestamp && b.timestamp.seconds ? b.timestamp.seconds : 0;
+                    return timeA - timeB;
+                });
+
+                renderMessages(allMessages);
+                
+                // Hide loading state and display chat
+                $('loading-state').classList.add('hidden');
+                $('chat-window').classList.remove('hidden');
+                
+            }, (error) => {
+                console.error("Error onSnapshot (Chat):", error);
+                $('chat-window').innerHTML = `<p class="text-red-500 text-center">Erreur de connexion au chat.</p>`;
+            });
+        }
+
+        /**
+         * Sends the message to the public channel.
+         */
+        async function sendMessage() {
+            const input = $('message-input');
+            const messageText = input.value.trim();
+            
+            if (!messageText || !bliteID || !currentPseudo) return;
+            
+            $('send-message-btn').disabled = true;
+            input.disabled = true;
+
+            const messageData = {
+                text: messageText,
+                pseudo: currentPseudo,
+                jia: bliteID, // The JIA for anonymous identification
+                timestamp: new Date(),
+                userId: userId, // The Firebase ID (for moderation/security)
+            };
+
+            try {
+                // Adding the message to the public collection
+                await addDoc(collection(db, PUBLIC_CHAT_PATH), messageData);
+                input.value = ''; // Clear input after sending
+
+            } catch (e) {
+                console.error("Error sending message:", e);
+                // Use a temporary message area if sending fails
+                const tempMsg = $('message-area');
+                tempMsg.className = 'mt-2 text-sm font-medium text-red-600';
+                tempMsg.textContent = "Échec de l'envoi. Veuillez réessayer.";
+                setTimeout(() => tempMsg.textContent = '', 3000);
+            } finally {
+                $('send-message-btn').disabled = false;
+                input.disabled = false;
+                input.focus();
+            }
+        }
+
+        // --- User Interface (UI) Functions ---
+
+        function updatePseudoUI(pseudo) {
+            $('current-pseudo').textContent = pseudo;
+            $('pseudo-input').value = pseudo;
+        }
+
+        function renderMessages(messages) {
+            const chatWindow = $('chat-window');
+            // Save current scroll position if near the bottom
+            const shouldScroll = chatWindow.scrollHeight - chatWindow.scrollTop <= chatWindow.clientHeight + 50;
+
+            chatWindow.innerHTML = messages.map(msg => {
+                const isMine = msg.jia === bliteID; // Checks if the message comes from this device's JIA
+                
+                const alignment = isMine ? 'justify-end' : 'justify-start';
+                const bubbleColor = isMine ? 'bg-indigo-600 text-white' : 'bg-gray-200 text-gray-800';
+                const pseudoColor = isMine ? 'text-indigo-400' : 'text-indigo-600';
+
+                return `
+                    <div class="flex ${alignment}">
+                        <div class="max-w-xs sm:max-w-md">
+                            <div class="text-xs font-semibold ${pseudoColor} mb-0.5 ${isMine ? 'text-right' : 'text-left'}">
+                                ${msg.pseudo}
+                            </div>
+                            <div class="rounded-xl p-3 shadow-md ${bubbleColor}">
+                                <p class="text-sm break-words">${msg.text}</p>
+                                <span class="block text-right text-xs mt-1 ${isMine ? 'text-indigo-200' : 'text-gray-500'}">
+                                    ${formatTime(msg.timestamp)}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            // Automatic scroll to bottom if the user wasn't reading history
+            if (shouldScroll) {
+                chatWindow.scrollTop = chatWindow.scrollHeight;
+            }
+        }
+
+        // --- User Interaction Management ---
+
+        // Toggle the pseudo edit form display
+        $('toggle-pseudo-edit-btn').addEventListener('click', () => {
+            const form = $('pseudo-edit-form');
+            form.classList.toggle('hidden');
+        });
+
+        // Pseudo Update
+        async function handleUpdatePseudo() {
+            const newPseudo = $('pseudo-input').value.trim();
+            const current = $('current-pseudo').textContent;
+
+            if (newPseudo === current) {
+                $('message-area').textContent = "Le pseudo est inchangé.";
+                return;
+            }
+            if (newPseudo.length < 3 || newPseudo.length > 15) {
+                $('message-area').className = 'mt-2 text-sm font-medium text-red-600';
+                $('message-area').textContent = "Le pseudo doit contenir entre 3 et 15 caractères.";
+                return;
+            }
+
+            try {
+                const userDocRef = doc(db, `artifacts/${appId}/users/${userId}/blite_identity`, 'jia');
+                await setDoc(userDocRef, { pseudo: newPseudo }, { merge: true });
+
+                $('message-area').className = 'mt-2 text-sm font-medium text-green-600';
+                $('message-area').textContent = "Pseudo mis à jour !";
+                $('save-pseudo-btn').disabled = true;
+
+            } catch (error) {
+                console.error("Error updating pseudo:", error);
+                $('message-area').className = 'mt-2 text-sm font-medium text-red-600';
+                $('message-area').textContent = "Erreur de sauvegarde.";
+            }
+        }
+
+        // Input and Send Button Management
+        $('pseudo-input').addEventListener('input', () => {
+            const current = $('current-pseudo').textContent;
+            const input = $('pseudo-input').value.trim();
+            $('save-pseudo-btn').disabled = (input === current || input.length < 3 || input.length > 15);
+            $('message-area').textContent = '';
+        });
+
+        $('save-pseudo-btn').addEventListener('click', handleUpdatePseudo);
+
+        $('send-message-btn').addEventListener('click', sendMessage);
+        
+        $('message-input').addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                sendMessage();
+            }
+        });
+        
+        $('modal-close-btn').addEventListener('click', () => {
+            $('modal-container').classList.add('hidden');
+        });
+
+        // Initialization
+        window.onload = initializeBlite;
+
+    </script>
+</body>
+</html>
