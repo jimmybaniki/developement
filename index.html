@@ -3,370 +3,173 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Eau Pure | Livraison d'eau (Tailwind)</title>
+    <title>MAISONSDUJOUR - Catalogue Dynamique</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        /* Configuration Tailwind personnalisée (pour les couleurs) */
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        'eau-primaire': '#0070c0', /* Un bleu plus profond */
-                        'eau-secondaire': '#10b981', /* Vert émeraude moderne */
-                        'eau-fond': '#f0f9ff', /* Bleu très clair pour le fond */
-                    }
-                }
-            }
-        }
-        /* Style pour les petits écrans (pour le scroll des commandes) */
-        @media (max-width: 768px) {
-            .scroll-x-auto {
-                overflow-x: auto;
-            }
-            .min-w-max-table {
-                 min-width: 800px;
-            }
-        }
+        html { font-family: 'Inter', sans-serif; }
+        .whitespace-pre-wrap { white-space: pre-wrap; }
     </style>
-</head>
-<body class="bg-eau-fond min-h-screen antialiased">
-
-    <div id="clientPage" class="hidden">
-        <div class="max-w-4xl mx-auto p-4 md:p-8 bg-white shadow-xl rounded-lg my-10">
-            <header class="text-center mb-8">
-                <h1 class="text-4xl font-extrabold text-eau-primaire">💧 Eau Pure</h1>
-                <p class="text-gray-500 mt-2">Livraison d'eau pure à votre porte</p>
-            </header>
-
-            <form id="commandeFormulaire">
-                <h2 class="text-2xl font-semibold text-eau-primaire mb-4 border-b pb-2">Nos Eaux</h2>
-
-                <div class="mb-6 border p-4 rounded-lg bg-gray-50">
-                    <h3 class="text-xl font-bold text-gray-700 mb-3">Eau Pure</h3>
-                    
-                    <div class="flex flex-col md:flex-row md:justify-between items-center py-2 border-b last:border-b-0">
-                        <div class="flex-grow">
-                            <p class="font-medium">Sachets individuels</p>
-                            <p class="text-sm text-gray-500">150FC / sachet</p>
-                        </div>
-                        <span class="font-bold text-eau-secondaire my-2 md:my-0">150FC</span>
-                        <input type="number" min="0" value="0" data-prix="150" class="quantite-input w-20 p-2 border rounded text-center ml-4">
-                    </div>
-
-                    <div class="flex flex-col md:flex-row md:justify-between items-center py-2 border-b last:border-b-0">
-                        <div class="flex-grow">
-                            <p class="font-medium">Pack de 12 sachets</p>
-                            <p class="text-sm text-gray-500">Le format économique</p>
-                        </div>
-                        <span class="font-bold text-eau-secondaire my-2 md:my-0">1 500FC</span>
-                        <input type="number" min="0" value="0" data-prix="1500" class="quantite-input w-20 p-2 border rounded text-center ml-4">
-                    </div>
-                </div>
-
-                <h3 class="text-xl font-bold text-gray-700 mt-6 mb-3">Eau Swissta, Spasso, America</h3>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div class="produit-template border p-4 rounded-lg bg-gray-50 space-y-3" data-name="Eau Swissta">
-                        <p class="font-medium text-lg">Eau Swissta</p>
-                        <div class="flex justify-between items-center">
-                            <p class="text-sm text-gray-500">Bouteille individuelle (500FC)</p>
-                            <input type="number" min="0" value="0" data-prix="500" class="quantite-input w-20 p-2 border rounded text-center">
-                        </div>
-                        <div class="flex justify-between items-center">
-                            <p class="text-sm text-gray-500">Pack de 12 bouteilles (5 000FC)</p>
-                            <input type="number" min="0" value="0" data-prix="5000" class="quantite-input w-20 p-2 border rounded text-center">
-                        </div>
-                    </div>
-                     <div class="produit-template border p-4 rounded-lg bg-gray-50 space-y-3" data-name="Eau Spasso">
-                        <p class="font-medium text-lg">Eau Spasso</p>
-                        <div class="flex justify-between items-center">
-                            <p class="text-sm text-gray-500">Bouteille individuelle (500FC)</p>
-                            <input type="number" min="0" value="0" data-prix="500" class="quantite-input w-20 p-2 border rounded text-center">
-                        </div>
-                        <div class="flex justify-between items-center">
-                            <p class="text-sm text-gray-500">Pack de 12 bouteilles (5 000FC)</p>
-                            <input type="number" min="0" value="0" data-prix="5000" class="quantite-input w-20 p-2 border rounded text-center">
-                        </div>
-                    </div>
-                     <div class="produit-template border p-4 rounded-lg bg-gray-50 space-y-3" data-name="Eau America">
-                        <p class="font-medium text-lg">Eau America</p>
-                        <div class="flex justify-between items-center">
-                            <p class="text-sm text-gray-500">Bouteille individuelle (500FC)</p>
-                            <input type="number" min="0" value="0" data-prix="500" class="quantite-input w-20 p-2 border rounded text-center">
-                        </div>
-                        <div class="flex justify-between items-center">
-                            <p class="text-sm text-gray-500">Pack de 12 bouteilles (5 000FC)</p>
-                            <input type="number" min="0" value="0" data-prix="5000" class="quantite-input w-20 p-2 border rounded text-center">
-                        </div>
-                    </div>
-                </div>
-
-                <div class="total-section mt-8 p-4 bg-eau-primaire text-white rounded-lg flex justify-between items-center">
-                    <span class="text-xl font-semibold">Total:</span>
-                    <span class="text-3xl font-extrabold" id="totalPrix">0 FC</span>
-                </div>
-
-                <h2 class="text-2xl font-semibold text-eau-primaire mt-8 mb-4 border-b pb-2">Informations de Livraison</h2>
-                <div class="space-y-4">
-                    <input type="text" id="nomClient" placeholder="Nom" class="w-full p-3 border border-gray-300 rounded focus:ring-eau-secondaire focus:border-eau-secondaire" required>
-                    <input type="text" id="adresseClient" placeholder="Adresse complète" class="w-full p-3 border border-gray-300 rounded focus:ring-eau-secondaire focus:border-eau-secondaire" required>
-                    <input type="tel" id="telephoneClient" placeholder="Téléphone (ex: 081xxxxxxx)" class="w-full p-3 border border-gray-300 rounded focus:ring-eau-secondaire focus:border-eau-secondaire" required>
-                </div>
-
-                <button type="submit" class="w-full p-4 mt-6 bg-eau-secondaire hover:bg-green-600 text-white font-bold rounded-lg transition duration-200">
-                    Commander
-                </button>
-            </form>
-            
-            <button onclick="showPage('login')" class="w-full mt-4 p-3 text-eau-primaire hover:text-blue-700 font-medium transition duration-200 bg-gray-100 rounded-lg border border-gray-300">
-                Connexion Livreur
-            </button>
-        </div>
-    </div>
-
-    <div id="loginPage" class="hidden">
-        <div class="max-w-md mx-auto p-8 bg-white shadow-2xl rounded-xl my-20">
-            <h1 class="text-3xl font-extrabold text-eau-primaire text-center mb-6">🔒 Connexion Livreur</h1>
-            <p class="text-center text-gray-500 mb-8">Accédez à votre tableau de bord.</p>
-            
-            <form id="loginForm" class="space-y-6">
-                <div>
-                    <label for="identifiant" class="block text-sm font-medium text-gray-700">Identifiant (livreur / admin)</label>
-                    <input type="text" id="identifiant" required class="mt-1 block w-full p-3 border border-gray-300 rounded-md shadow-sm focus:ring-eau-secondaire focus:border-eau-secondaire">
-                </div>
-                
-                <div>
-                    <label for="password" class="block text-sm font-medium text-gray-700">Mot de passe</label>
-                    <input type="password" id="password" required class="mt-1 block w-full p-3 border border-gray-300 rounded-md shadow-sm focus:ring-eau-secondaire focus:border-eau-secondaire">
-                </div>
-                
-                <button type="submit" class="w-full p-3 bg-eau-secondaire hover:bg-green-600 text-white font-semibold rounded-md transition duration-200">
-                    Se Connecter
-                </button>
-            </form>
-            <button onclick="showPage('client')" class="w-full mt-4 p-2 text-eau-primaire hover:text-blue-700 text-sm">
-                Retour à la page Client
-            </button>
-        </div>
-    </div>
-
-    <div id="adminPage" class="hidden">
-        <div class="max-w-7xl mx-auto p-4 md:p-8 bg-white shadow-xl rounded-lg my-10">
-            <h1 class="text-3xl font-extrabold text-eau-primaire mb-6">⚙️ Gestion des Commandes</h1>
-            <p class="text-gray-600 mb-6">Tableau de bord des commandes à livrer.</p>
-
-            <div class="scroll-x-auto">
-                <table class="table-auto w-full min-w-max-table border-collapse">
-                    <thead>
-                        <tr class="bg-eau-primaire text-white text-left">
-                            <th class="p-3">ID</th>
-                            <th class="p-3">Client / Tél.</th>
-                            <th class="p-3">Adresse</th>
-                            <th class="p-3">Détail Commande</th>
-                            <th class="p-3">Total</th>
-                            <th class="p-3">Statut</th>
-                            <th class="p-3">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody id="ordersTableBody" class="divide-y divide-gray-200">
-                        </tbody>
-                </table>
-            </div>
-            <button onclick="showPage('client')" class="mt-8 p-3 bg-gray-200 hover:bg-gray-300 text-gray-700 font-medium rounded-lg transition duration-200">
-                Déconnexion
-            </button>
-        </div>
-    </div>
-
     <script>
-        // =================================================
-        // == LOGIQUE JAVASCRIPT POUR LA NAVIGATION ET LE CALCUL ==
-        // =================================================
+        // --- CONFIGURATION GOOGLE SHEETS ---
+        // Remplacez l'URL ci-dessous par votre lien "Publier sur le web" au format CSV
+        const SHEET_CSV_URL = "VOTRE_LIEN_GOOGLE_SHEET_ICI";
+        const WHATSAPP_NUMBER = '243978415814';
+
+        let allProperties = []; // Stockage global des données du Sheet
+
+        // Fonction pour charger les données depuis Google Sheets
+        async function fetchSheetData() {
+            try {
+                const response = await fetch(SHEET_CSV_URL);
+                const data = await response.text();
+                const rows = data.split('\n').slice(1); // On ignore l'en-tête
+
+                allProperties = rows.map(row => {
+                    const columns = row.split(',');
+                    return {
+                        id: columns[0],
+                        title: columns[1],
+                        price: columns[2],
+                        description: columns[3],
+                        imageUrl: columns[4],
+                        videoUrl: columns[5],
+                        commune: columns[6],
+                        district: columns[7],
+                        isFeatured: columns[8]?.trim().toLowerCase() === "oui"
+                    };
+                }).filter(p => p.id); // On garde uniquement les lignes avec un ID
+
+                renderFeaturedProperties();
+            } catch (error) {
+                console.error("Erreur de chargement Google Sheets:", error);
+            }
+        }
+
+        // Fonction WhatsApp (Inchangée mais optimisée)
+        function orderCommissionnaireNumber(propertyRef, commissionPrice = 3) {
+            const messageBox = document.getElementById('message-box');
+            messageBox.classList.remove('hidden');
+            messageBox.innerHTML = `<div class="bg-blue-50 border-l-4 border-blue-400 p-4 rounded-lg shadow-md mb-6"><p class="text-sm font-medium text-blue-800">Redirection vers WhatsApp...</p></div>`;
+            
+            const message = encodeURIComponent(`Bonjour MAISONSDUJOUR, je souhaite payer ${commissionPrice}$ pour la propriété Ref: ${propertyRef}.`);
+            setTimeout(() => {
+                window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${message}`, '_blank');
+                messageBox.classList.add('hidden');
+            }, 1000);
+        }
+
+        // Afficher les 10 propriétés "À la Une" (celles marquées "oui" dans le Sheet)
+        function renderFeaturedProperties() {
+            const container = document.getElementById('featured-catalogue');
+            const featured = allProperties.filter(p => p.isFeatured).slice(0, 10);
+            
+            let html = `<h3 class="text-3xl font-bold text-gray-700 mb-8 border-b border-gray-200 pb-3">🔥 10 Propriétés à la Une</h3>`;
+            html += `<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">`;
+
+            featured.forEach(prop => {
+                html += generateCardHTML(prop);
+            });
+
+            html += `</div>`;
+            container.innerHTML = html;
+        }
+
+        // Recherche par district et commune
+        function displayCommuneHouses(districtName, selectElement) {
+            const communeName = selectElement.value;
+            const resultDisplay = document.getElementById('result-display');
+            
+            const houses = allProperties.filter(p => p.commune.trim() === communeName.trim());
+            
+            let housesHtml = '';
+            houses.forEach(house => { housesHtml += generateCardHTML(house, true); });
+
+            resultDisplay.classList.remove('hidden');
+            resultDisplay.innerHTML = `
+                <div class="p-6 bg-white rounded-xl shadow-2xl border-t-8 border-emerald-600">
+                    <h3 class="text-3xl font-bold text-emerald-700 mb-2">${communeName}</h3>
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">${housesHtml}</div>
+                    <button onclick="document.getElementById('result-display').classList.add('hidden')" class="mt-10 px-6 py-3 bg-gray-500 text-white rounded-lg">Fermer</button>
+                </div>`;
+            resultDisplay.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // Générateur de carte HTML (Gère image et vidéo)
+        function generateCardHTML(prop, isLarge = false) {
+            const mediaHeight = isLarge ? 'h-96' : 'h-40';
+            let mediaZone = `<img src="${prop.imageUrl}" class="${mediaHeight} w-full object-cover">`;
+            
+            // Si une vidéo YouTube est présente, on l'affiche à la place
+            if (prop.videoUrl && prop.videoUrl.includes('youtube.com')) {
+                const vId = prop.videoUrl.split('v=')[1]?.split('&')[0];
+                mediaZone = `<iframe class="${mediaHeight} w-full" src="https://www.youtube.com/embed/${vId}" frameborder="0" allowfullscreen></iframe>`;
+            }
+
+            return `
+                <div class="bg-white rounded-xl shadow-lg overflow-hidden border border-gray-100 relative">
+                    ${mediaZone}
+                    <p class="absolute top-0 right-0 bg-emerald-600 text-white text-xs font-bold py-1 px-3 rounded-bl-lg">Réf: ${prop.id}</p>
+                    <div class="p-4">
+                        <h4 class="text-xl font-bold text-gray-900 mb-2">${prop.title}</h4>
+                        <p class="text-sm text-gray-700 mb-4 whitespace-pre-wrap">${prop.description}</p>
+                        <div class="mb-4 pt-2 border-t font-bold text-2xl text-emerald-600">${prop.price}$ <span class="text-xs text-gray-500">/mois</span></div>
+                        <button onclick="orderCommissionnaireNumber('${prop.id}', 3)" class="w-full bg-red-600 text-white py-3 rounded-lg font-bold">Commander le numéro (3$)</button>
+                    </div>
+                </div>`;
+        }
+
+        const districtsData = {
+            'Lukunga': ['Gombe', 'Kinshasa', 'Lingwala', 'Kintambo', 'Ngaliema', 'Mont-Ngafula', 'Selembao (partiel)'],
+            'Mont-Amba': ['Lemba', 'Limete', 'Matete', 'Kisenso', 'Ngaba', 'Mont-Ngafula (partiel)'],
+            'Tshangu': ['Masina', 'Ndjili', 'Kimbanseke', 'Maluku', 'Nsele'],
+            'Funa': ['Bandalungwa', 'Kalamu', 'Bumbu', 'Makala', 'Ngiri-Ngiri', 'Kasa-Vubu']
+        };
 
         document.addEventListener('DOMContentLoaded', () => {
-            const clientPage = document.getElementById('clientPage');
-            const loginPage = document.getElementById('loginPage');
-            const adminPage = document.getElementById('adminPage');
-            const commandeFormulaire = document.getElementById('commandeFormulaire');
-            const loginForm = document.getElementById('loginForm');
-            const totalElement = document.getElementById('totalPrix');
-            const quantiteInputs = document.querySelectorAll('.quantite-input');
-            const ordersTableBody = document.getElementById('ordersTableBody');
-
-            // Simuler une base de données de commandes
-            let commandesDB = [];
-
-            // Fonction pour changer de page (rendue globale pour les boutons HTML)
-            window.showPage = function(page) {
-                clientPage.classList.add('hidden');
-                loginPage.classList.add('hidden');
-                adminPage.classList.add('hidden');
-
-                if (page === 'client') {
-                    clientPage.classList.remove('hidden');
-                } else if (page === 'login') {
-                    loginPage.classList.remove('hidden');
-                } else if (page === 'admin') {
-                    adminPage.classList.remove('hidden');
-                    loadAdminOrders(); // Charger les commandes à chaque affichage
+            Object.keys(districtsData).forEach(district => {
+                const select = document.getElementById(`select-${district.replace('-', '').toLowerCase()}`);
+                if (select) {
+                    select.innerHTML = `<option value="" disabled selected>Sélectionnez une commune</option>`;
+                    districtsData[district].forEach(c => { select.innerHTML += `<option value="${c}">${c}</option>`; });
                 }
-            }
-
-            // Afficher la page client par défaut
-            showPage('client');
-
-            // -------------------------------------------------
-            // LOGIQUE CLIENT (CALCUL ET COMMANDE)
-            // -------------------------------------------------
-
-            function calculerTotal() {
-                let total = 0;
-                quantiteInputs.forEach(input => {
-                    const prixUnitaire = parseInt(input.getAttribute('data-prix'));
-                    const quantite = parseInt(input.value) || 0;
-                    if (quantite > 0) {
-                        total += prixUnitaire * quantite;
-                    }
-                });
-                // Formatage du total
-                totalElement.textContent = total.toLocaleString('fr-FR') + ' FC';
-                return total;
-            }
-
-            // Écouter les changements dans les champs de quantité
-            quantiteInputs.forEach(input => {
-                input.addEventListener('input', calculerTotal);
             });
-
-
-            // Gérer la soumission du formulaire de commande
-            commandeFormulaire.addEventListener('submit', (e) => {
-                e.preventDefault();
-                
-                const total = calculerTotal();
-
-                if (total === 0) {
-                    alert("Votre panier est vide. Veuillez sélectionner des produits.");
-                    return;
-                }
-                
-                // Récupérer les détails de la commande
-                let detailsCommande = [];
-                quantiteInputs.forEach(input => {
-                    const quantite = parseInt(input.value) || 0;
-                    if (quantite > 0) {
-                        // Identifier le nom du produit et le type de conditionnement
-                        const produitContainer = input.closest('.produit-template') || input.closest('.mb-6');
-                        let nomBase = "Eau Pure";
-                        if(produitContainer.dataset.name) {
-                            nomBase = produitContainer.dataset.name;
-                        }
-                        
-                        const prix = parseInt(input.getAttribute('data-prix'));
-                        const typeConditionnement = prix < 1000 ? "Individuel" : "Pack";
-                        
-                        detailsCommande.push(`${quantite} x ${nomBase} (${typeConditionnement})`);
-                    }
-                });
-
-                // Création de l'objet commande (Simule l'envoi au backend)
-                const nouvelleCommande = {
-                    id: commandesDB.length + 1,
-                    nomClient: document.getElementById('nomClient').value,
-                    adresse: document.getElementById('adresseClient').value,
-                    telephone: document.getElementById('telephoneClient').value,
-                    details: detailsCommande.join('; '),
-                    total: total,
-                    statut: 'Nouveau',
-                    livreur: 'Non Affecté'
-                };
-
-                commandesDB.push(nouvelleCommande);
-                alert(`Commande #${nouvelleCommande.id} de ${total.toLocaleString('fr-FR')} FC envoyée !`);
-
-                // Réinitialiser le formulaire
-                commandeFormulaire.reset();
-                calculerTotal();
-            });
-
-
-            // -------------------------------------------------
-            // LOGIQUE LIVREUR (LOGIN)
-            // -------------------------------------------------
-
-            loginForm.addEventListener('submit', (e) => {
-                e.preventDefault();
-                const identifiant = document.getElementById('identifiant').value.toLowerCase();
-                const password = document.getElementById('password').value;
-
-                // Authentification Simplifiée :
-                if (identifiant === 'livreur' && password === '1234') {
-                    showPage('admin');
-                } else if (identifiant === 'admin' && password === 'admin') {
-                     showPage('admin');
-                } else {
-                    alert("Identifiant ou mot de passe incorrect.");
-                }
-
-                loginForm.reset();
-            });
-
-
-            // -------------------------------------------------
-            // LOGIQUE ADMIN (ADMINORDERS)
-            // -------------------------------------------------
-
-            function loadAdminOrders() {
-                ordersTableBody.innerHTML = '';
-                if (commandesDB.length === 0) {
-                    ordersTableBody.innerHTML = '<tr><td colspan="7" class="text-center p-4 text-gray-500">Aucune commande en attente.</td></tr>';
-                    return;
-                }
-
-                commandesDB.forEach(cmd => {
-                    // Déterminer les classes Tailwind pour le statut
-                    let statusColor = 'bg-yellow-100 text-yellow-800';
-                    if (cmd.statut.includes('livraison')) statusColor = 'bg-blue-100 text-blue-800';
-                    if (cmd.statut === 'Livré') statusColor = 'bg-green-100 text-green-800';
-                    if (cmd.statut === 'Nouveau') statusColor = 'bg-red-100 text-red-800';
-
-                    const row = document.createElement('tr');
-                    row.classList.add('hover:bg-gray-50');
-
-                    row.innerHTML = `
-                        <td class="p-3 font-semibold text-gray-700">#${cmd.id}</td>
-                        <td class="p-3">${cmd.nomClient}<br><span class="text-sm text-gray-500">${cmd.telephone}</span></td>
-                        <td class="p-3">${cmd.adresse}</td>
-                        <td class="p-3 text-sm">${cmd.details.replace(/; /g, '<br>')}</td>
-                        <td class="p-3 font-bold text-lg text-eau-secondaire">${cmd.total.toLocaleString('fr-FR')} FC</td>
-                        <td class="p-3">
-                            <span class="inline-block px-3 py-1 text-xs font-medium rounded-full ${statusColor}">
-                                ${cmd.statut}
-                            </span>
-                        </td>
-                        <td class="p-3 space-y-2 md:space-y-0 md:space-x-2 flex flex-col md:flex-row">
-                            <button onclick="changeStatus(${cmd.id}, 'En cours de livraison')" class="text-xs p-2 bg-blue-600 hover:bg-blue-700 text-white rounded transition duration-150">
-                                Affecter & Livrer
-                            </button>
-                            <button onclick="changeStatus(${cmd.id}, 'Livré')" class="text-xs p-2 bg-eau-secondaire hover:bg-green-600 text-white rounded transition duration-150">
-                                Terminer
-                            </button>
-                        </td>
-                    `;
-                    ordersTableBody.appendChild(row);
-                });
-            }
-
-            // Rendre la fonction accessible globalement pour les boutons du tableau
-            window.changeStatus = (id, newStatus) => {
-                const cmd = commandesDB.find(c => c.id === id);
-                if (cmd) {
-                    cmd.statut = newStatus;
-                    alert(`Commande #${id} : Statut mis à jour vers "${newStatus}"`);
-                    loadAdminOrders(); // Recharger le tableau
-                }
-            };
+            fetchSheetData();
         });
     </script>
+</head>
+<body class="bg-gray-50">
+    <header class="bg-white shadow-md sticky top-0 z-10 p-4">
+        <div class="max-w-7xl mx-auto flex justify-between items-center">
+            <h1 class="text-2xl font-extrabold text-emerald-600">MAISONSDUJOUR</h1>
+            <a href="commissionnaire_submission.html" class="bg-red-600 text-white px-4 py-2 rounded-lg font-bold text-sm">Espace Agent</a>
+        </div>
+    </header>
 
+    <main class="max-w-7xl mx-auto px-4 py-12">
+        <div id="message-box" class="hidden"></div>
+        
+        <h2 class="text-3xl font-bold mb-8">Recherche par District</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-12">
+            <div class="bg-white p-6 rounded-xl shadow border-t-4 border-red-500">
+                <h3 class="text-xl font-bold text-red-600 mb-3">Lukunga</h3>
+                <select id="select-lukunga" onchange="displayCommuneHouses('Lukunga', this)" class="w-full p-2 border rounded"></select>
+            </div>
+            <div class="bg-white p-6 rounded-xl shadow border-t-4 border-blue-500">
+                <h3 class="text-xl font-bold text-blue-600 mb-3">Mont-Amba</h3>
+                <select id="select-montamba" onchange="displayCommuneHouses('Mont-Amba', this)" class="w-full p-2 border rounded"></select>
+            </div>
+            <div class="bg-white p-6 rounded-xl shadow border-t-4 border-green-500">
+                <h3 class="text-xl font-bold text-green-600 mb-3">Tshangu</h3>
+                <select id="select-tshangu" onchange="displayCommuneHouses('Tshangu', this)" class="w-full p-2 border rounded"></select>
+            </div>
+            <div class="bg-white p-6 rounded-xl shadow border-t-4 border-purple-500">
+                <h3 class="text-xl font-bold text-purple-600 mb-3">Funa</h3>
+                <select id="select-funa" onchange="displayCommuneHouses('Funa', this)" class="w-full p-2 border rounded"></select>
+            </div>
+        </div>
+
+        <div id="result-display" class="hidden mb-12"></div>
+        <section id="featured-catalogue"></section>
+    </main>
 </body>
 </html>
