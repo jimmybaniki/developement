@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UPKOL | Université Pédagogique de Kolwezi</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <!-- Bibliothèque pour les animations au défilement -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+    <style>
+        :root {
+            --primary: #FFD700; /* Jaune Or UPKOL */
+            --secondary: #121212; /* Noir Institutionnel */
+            --accent: #ffffff;
+        }
+        
+        body { font-family: 'Inter', sans-serif; scroll-behavior: smooth; overflow-x: hidden; }
+
+        .bg-upkol-jaune { background-color: var(--primary); }
+        .text-upkol-jaune { color: var(--primary); }
+        .bg-upkol-noir { background-color: var(--secondary); }
+        
+        .hero-section {
+            background: linear-gradient(rgba(0,0,0,0.75), rgba(0,0,0,0.75)), 
+                        url('https://images.unsplash.com/photo-1562774053-701939374585?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80');
+            background-size: cover;
+            background-position: center;
+        }
+
+        /* Animations personnalisées */
+        @keyframes slideFromTop {
+            from { transform: translateY(-50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        @keyframes slideFromLeft {
+            from { transform: translateX(-100px); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        @keyframes slideFromRight {
+            from { transform: translateX(100px); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        .reveal-down { animation: slideFromTop 0.8s ease-out forwards; }
+        .reveal-left { animation: slideFromLeft 0.8s ease-out forwards; }
+        .reveal-right { animation: slideFromRight 0.8s ease-out forwards; }
+
+        .nav-dropdown:hover .dropdown-content { display: block; animation: fadeIn 0.3s ease; }
+        
+        .tab-content { display: none; }
+        .tab-content.active { display: block; animation: fadeIn 0.6s ease-in-out; }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .card-faculte {
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        .card-faculte:hover {
+            border-color: var(--primary);
+            transform: translateY(-10px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Barre de recherche animée */
+        .search-container input:focus {
+            width: 250px;
+            border-color: var(--primary);
+        }
+        .search-container input {
+            transition: width 0.4s ease, border-color 0.4s ease;
+            width: 150px;
+        }
+    </style>
+</head>
+<body class="bg-white text-gray-900">
+
+    <!-- TOP BAR -->
+    <div class="bg-upkol-noir text-white py-2 px-6 text-[10px] md:text-xs font-medium tracking-widest border-b border-gray-800 reveal-down">
+        <div class="max-w-7xl mx-auto flex justify-between items-center">
+            <div class="flex space-x-6">
+                <span class="flex items-center"><i class="fas fa-map-marker-alt text-upkol-jaune mr-2"></i> KOLWEZI, RDC</span>
+                <span class="hidden sm:inline flex items-center"><i class="fas fa-envelope text-upkol-jaune mr-2"></i> CONTACT@UPKOL.EDU</span>
+            </div>
+            <div class="hidden md:flex space-x-4">
+                <span class="text-gray-500 italic">Excellence Pédagogique au Lualaba</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- MAIN NAVIGATION -->
+    <nav class="sticky top-0 z-50 bg-white shadow-md transition-all duration-300">
+        <div class="max-w-7xl mx-auto px-6 h-20 flex justify-between items-center">
+            <!-- Logo -->
+            <div class="flex items-center space-x-3 cursor-pointer reveal-left" onclick="showTab('home')">
+                <div class="w-12 h-12 bg-upkol-noir flex items-center justify-center rounded-lg shadow-lg hover:rotate-3 transition-transform">
+                    <span class="text-upkol-jaune font-black text-xl">U</span>
+                </div>
+                <div>
+                    <h1 class="text-xl font-black leading-none tracking-tighter">UPKOL</h1>
+                    <p class="text-[9px] font-bold text-gray-500 uppercase tracking-widest">Univ. Pédagogique de Kolwezi</p>
+                </div>
+            </div>
+
+            <!-- Desktop Menu & Search -->
+            <div class="hidden lg:flex space-x-6 text-[11px] font-bold uppercase tracking-widest items-center reveal-right">
+                
+                <!-- Search Bar -->
+                <div class="search-container relative mr-4">
+                    <input type="text" id="site-search" placeholder="Rechercher..." 
+                           class="bg-gray-100 border-2 border-transparent px-4 py-2 rounded-full outline-none text-gray-700">
+                    <button class="absolute right-3 top-2.5 text-gray-400 hover:text-upkol-jaune" onclick="handleSearch()">
+                        <i class="fas fa-search"></i>
+                    </button>
+                </div>
+
+                <div class="relative nav-dropdown py-8">
+                    <button class="flex items-center hover:text-upkol-jaune transition-colors">L'Université <i class="fas fa-chevron-down ml-2 text-[8px]"></i></button>
+                    <div class="dropdown-content hidden absolute left-0 top-full bg-white shadow-2xl border-t-4 border-upkol-jaune min-w-[250px] py-4 rounded-b-xl">
+                        <a href="#" onclick="showTab('presentation')" class="block px-6 py-3 hover:bg-gray-50 hover:text-upkol-jaune transition-all">Présentation de l'UPKOL</a>
+                        <a href="#" class="block px-6 py-3 hover:bg-gray-50 hover:text-upkol-jaune transition-all">Les Organes</a>
+                        <a href="#" class="block px-6 py-3 hover:bg-gray-50 hover:text-upkol-jaune transition-all">Plan Stratégique</a>
+                    </div>
+                </div>
+
+                <button onclick="showTab('actualites')" class="hover:text-upkol-jaune py-8 transition-colors">Facultés</button>
+                
+                <button onclick="showTab('facultes')" class="hover:text-upkol-jaune py-8 transition-colors">Actualités</button>
+
+                <!-- Section Enseignements avec Pop-up -->
+                <div class="relative nav-dropdown py-8">
+                    <button class="flex items-center hover:text-upkol-jaune transition-colors">Enseignements <i class="fas fa-chevron-down ml-2 text-[8px]"></i></button>
+                    <div class="dropdown-content hidden absolute right-0 top-full bg-white shadow-2xl border-t-4 border-upkol-jaune min-w-[220px] py-4 rounded-b-xl">
+                        <a href="#" class="flex items-center px-6 py-3 hover:bg-gray-50 hover:text-upkol-jaune transition-all">
+                            <i class="fas fa-book-open mr-3 opacity-50"></i> BIBLIOTHÈQUES
+                        </a>
+                        <a href="#" class="flex items-center px-6 py-3 hover:bg-gray-50 hover:text-upkol-jaune transition-all">
+                            <i class="fas fa-laptop mr-3 opacity-50"></i> E-LEARNING
+                        </a>
+                        <a href="#" class="flex items-center px-6 py-3 hover:bg-gray-50 hover:text-upkol-jaune transition-all">
+                            <i class="fas fa-microscope mr-3 opacity-50"></i> RECHERCHES
+                        </a>
+                    </div>
+                </div>
+                
+                <button onclick="showTab('inscription')" class="bg-upkol-jaune text-black px-6 py-3 rounded-full hover:bg-upkol-noir hover:text-white transition-all transform hover:scale-105 shadow-md">S'INSCRIRE</button>
+            </div>
+
+            <!-- Mobile Menu Toggle -->
+            <div class="lg:hidden flex items-center space-x-4">
+                <i class="fas fa-search text-xl cursor-pointer" onclick="toggleMobileSearch()"></i>
+                <i class="fas fa-bars text-2xl cursor-pointer"></i>
+            </div>
+        </div>
+    </nav>
+
+    <!-- MAIN CONTENT SECTIONS -->
+
+    <!-- 1. ACCUEIL -->
+    <main id="home" class="tab-content active">
+        <!-- Hero -->
+        <section class="hero-section h-[85vh] flex items-center px-6 overflow-hidden">
+            <div class="max-w-7xl mx-auto w-full grid md:grid-cols-2">
+                <div class="text-white">
+                    <div class="w-20 h-1 bg-upkol-jaune mb-8 reveal-left" style="animation-delay: 0.2s"></div>
+                    <h2 class="text-5xl md:text-7xl font-black mb-6 uppercase leading-tight reveal-left" style="animation-delay: 0.4s">
+                        Innovation. <br>Recherche. <br><span class="text-upkol-jaune">Réalisation.</span>
+                    </h2>
+                    <p class="text-lg md:text-xl text-gray-300 mb-10 max-w-lg reveal-left" style="animation-delay: 0.6s">
+                        Le pôle académique de référence au Lualaba pour la formation des cadres de demain.
+                    </p>
+                    <div class="flex space-x-4 reveal-left" style="animation-delay: 0.8s">
+                        <button onclick="showTab('inscription')" class="bg-upkol-jaune text-black px-8 py-4 font-bold rounded-lg hover:bg-white transition-all shadow-xl">REJOINDRE L'UPKOL</button>
+                        <button onclick="showTab('facultes')" class="border-2 border-white px-8 py-4 font-bold rounded-lg hover:bg-upkol-jaune hover:border-upkol-jaune hover:text-black transition-all">NOS FILIÈRES</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Stats -->
+        <section class="py-12 bg-upkol-noir text-white">
+            <div class="max-w-7xl mx-auto px-6 grid grid-cols-2 md:grid-cols-4 gap-8">
+                <div class="text-center transform hover:scale-110 transition-transform cursor-default">
+                    <p class="text-upkol-jaune text-4xl font-black">15+</p>
+                    <p class="text-[10px] tracking-widest font-bold text-gray-500 uppercase">Partenaires</p>
+                </div>
+                <div class="text-center transform hover:scale-110 transition-transform cursor-default">
+                    <p class="text-upkol-jaune text-4xl font-black">08</p>
+                    <p class="text-[10px] tracking-widest font-bold text-gray-500 uppercase">Facultés</p>
+                </div>
+                <div class="text-center transform hover:scale-110 transition-transform cursor-default">
+                    <p class="text-upkol-jaune text-4xl font-black">100%</p>
+                    <p class="text-[10px] tracking-widest font-bold text-gray-500 uppercase">Agréés</p>
+                </div>
+                <div class="text-center transform hover:scale-110 transition-transform cursor-default">
+                    <p class="text-upkol-jaune text-4xl font-black">2024</p>
+                    <p class="text-[10px] tracking-widest font-bold text-gray-500 uppercase">Innovation</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Access Cards with Hover Effects -->
+        <section class="py-20 px-6 max-w-7xl mx-auto">
+            <div class="grid md:grid-cols-3 gap-6">
+                <div class="bg-gray-50 p-8 rounded-2xl border-l-8 border-upkol-noir hover:bg-white hover:shadow-2xl transition-all cursor-pointer transform hover:-translate-y-2 group">
+                    <i class="fas fa-graduation-cap text-3xl mb-4 text-upkol-jaune group-hover:scale-110 transition-transform inline-block"></i>
+                    <h3 class="font-black text-xl mb-2">Comment réussir ?</h3>
+                    <p class="text-sm text-gray-600">Guide méthodologique complet pour votre parcours universitaire.</p>
+                </div>
+                <div class="bg-gray-50 p-8 rounded-2xl border-l-8 border-upkol-noir hover:bg-white hover:shadow-2xl transition-all cursor-pointer transform hover:-translate-y-2 group">
+                    <i class="fas fa-laptop-house text-3xl mb-4 text-upkol-jaune group-hover:scale-110 transition-transform inline-block"></i>
+                    <h3 class="font-black text-xl mb-2">E-Learning</h3>
+                    <p class="text-sm text-gray-600">Accédez à vos cours et ressources numériques en un clic.</p>
+                </div>
+                <div class="bg-gray-50 p-8 rounded-2xl border-l-8 border-upkol-noir hover:bg-white hover:shadow-2xl transition-all cursor-pointer transform hover:-translate-y-2 group">
+                    <i class="fas fa-book-reader text-3xl mb-4 text-upkol-jaune group-hover:scale-110 transition-transform inline-block"></i>
+                    <h3 class="font-black text-xl mb-2">Recherche</h3>
+                    <p class="text-sm text-gray-600">Explorez nos dernières publications et projets scientifiques.</p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- 2. FACULTÉS -->
+    <main id="facultes" class="tab-content py-20 px-6 max-w-7xl mx-auto">
+        <div class="text-center mb-16 reveal-down">
+            <h2 class="text-4xl font-black uppercase mb-4">Nos <span class="text-upkol-jaune">Facultés</span></h2>
+            <div class="w-24 h-1 bg-upkol-jaune mx-auto"></div>
+        </div>
+        
+        <div class="grid md:grid-cols-3 gap-8">
+            <!-- Psychologie -->
+            <div class="card-faculte bg-white border border-gray-100 p-8 rounded-3xl shadow-sm reveal-left" style="animation-delay: 0.1s">
+                <i class="fas fa-brain text-upkol-jaune text-3xl mb-6"></i>
+                <h3 class="text-xl font-black mb-4">PSYCHOLOGIE</h3>
+                <p class="text-sm text-gray-500 mb-6">Formation des cadres pour la transformation humaine et sociale.</p>
+                <button class="text-xs font-bold uppercase tracking-widest text-upkol-jaune hover:underline">Découvrir le programme</button>
+            </div>
+
+            <!-- Sciences -->
+            <div class="card-faculte bg-white border border-gray-100 p-8 rounded-3xl shadow-sm reveal-down" style="animation-delay: 0.2s">
+                <i class="fas fa-flask text-upkol-jaune text-3xl mb-6"></i>
+                <h3 class="text-xl font-black mb-4">SCIENCES</h3>
+                <p class="text-sm text-gray-500 mb-6">Recherche fondamentale et appliquée aux enjeux technologiques.</p>
+                <button class="text-xs font-bold uppercase tracking-widest text-upkol-jaune hover:underline">Découvrir le programme</button>
+            </div>
+
+            <!-- Agronomie -->
+            <div class="card-faculte bg-white border border-gray-100 p-8 rounded-3xl shadow-sm reveal-right" style="animation-delay: 0.3s">
+                <i class="fas fa-leaf text-upkol-jaune text-3xl mb-6"></i>
+                <h3 class="text-xl font-black mb-4">AGRONOMIE</h3>
+                <p class="text-sm text-gray-500 mb-6">Sécurité alimentaire et gestion durable de l'environnement.</p>
+                <button class="text-xs font-bold uppercase tracking-widest text-upkol-jaune hover:underline">Découvrir le programme</button>
+            </div>
+        </div>
+    </main>
+
+    <!-- 3. ACTUALITÉS -->
+    <main id="actualites" class="tab-content py-20 px-6 max-w-7xl mx-auto">
+        <div class="text-center mb-16 reveal-down">
+            <h2 class="text-4xl font-black uppercase mb-4">Facultés de <span class="text-upkol-jaune">l'Université</span></h2>
+            <p class="text-gray-500 font-bold text-sm tracking-widest uppercase mb-4">Toutes les facultés de l'UPKOL (Université pedagogique de Kolwezi)</p>
+            <div class="w-24 h-1 bg-upkol-jaune mx-auto"></div>
+        </div>
+
+        <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <!-- Fac 1 -->
+            <div class="group overflow-hidden bg-gray-50 rounded-2xl hover:shadow-2xl transition-all duration-500 reveal-left">
+                <div class="h-48 bg-gray-200 overflow-hidden relative">
+                    <img src="https://images.unsplash.com/photo-1544027993-37dbfe43562a?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80" alt="Médecine" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700">
+                    <div class="absolute top-4 left-4 bg-upkol-jaune text-black text-[9px] font-black px-3 py-1 rounded-full uppercase tracking-widest shadow-lg">Santé</div>
+                </div>
+                <div class="p-8">
+                    <h3 class="font-black text-lg mb-3 uppercase group-hover:text-upkol-jaune transition-colors">Faculté de Médecine</h3>
+                    <p class="text-xs text-gray-600 leading-relaxed mb-6">Formation d'excellence pour les futurs professionnels de santé de la province du Lualaba.</p>
+                    <div class="flex items-center justify-between">
+                        <span class="text-[10px] font-black text-gray-400">SESSION 2024</span>
+                        <a href="#" class="text-upkol-jaune font-black text-[10px] uppercase tracking-widest hover:translate-x-2 transition-transform inline-block">Lire plus <i class="fas fa-arrow-right ml-2"></i></a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Fac 2 -->
+            <div class="group overflow-hidden bg-gray-50 rounded-2xl hover:shadow-2xl transition-all duration-500 reveal-down">
+                <div class="h-48 bg-gray-200 overflow-hidden relative">
+                    <img src="https://images.unsplash.com/photo-1504917595217-d4dc5ebe6122?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80" alt="Ingénierie" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700">
+                    <div class="absolute top-4 left-4 bg-upkol-jaune text-black text-[9px] font-black px-3 py-1 rounded-full uppercase tracking-widest shadow-lg">Mines</div>
+                </div>
+                <div class="p-8">
+                    <h3 class="font-black text-lg mb-3 uppercase group-hover:text-upkol-jaune transition-colors">Faculté des Sciences Techniques</h3>
+                    <p class="text-xs text-gray-600 leading-relaxed mb-6">Spécialisation dans le domaine minier et les constructions civiles adaptées à notre région.</p>
+                    <div class="flex items-center justify-between">
+                        <span class="text-[10px] font-black text-gray-400">NOUVEAU</span>
+                        <a href="#" class="text-upkol-jaune font-black text-[10px] uppercase tracking-widest hover:translate-x-2 transition-transform inline-block">Lire plus <i class="fas fa-arrow-right ml-2"></i></a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Fac 3 -->
+            <div class="group overflow-hidden bg-gray-50 rounded-2xl hover:shadow-2xl transition-all duration-500 reveal-right">
+                <div class="h-48 bg-gray-200 overflow-hidden relative">
+                    <img src="https://images.unsplash.com/photo-1523240795612-9a054b0db644?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80" alt="Économie" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700">
+                    <div class="absolute top-4 left-4 bg-upkol-jaune text-black text-[9px] font-black px-3 py-1 rounded-full uppercase tracking-widest shadow-lg">Gestion</div>
+                </div>
+                <div class="p-8">
+                    <h3 class="font-black text-lg mb-3 uppercase group-hover:text-upkol-jaune transition-colors">Faculté des Sc. Économiques</h3>
+                    <p class="text-xs text-gray-600 leading-relaxed mb-6">Analyse financière et gestion d'entreprise pour le développement économique durable.</p>
+                    <div class="flex items-center justify-between">
+                        <span class="text-[10px] font-black text-gray-400">OUVERTURE</span>
+                        <a href="#" class="text-upkol-jaune font-black text-[10px] uppercase tracking-widest hover:translate-x-2 transition-transform inline-block">Lire plus <i class="fas fa-arrow-right ml-2"></i></a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Fac 4 -->
+            <div class="group overflow-hidden bg-gray-50 rounded-2xl hover:shadow-2xl transition-all duration-500 reveal-left">
+                <div class="h-48 bg-gray-200 overflow-hidden relative">
+                    <img src="https://images.unsplash.com/photo-1589829545856-d10d557cf95f?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80" alt="Droit" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700">
+                    <div class="absolute top-4 left-4 bg-upkol-jaune text-black text-[9px] font-black px-3 py-1 rounded-full uppercase tracking-widest shadow-lg">Justice</div>
+                </div>
+                <div class="p-8">
+                    <h3 class="font-black text-lg mb-3 uppercase group-hover:text-upkol-jaune transition-colors">Faculté de Droit</h3>
+                    <p class="text-xs text-gray-600 leading-relaxed mb-6">Expertise juridique, défense des droits et formation des magistrats de demain.</p>
+                    <div class="flex items-center justify-between">
+                        <span class="text-[10px] font-black text-gray-400">CONFÉRENCE</span>
+                        <a href="#" class="text-upkol-jaune font-black text-[10px] uppercase tracking-widest hover:translate-x-2 transition-transform inline-block">Lire plus <i class="fas fa-arrow-right ml-2"></i></a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Fac 5 -->
+            <div class="group overflow-hidden bg-gray-50 rounded-2xl hover:shadow-2xl transition-all duration-500 reveal-down">
+                <div class="h-48 bg-gray-200 overflow-hidden relative">
+                    <img src="https://images.unsplash.com/photo-1517048676732-d65bc937f952?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80" alt="Lettres" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700">
+                    <div class="absolute top-4 left-4 bg-upkol-jaune text-black text-[9px] font-black px-3 py-1 rounded-full uppercase tracking-widest shadow-lg">Culture</div>
+                </div>
+                <div class="p-8">
+                    <h3 class="font-black text-lg mb-3 uppercase group-hover:text-upkol-jaune transition-colors">Faculté de Lettres & Sc. Humaines</h3>
+                    <p class="text-xs text-gray-600 leading-relaxed mb-6">Langues, communication et compréhension des enjeux socioculturels africains.</p>
+                    <div class="flex items-center justify-between">
+                        <span class="text-[10px] font-black text-gray-400">COLLOQUE</span>
+                        <a href="#" class="text-upkol-jaune font-black text-[10px] uppercase tracking-widest hover:translate-x-2 transition-transform inline-block">Lire plus <i class="fas fa-arrow-right ml-2"></i></a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Fac 6 -->
+            <div class="group overflow-hidden bg-gray-50 rounded-2xl hover:shadow-2xl transition-all duration-500 reveal-right">
+                <div class="h-48 bg-gray-200 overflow-hidden relative">
+                    <img src="https://images.unsplash.com/photo-1488590528505-98d2b5aba04b?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80" alt="Informatique" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700">
+                    <div class="absolute top-4 left-4 bg-upkol-jaune text-black text-[9px] font-black px-3 py-1 rounded-full uppercase tracking-widest shadow-lg">Tech</div>
+                </div>
+                <div class="p-8">
+                    <h3 class="font-black text-lg mb-3 uppercase group-hover:text-upkol-jaune transition-colors">Faculté des Sciences de l'Info</h3>
+                    <p class="text-xs text-gray-600 leading-relaxed mb-6">Maîtrise du numérique, développement logiciel et cybersécurité pour la modernité.</p>
+                    <div class="flex items-center justify-between">
+                        <span class="text-[10px] font-black text-gray-400">WORKSHOP</span>
+                        <a href="#" class="text-upkol-jaune font-black text-[10px] uppercase tracking-widest hover:translate-x-2 transition-transform inline-block">Lire plus <i class="fas fa-arrow-right ml-2"></i></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- 4. INSCRIPTION -->
+    <main id="inscription" class="tab-content py-20 px-6">
+        <div class="max-w-3xl mx-auto bg-white border-2 border-gray-100 rounded-[2rem] shadow-2xl overflow-hidden reveal-down">
+            <div class="bg-upkol-noir p-10 text-white text-center">
+                <h2 class="text-3xl font-black mb-2 uppercase">Pré-inscription</h2>
+                <p class="text-upkol-jaune text-xs font-bold tracking-widest">SESSION ACADÉMIQUE 2024-2025</p>
+            </div>
+            <form class="p-10 space-y-6" onsubmit="handleFormSubmit(event)">
+                <div class="grid md:grid-cols-2 gap-6">
+                    <div class="space-y-2">
+                        <label class="text-[10px] font-bold text-gray-400 uppercase ml-2">Nom Complet</label>
+                        <input type="text" required placeholder="Ex: Jean Mukendi" class="w-full p-4 bg-gray-50 border-0 rounded-xl focus:ring-2 focus:ring-upkol-jaune outline-none font-bold text-sm transition-all">
+                    </div>
+                    <div class="space-y-2">
+                        <label class="text-[10px] font-bold text-gray-400 uppercase ml-2">Email</label>
+                        <input type="email" required placeholder="exemple@mail.com" class="w-full p-4 bg-gray-50 border-0 rounded-xl focus:ring-2 focus:ring-upkol-jaune outline-none font-bold text-sm transition-all">
+                    </div>
+                </div>
+                <div class="space-y-2">
+                    <label class="text-[10px] font-bold text-gray-400 uppercase ml-2">Faculté de choix</label>
+                    <select class="w-full p-4 bg-gray-50 border-0 rounded-xl focus:ring-2 focus:ring-upkol-jaune outline-none font-bold text-sm">
+                        <option>Médecine</option>
+                        <option>Droit</option>
+                        <option>Sciences de l'Ingénieur / Polytechnique</option>
+                        <option>Sciences Économiques et de Gestion</option>
+                        <option>Lettres et Sciences Humaines</option>
+                        <option>Sciences de l'Information et de la Communication</option>
+                        <option>Agronomie</option>
+                        <option>Psychologie et Sciences de l'Éducation</option>
+                    </select>
+                </div>
+                <button type="submit" class="w-full bg-upkol-jaune text-black py-5 rounded-xl font-black text-lg uppercase shadow-xl hover:bg-black hover:text-white transition-all transform hover:scale-[1.02]">
+                    Envoyer ma candidature
+                </button>
+            </form>
+        </div>
+    </main>
+
+    <!-- MODAL DE RECHERCHE (Popup factice) -->
+    <div id="search-feedback" class="fixed bottom-10 right-10 bg-upkol-noir text-white px-6 py-4 rounded-xl shadow-2xl hidden animate__animated animate__fadeInUp">
+        <p id="search-text" class="text-sm font-bold"></p>
+    </div>
+
+    <!-- FOOTER -->
+    <footer class="bg-upkol-noir text-white py-20 px-6 border-t-[12px] border-upkol-jaune">
+        <div class="max-w-7xl mx-auto grid md:grid-cols-4 gap-12">
+            <div class="reveal-left">
+                <h4 class="text-3xl font-black mb-6 uppercase">UP<span class="text-upkol-jaune">KOL</span></h4>
+                <p class="text-gray-500 text-sm leading-relaxed">Université de prestige au cœur du Lualaba. Dédiée à l'excellence et à l'innovation.</p>
+            </div>
+            <div class="reveal-down" style="animation-delay: 0.2s">
+                <h5 class="text-upkol-jaune font-black text-xs uppercase mb-6 tracking-widest">Liens</h5>
+                <ul class="space-y-4 text-xs font-bold text-gray-400">
+                    <li><a href="#" onclick="showTab('actualites')" class="hover:text-white transition-colors uppercase">Actualités</a></li>
+                    <li><a href="#" class="hover:text-white transition-colors uppercase">Bibliothèques</a></li>
+                    <li><a href="#" class="hover:text-white transition-colors uppercase">E-Learning</a></li>
+                </ul>
+            </div>
+            <div class="reveal-down" style="animation-delay: 0.4s">
+                <h5 class="text-upkol-jaune font-black text-xs uppercase mb-6 tracking-widest">Social</h5>
+                <div class="flex space-x-4">
+                    <a href="#" class="w-10 h-10 bg-gray-800 flex items-center justify-center rounded-full hover:bg-upkol-jaune hover:text-black transition-all"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#" class="w-10 h-10 bg-gray-800 flex items-center justify-center rounded-full hover:bg-upkol-jaune hover:text-black transition-all"><i class="fab fa-linkedin-in"></i></a>
+                </div>
+            </div>
+            <div class="reveal-right">
+                <h5 class="text-upkol-jaune font-black text-xs uppercase mb-6 tracking-widest">Localisation</h5>
+                <p class="text-xs text-gray-400 font-bold">Kolwezi, Lualaba<br>République Démocratique du Congo</p>
+            </div>
+        </div>
+        <div class="max-w-7xl mx-auto mt-20 pt-8 border-t border-gray-900 flex justify-between items-center text-[10px] font-bold text-gray-600 uppercase">
+            <span>&copy; 2024 UPKOL - TOUS DROITS RÉSERVÉS</span>
+            <div class="flex space-x-4">
+                <span>INNOVATION</span>
+                <span>EXCELLENCE</span>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Gestion de la navigation par onglets
+        function showTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(section => {
+                section.classList.remove('active');
+            });
+            const activeSection = document.getElementById(tabId);
+            if (activeSection) {
+                activeSection.classList.add('active');
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+                
+                // Réinitialiser les animations d'entrée au changement d'onglet
+                const elements = activeSection.querySelectorAll('.reveal-left, .reveal-right, .reveal-down');
+                elements.forEach(el => {
+                    el.style.animation = 'none';
+                    el.offsetHeight; // Trigger reflow
+                    el.style.animation = null;
+                });
+            }
+        }
+
+        // Gestion de la recherche
+        function handleSearch() {
+            const query = document.getElementById('site-search').value;
+            if (query.trim() !== "") {
+                const feedback = document.getElementById('search-feedback');
+                const feedbackText = document.getElementById('search-text');
+                feedbackText.innerText = "Recherche en cours pour : " + query;
+                feedback.classList.remove('hidden');
+                
+                setTimeout(() => {
+                    feedback.classList.add('animate__fadeOutDown');
+                    setTimeout(() => {
+                        feedback.classList.add('hidden');
+                        feedback.classList.remove('animate__fadeOutDown');
+                    }, 1000);
+                }, 3000);
+            }
+        }
+
+        // Recherche via touche "Entrée"
+        document.getElementById('site-search').addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') {
+                handleSearch();
+            }
+        });
+
+        // Simulation d'envoi de formulaire
+        function handleFormSubmit(e) {
+            e.preventDefault();
+            const btn = e.target.querySelector('button');
+            const originalText = btn.innerText;
+            btn.innerText = "ENVOI EN COURS...";
+            btn.disabled = true;
+
+            setTimeout(() => {
+                btn.classList.replace('bg-upkol-jaune', 'bg-green-500');
+                btn.innerText = "DOSSIER REÇU !";
+                setTimeout(() => {
+                    btn.innerText = originalText;
+                    btn.classList.replace('bg-green-500', 'bg-upkol-jaune');
+                    btn.disabled = false;
+                    e.target.reset();
+                }, 3000);
+            }, 1500);
+        }
+
+        // Animation au défilement (Simple observer)
+        const observerOptions = { threshold: 0.1 };
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = "1";
+                    entry.target.classList.add('animate__animated', 'animate__fadeInUp');
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.card-faculte, .group').forEach(card => {
+            card.style.opacity = "0";
+            observer.observe(card);
+        });
+    </script>
+</body>
+</html>
